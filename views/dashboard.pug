@@ -1,0 +1,48 @@
+doctype html
+html
+    head
+        title #{title}
+        meta(name='viewport' content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/bootstrap/bootstrap.css')
+        link(rel='stylesheet' href='https://use.fontawesome.com/releases/v5.3.1/css/all.css' integrity='sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU' crossorigin='anonymous')
+        link(rel='stylesheet', href='/javascripts/vendor/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/dashboard.css')
+        link(rel='stylesheet', href='/stylesheets/load_spinner.css')
+        script(src='http://code.jquery.com/jquery-1.11.1.min.js')
+        script(type='text/javascript',src='/javascripts/vendor/bootstrap.min.js')
+        script(type='text/javascript',src='/javascripts/vendor/popper.min.js')
+        include mixins/table.pug
+    body
+        nav.navbar.navbar-dark.sticky-top.bg-dark.flex-md-nowrap.p-0
+            a.navbar-brand.col-sm-3.col-md-2.mr-0(href='#') NFT Colligence
+            //-     
+            ul.navbar-nav.px-3  
+                li.nav-item.text-nowrap
+                a.nav-link(href='#') Sign out
+        .container-fluid
+            .row
+                nav(class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar")
+                    div.sidebar-sticky
+                        ul.nav.flex-column
+                            li.nav-item
+                                a.nav-link(href='/user')#user_current
+                                    span(data-feather='user')
+                                    | User Management 
+                            li.nav-item
+                                a#product_current.nav-link(href='/product')
+                                    span(data-feather='layers')
+                                    span
+                                    | Product Management
+                            li.nav-item
+                                a#edition_current.nav-link(href='#')
+                                    span(data-feather='file')
+                                    | Edition Management
+                            li.nav-item
+                                a#transaction_current.nav-link(href='#')
+                                    span(data-feather='shopping-cart')
+                                    | Transaction Management
+                main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+                    div.d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+                        h1.h2 #{title}
+                    block content

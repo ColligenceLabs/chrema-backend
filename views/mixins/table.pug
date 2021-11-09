@@ -1,0 +1,15 @@
+mixin table(table_head)
+    - var length = table_head.length + 1    
+    div.table-responsive
+        table.table.table-bordered.table-sm
+            thead.thead-light
+                tr
+                    th(class='checkbox-col' )
+                        input(type="checkbox")
+                    each val in table_head
+                        th= val.name
+            tbody
+                tr#table_list
+                    td(colspan=length)
+                        div(class='d-flex justify-content-center' style='height: 300px;' id='loader')
+                            div(class="loader" style="margin: auto")

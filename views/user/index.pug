@@ -1,0 +1,98 @@
+extends ../layout
+
+block content
+  input(type='hidden' class="menu-data" value='user-group | user')
+  .card
+    .card-body
+      .d-flex.justify-content-between.m-b-10
+        h5 User Management
+        
+      .tab-content.m-t-15
+        .tab-pane.fade.show.active(role='tabpanel')
+          .m-b-10
+            .row
+              .col-6
+                .multi-action-wrapper.align-center.d-flex
+                  .btn-group.data-table-selected-dropdown.mr-2(atr='Delete Multi')
+                    button.btn.btn-default
+                      span Delete
+                      span.number-selected  
+                      span item(s) selected
+              .col-6
+                .d-flex.justify-content-end
+                  input.form-control.width-unset.filter-search(type='text' placeholder='Search')
+                  button.btn.btn-search.btn-light.mr-3(atr='Search')
+                    i.fa.fa-search
+                  button.btn.btn-light.filters-toggle-btn.d-flex.align-items-center(data-toggle='modal' data-target='#quick-view')
+                    i.anticon.anticon-filter.m-r-10
+                    |  Filters
+                  button.btn.m-l-10.action-upload.remove-filter.remove-all-filter(atr='Remove Filter')
+                    i.anticon.anticon-close
+          table#orders-table
+      .m-t-25
+        table#data-table.table  
+block modal
+  #user-create.modal.fade
+    .modal-dialog
+      #story-form-update.modal-content
+        .modal-header
+          h5#exampleModalLabel.modal-title  
+          button.close(type='button' data-dismiss='modal')
+            i.anticon.anticon-close
+        .modal-body
+        .modal-footer
+          button.btn.btn-default(type='button' data-dismiss='modal') Cancel
+          button.btn.btn-primary.modal-action(atr='Save') Confirm
+  #user-update.modal.fade
+    .modal-dialog
+      #story-form-update.modal-content
+        .modal-header
+          h5#exampleModalLabel.modal-title  
+          button.close(type='button' data-dismiss='modal')
+            i.anticon.anticon-close
+        .modal-body
+        .modal-footer
+          button.btn.btn-default(type='button' data-dismiss='modal') Close
+  #user-status-update.modal.fade
+    .modal-dialog
+      #story-form-update.modal-content
+        .modal-header
+          h5#exampleModalLabel.modal-title  
+          button.close(type='button' data-dismiss='modal')
+            i.anticon.anticon-close
+        .modal-body
+        .modal-footer
+          button.btn.btn-default(type='button' data-dismiss='modal') Cancel
+          button.btn.btn-primary.modal-action(atr='Save') Confirm
+  #user-delete.modal.fade
+    .modal-dialog
+      #story-form-update.modal-content
+        .modal-header
+          h5#exampleModalLabel.modal-title  
+          button.close(type='button' data-dismiss='modal')
+            i.anticon.anticon-close
+        .modal-body
+        .modal-footer
+          button.btn.btn-default(type='button' data-dismiss='modal') Cancel
+          button.btn.btn-primary.modal-action(atr='Save') Confirm
+  #quick-view.modal.modal-right.fade.quick-view.I-filter
+    .modal-dialog
+      .modal-content
+        .modal-header.justify-content-between.align-items-center
+          h5.modal-title Filter
+        .modal-body
+          .group-filter.scrollable
+            .form-group
+              label(for='formGroupExampleInput') Status
+              select.custom-select.form-control.filter-status
+                option(value='')
+                option(value='active') Active
+                option(value='inactive') Inactive
+          .row
+            .col-6
+              button.btn.btn-primary.btn-tone.filter-apply-btn(style='width: 100%; border: none !important;') Apply
+            .col-6
+              button.btn.btn-danger.btn-tone.filter-reset-btn.remove-filter(style='width: 100%') Reset
+
+block js
+  script(src='assets/js/page/user.js')

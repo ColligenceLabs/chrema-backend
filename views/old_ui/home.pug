@@ -1,0 +1,71 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/home_style.css')
+        meta(name='viewport' content='width=device-width, initial-scale=1')
+        link(href='http://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet')
+        link(href='/stylesheets/sign_in.css', rel='stylesheet')
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/bootstrap/bootstrap.css')
+        link(rel='stylesheet' href='https://use.fontawesome.com/releases/v5.3.1/css/all.css' integrity='sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU' crossorigin='anonymous')
+        script(src='http://code.jquery.com/jquery-1.11.1.min.js')
+    body#admin
+        div(class='left-menu')
+            a(class='home', href='user-management')
+                div(class='main-icon')
+                    img(class='logo', src='../images/logo.png', alt="")
+                    p NFT Colligence
+            div(style="flex: 1 1 0%;overflow: hidden auto;")
+                -
+                    var menuList = [
+                        {
+                            src: '../images/user-icon.png',
+                            title: 'User management',
+                            href: 'user-management',
+                            active: false
+                        },
+                        {
+                            src: '../images/product-icon.png',
+                            title: 'Product management',
+                            href: 'product-management',
+                            active: false
+                        },
+                        {
+                            src: '../images/edition-icon.png',
+                            title: 'Edition management',
+                            href: 'edition-management',
+                            active: false
+                        },
+                        {
+                            src: '../images/dashboard-icon.png',
+                            title: 'Transaction management',
+                            href: 'transaction-management',
+                            active: false
+                        }
+                    ]
+                    menuList[itemActive].active = true
+                    
+                ul(class='menu')
+                    each item in menuList
+                        if item.active
+                            li(class='menu-item')
+                                a(class='active', href=item.href)
+                                    span(class='menu-item-icon')
+                                        img(class='item-icon', src=item.src, alt="")
+                                    span(class='menu-item-title') #{item.title}
+                        else
+                            li(class='menu-item')
+                                a(href=item.href)
+                                    span(class='menu-item-icon')
+                                        img(class='item-icon', src=item.src, alt="")
+                                    span(class='menu-item-title') #{item.title}
+        div(class='content')
+            div(class='header')
+                div(class='right')
+                    div(class='user-menu')
+                        span(class='avatar')
+                            img(src='../images/user-icon1.jpg', alt="")
+                        span(class='user-name') #{admin.name}
+            div(class='main-content')
+                block content

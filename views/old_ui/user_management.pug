@@ -1,0 +1,28 @@
+extends home
+
+block content
+    link(rel='stylesheet', href='/stylesheets/user_style.css')
+    link(rel='stylesheet', href='/stylesheets/load_spinner.css')
+    script(type='text/javascript',src='/javascripts/user_management.js')
+    form(action="") 
+        div(class='main-content')
+            div(class='page-header')
+                div(class='search')
+                    input(type="text", name="search-textbox")
+                    button(class='btn-search') Search
+                div(class='delete')
+                    button(class='btn-delete') Delete
+            div(class='page-content')
+                table(class='user-table')
+                    tr
+                        th(class='checkbox-col')
+                            input(type="checkbox", id='ids')
+                        th(class='no-col') No.
+                        th(class='address-col') Address
+                        th(class='status-col') Status
+                        th(class='action-col') Action
+
+                        tr(id='list-user')
+                            td(colspan="5", id="spinner")
+                                div(class="loader")
+        script(type='text/javascript').

@@ -1,0 +1,32 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/login.css')
+    body
+        div(class='login')
+            div(class='content')
+                div(class='container')
+                    div(class='card-head')
+                        p Login
+                    div(class='card-body')
+                        form(action='')
+                            table
+                                tr 
+                                    td 
+                                        text Email
+                                    td 
+                                        input(type='text', name='email', class='email', placeholder='Enter your email')
+                                tr
+                                    td 
+                                        text Password
+                                    td 
+                                        input(type='password', name='password', class='password', placeholder='Enter your password')
+                            div(class='checkbox')
+                                input(type='checkbox', name='agreement', checked)
+                                |Remember me
+                            div(class='btn')
+                                button(class='btn-login') Login
+                                br
+                                a(href="#") Sing Up now
+                        

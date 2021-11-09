@@ -1,0 +1,122 @@
+extends layout
+
+block content
+
+block content
+  .card
+    .card-body
+      .d-flex.justify-content-between.m-b-10
+        h5 Dashboard
+        //- .col-md-3
+        //-   .form-group
+        //-     label Showing
+        //-     .m-b-10
+        //-       select.custom-select.filter-time(style='min-width: 180px;')
+        //-         option.custom-select-option(value='today' atr='today' selected='') Today
+        //-         option.custom-select-option(value='yesterday' atr='yesterday') Yesterday
+        //-         option.custom-select-option(value='custom' atr='custom') Custom
+        //-         option.custom-select-option(value='thisweek' atr='thisweek') This week
+        //-         option.custom-select-option(value='lastweek' atr='lastweek') Last week
+        //-         option.custom-select-option(value='thismonth' atr='thismonth') This month
+        //-         option.custom-select-option(value='lastmonth' atr='lastmonth') Last month
+        //- .col-md-4.datePicker
+        //-   .form-group
+        //-     label Datepicker
+        //-     .input-affix.m-b-10
+        //-       i.prefix-icon.anticon.anticon-calendar
+        //-       input.form-control.daterangepicker-input(type='text' placeholder='Pick a date')
+      .row.allStatis.row-7
+        .col-md-4.col-lg-3.colx-7
+          .card
+            .card-body
+              .media.align-items-center
+                .avatar.avatar-icon.avatar-lg.avatar-blue
+                  i.anticon.anticon-inbox
+                .m-l-10.nft-data
+                  h2.m-b-0.nft
+                  .d-flex.align-items-center
+                    p.m-b-0.text-muted NFTs
+                    .m-l-10
+                      span.per-color.badge.badge-pill.font-size-12
+                        i.per-icon.anticon
+                        span.font-weight-semibold.per-value
+        .col-md-4.col-lg-3.colx-7
+          .card
+            .card-body
+              .media.align-items-center
+                .avatar.avatar-icon.avatar-lg.avatar-lime
+                  i.anticon.anticon-exception
+                .m-l-10.airdrops-data
+                  h2.m-b-0.total-airdrops
+                  .d-flex.align-items-center
+                    p.m-b-0.text-muted Airdrops
+                    .m-l-10
+                      span.per-color.badge.badge-pill.font-size-12
+                        i.per-icon.anticon
+                        span.font-weight-semibold.per-value
+        .col-md-4.col-lg-3.colx-7
+          .card
+            .card-body
+              .media.align-items-center
+                .avatar.avatar-icon.avatar-lg.avatar-magenta
+                  i.anticon.anticon-book
+                .m-l-10.companies-data
+                  h2.m-b-0.total-companies
+                  .d-flex.align-items-center
+                    p.m-b-0.text-muted Companies
+                    .m-l-10
+                      span.per-color.badge.badge-pill.font-size-12
+                        i.per-icon.anticon
+                        span.font-weight-semibold.per-value
+        .col-md-4.col-lg-3.colx-7
+          .card
+            .card-body
+              .media.align-items-center
+                .avatar.avatar-icon.avatar-lg.avatar-cyan
+                  i.anticon.anticon-credit-card
+                .m-l-10.transactions-data
+                  h2.m-b-0.transactions
+                  .d-flex.align-items-center
+                    p.m-b-0.text-muted Transactions
+                    .m-l-10
+                      span.per-color.badge.badge-pill.font-size-12
+                        i.per-icon.anticon
+                        span.font-weight-semibold.per-value
+      .row
+        .col-md-8
+          .card
+            .card-body
+              .d-flex.justify-content-between.align-items-center
+                div
+                  span
+                    h5.m-0 Last 30 days
+                  span.m-t-10
+                    i.anticon.anticon-clock-circle
+                    |  Updated at:
+                    time.time_update.m-l-10
+                //- .text-gray.font-size-18.refresh-all(atr='Refresh')
+                //-   i.anticon.anticon-reload
+              .m-t-30.order-chart
+                canvas#line-chart.chart(height='150')
+        .col-md-4.col-lg-4
+          .card
+            .card-body
+              h5.m-b-0 Total NFTs
+              .m-v-35.text-center.country-chart
+                canvas#customers-chart.chart(height='227')
+        //- .col-md-6
+        //-   .d-flex.justify-content-between.align-items-center
+        //-     h5 Top 10 NFTs best sale 
+        //-   .m-t-30
+        //-     ul.list-group.list-group-flush.list-top10-sku
+
+        //- .col-md-6
+        //-   .d-flex.justify-content-between.align-items-center
+        //-     h5 Top 15 stores best sale
+        //-   .m-t-30
+        //-     canvas#top-10-sale-chart.chart(height='255')
+
+
+
+block js
+  script(src='assets/js/page/index.js')

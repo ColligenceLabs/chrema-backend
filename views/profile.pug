@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  .row
+    .col-md-8.offset-2
+      #user-info.card
+        .card-header
+          h4.card-title Admin Information
+        .card-body
+
+          form.customer-form-data
+            .form-row
+              .form-group.col-md-4.readonly
+                label.font-weight-semibold(for='userName') User Name:
+                input#userName.form-control.username(type='text' placeholder='User Name')
+              .form-group.col-md-4.readonly
+                label.font-weight-semibold(for='address') Address:
+                input#address.form-control.address(type='text' placeholder='Address')
+          .d-flex.justify-content-end
+            button.btn.btn-tone.btn-primary.save-btn.change-profile.border-none(type='button' atr='Save') Save
+      .card
+        .card-header
+          h4.card-title Change Password
+        .card-body
+          .form-row.password-form-data(style='flex: 1')
+            .form-group.col-md-4
+              label.font-weight-semibold(for='oldPassword')
+                | Old Password: 
+                span.text-red *
+              input#oldPassword.form-control.old-password(type='password' placeholder='Old Password')
+            .form-group.col-md-4
+              label.font-weight-semibold(for='newPassword')
+                | New Password: 
+                span.text-red *
+              input#newPassword.form-control.password(type='password' placeholder='New Password')
+          .form-group.ml-2.d-flex.justify-content-end
+            button.ml-2.btn-tone.btn.btn-primary.change-password.btn-change-password.border-none(type='button' atr='Save') Change
+
+
+
+block js
+  script(src='assets/js/page/profile.js')

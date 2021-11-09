@@ -1,0 +1,154 @@
+var express = require('express');
+var router = express.Router();
+
+// Require controller modules.
+var adminController = require('../controllers/admin/admin_controller');
+var collectionController = require('../controllers/admin/collection_controller');
+var serialController = require('../controllers/admin/serial_controller');
+var nftController = require('../controllers/admin/nft_controller');
+var transactionController = require('../controllers/admin/transaction_controller');
+var userController = require('../controllers/admin/user_controller');
+var companyController = require('../controllers/admin/company_controller');
+var rewardController = require('../controllers/admin/reward_controller');
+var statisticsController = require('../controllers/admin/statistics_controller');
+
+// Require request validators
+var validateAdmin = require('../requests/validate_admin');
+var validateNft = require('../requests/validate_nft');
+var validateSerial = require('../requests/validate_serial');
+var validateReward = require('../requests/validate_reward');
+
+// Require utils
+var isAuth = require('../utils/validate_token');
+
+//Admin apis
+router.post('/admin/register', validateAdmin.register(), adminController.adminRegister);
+
+router.post('/admin/login', validateAdmin.login(), adminController.adminlogin);
+
+router.get('/admin/indexs', isAuth.validateToken, adminController.indexAdmins);
+
+router.get('/admin/detail/:id', isAuth.validateToken, adminController.getDetailAdmin);
+
+router.put('/admin/update/:id', isAuth.validateToken, adminController.updateAdmin);
+
+//Collection apis
+router.get('/collection/getnfts', isAuth.validateToken, collectionController.getAvailableNfts);
+
+router.get('/collection/category', isAuth.validateToken, collectionController.indexCollectionCategories);
+
+router.post('/collection/create', isAuth.validateToken, collectionController.createCollection);
+
+router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
+
+router.get(
+    '/collection/detail/:id',
+    isAuth.validateToken,
+    collectionController.getDetailCollection,
+);
+
+router.put('/collection/update/:id', isAuth.validateToken, collectionController.updateCollection);
+
+router.put('/collection/update-status/:id', isAuth.validateToken, collectionController.updateCollectionStatus);
+
+router.put('/collection/addnft/:id', isAuth.validateToken, collectionController.addNftToCollection);
+
+router.put(
+    '/collection/removenft/:id',
+    isAuth.validateToken,
+    collectionController.removeNftFromCollection,
+);
+
+router.delete(
+    '/collection/delete/:id',
+    isAuth.validateToken,
+    collectionController.deleteCollection,
+);
+
+//Serials apis
+router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
+
+router.get('/serial/indexs', isAuth.validateToken, serialController.indexSerials);
+
+router.get('/serial/detail/:id', isAuth.validateToken, serialController.getDetailSerial);
+
+router.put('/serial/update/:id', isAuth.validateToken, serialController.updateSerial);
+
+router.delete('/serial/delete/:id', isAuth.validateToken, serialController.deleteSerial);
+
+router.delete('/serial/delete-many', isAuth.validateToken, serialController.deleteManySerial);
+
+//Nft apis
+router.post('/nft/create', isAuth.validateToken, nftController.createNft);
+
+router.get('/nft/indexs', isAuth.validateToken, nftController.indexNfts);
+
+router.get('/nft/detail/:id', isAuth.validateToken, nftController.getDetailNft);
+
+router.put('/nft/update/:id', isAuth.validateToken, nftController.updateNft);
+
+router.put('/nft/update-status/:id', isAuth.validateToken, nftController.updateNftStatus);
+
+router.put(
+    '/nft/update-schedule',
+    validateNft.updateNftSchedule(),
+    isAuth.validateToken,
+    nftController.updateSchedule,
+);
+
+router.delete('/nft/delete/:id', isAuth.validateToken, nftController.deleteNft);
+
+router.delete('/nft/delete-many', isAuth.validateToken, nftController.deleteManyNft);
+
+//Transaction apis
+router.post('/transaction/create', isAuth.validateToken, transactionController.createTx);
+
+router.get('/transaction/indexs', isAuth.validateToken, transactionController.indexTxs);
+
+router.put('/transaction/update/:id', isAuth.validateToken, transactionController.updateTx);
+
+router.delete('/transaction/delete/:id', isAuth.validateToken, transactionController.deleteTx);
+
+router.get('/transaction/detail/:id', isAuth.validateToken, transactionController.getDetailTx);
+
+//User apis
+router.get('/user/indexs', isAuth.validateToken, userController.indexUsers);
+
+router.get('/user/detail/:id', isAuth.validateToken, userController.getDetailUser);
+
+router.post('/user/create', isAuth.validateToken, userController.createUser);
+
+router.put('/user/update/:id', isAuth.validateToken, userController.updateUser);
+
+router.delete('/user/delete/:id', isAuth.validateToken, userController.deleteUser);
+
+router.delete('/user/delete-many', isAuth.validateToken, userController.deleteManyUser);
+
+//Company apis
+router.get('/company/indexs', isAuth.validateToken, companyController.indexCompany);
+
+router.get('/company/detail/:id', isAuth.validateToken, companyController.getCompanyDetail);
+
+router.post('/company/create', isAuth.validateToken, companyController.createCompany);
+
+router.put('/company/update/:id', isAuth.validateToken, companyController.updateCompany);
+
+//Reward apis
+router.get('/reward/indexs', isAuth.validateToken, rewardController.indexRewards);
+
+router.get('/reward/detail/:id', isAuth.validateToken, rewardController.getRewardDetail);
+
+router.post('/reward/create', isAuth.validateToken, validateReward.createReward(), rewardController.createReward);
+
+router.put('/reward/update/:id', isAuth.validateToken, rewardController.updateReward);
+
+router.delete('/reward/delete/:id', isAuth.validateToken, rewardController.deleteReward);
+
+//Statistics apis
+router.get('/statistics/line', isAuth.validateToken, statisticsController.getLine);
+
+router.get('/statistics/chart', isAuth.validateToken, statisticsController.getChart);
+
+router.get('/statistics/summarypie', isAuth.validateToken, statisticsController.getSummaryPie);
+
+module.exports = router;

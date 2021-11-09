@@ -1,0 +1,67 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  title NTF - Login
+  // Favicon
+  link(rel='shortcut icon' href='assets/images/logo.png')
+  // page css
+  link(href='assets/css/style.css' rel='stylesheet')
+  // Core css
+  link(href='assets/css/app.min.css' rel='stylesheet')
+.dynamic-bg
+  ul.bg-bubbles
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+    li
+.app.login
+  .container-fluid.p-h-0.p-v-20.bg.full-height.d-flex(style="background-image: url('assets/images/others/login-3.png')")
+    .d-flex.flex-column.justify-content-between.w-100
+      .container.d-flex.h-100
+        .row.align-items-center.w-100
+          .col-md-7.col-lg-5.m-h-auto
+            .card.shadow-lg.login-card
+              .d-flex.align-items-center.justify-content-between.m-b-30.header-bg.p-t-10.p-b-10
+                h3.m-b-0 NFT Talken
+                h2.m-b-0 Sign In
+              .card-body.p-t-0
+                .notification
+                form
+                  .form-group
+                    label.font-weight-semibold(for='Email') Email:
+                    .input-affix
+                      i.prefix-icon.anticon.anticon-user
+                      input#Email.form-control(type='text' name='email' placeholder='Email')
+                  .form-group
+                    label.font-weight-semibold(for='password') Password:
+                    a.float-right.font-size-13.text-muted(href='#') Forget Password?
+                    .input-affix.m-b-10
+                      i.prefix-icon.anticon.anticon-lock
+                      input#password.form-control(type='password' name='password' placeholder='Password')
+                  .form-group.m-b-10
+                    .checkbox
+                      input#gridCheck1(type='checkbox')
+                      label(for='gridCheck1')  Remember me 
+                  .form-group
+                    .d-flex.align-items-center.justify-content-between
+                      span.font-size-13.text-muted
+                        | Don&apos;t have an account? 
+                        a.small(href='#')  Signup
+                      button.btn.btn-primary.btn-login(atr='Login' type='button') Sign In
+// Core Vendors JS
+script(src='assets/js/vendors.min.js')
+// page js
+script(src='assets/js/api.js')
+script(src='assets/js/page/login.js')
+// Core JS
+script(src='assets/js/app.min.js')

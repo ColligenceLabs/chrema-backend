@@ -1,0 +1,91 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const {NFT_STATUS, NFT_TYPE, COLLECTION_CATE, SELLING_STATUS} = require('../utils/consts');
+const {getValueInEnum, getCollectionCateValueInEnum} = require('../utils/helper');
+
+const NftSchema = new Schema(
+    {
+        metadata: {
+            type: Schema.Types.Mixed,
+            // required: true,
+            default: null,
+        },
+        ipfs_link: {
+            type: String,
+        },
+        quantity: {
+            type: Number,
+            required: false,
+            default: 1,
+        },
+        quantity_selling: {
+            type: Number,
+            default: 1,
+        },
+        price: {
+            type: Number,
+            default: 0,
+        },
+        name: {
+            type: String,
+        },
+        description: {
+            type: String,
+            required: false,
+            trim: true,
+        },
+        category: {
+            type: [
+                {
+                    type: String,
+                    enum: getCollectionCateValueInEnum(COLLECTION_CATE),
+                },
+            ],
+            default: [COLLECTION_CATE.OTHER.value],
+        },
+        company_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Company',
+            required: true,
+        },
+        collection_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Collection',
+            required: false,
+            default: null,
+        },
+        start_date: {
+            type: Date,
+            default: null,
+        },
+        end_date: {
+            type: Date,
+            default: null,
+        },
+        type: {
+            type: Number,
+            default: NFT_TYPE.NORMAL,
+        },
+        selling_status: {
+            type: Number,
+            default: SELLING_STATUS.SELL,
+        },
+        status: {
+            type: String,
+            enum: getValueInEnum(NFT_STATUS),
+            default: NFT_STATUS.INACTIVE,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now,
+        },
+    },
+    {usePushEach: true},
+);
+NftSchema.index({'metadata.name': 1, status: -1}, {background: true});
+
+module.exports = mongoose.model('Nft', NftSchema);

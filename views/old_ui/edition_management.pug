@@ -1,0 +1,41 @@
+extends home
+
+block content
+    link(rel='stylesheet', href='/stylesheets/edition_style.css')
+    form(action="") 
+        div(class='main-content')
+            div(class='page-header')
+                div(class='search')
+                    input(type="text", name="search-textbox")
+                    button(class='btn-search') Search
+                div(class='delete')
+                    button(class='btn-delete') Delete
+            div(class='page-content')#editions
+                table(class='edition-table')
+                    tr
+                        th(class='checkbox-col')
+                            input(type="checkbox", id='ids')
+                        th(class='no-col') No.
+                        th(class='edition-name-col') Edition name
+                        th(class='edition-index-col') Edition index
+                        th(class='owner-col') Owner
+                        th(class='price-col') Price
+                        th(class='token-id-col') Token ID
+                        th(class='created-at-col') Created at
+                        th(class='status-col') Status
+                        th(class='action-col') Action
+
+                    for edition, index in editions
+                        tr 
+                            td(class='checkbox-col')
+                                input(type="checkbox", id=edition.id)
+                            td(class='no-col') #{index + 1}
+                            td(class='edition-name-col') #{edition.edition_name}
+                            td(class='edition-index-col') #{edition.edition_index}
+                            td(class='owner-col') #{edition.owner}
+                            td(class='price-col') #{edition.price}
+                            td(class='token-id-col') #{edition.token_id}
+                            td(class='created-at-col') #{edition.created_at}
+                            td(class='status-col') #{edition.status}
+                            td(class='action-col')
+        

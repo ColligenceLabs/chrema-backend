@@ -1,0 +1,140 @@
+div.main-content {
+    width: 100%;
+    height: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    margin: 0px;
+    background-color: rgb(255, 255, 255);
+}
+
+div.page-header {
+    margin: 0px;
+    width: 100%;
+    height: 8%;
+    display: table;
+    /* background-color: rgb(241, 216, 216); */
+}
+
+div.search {
+    margin-left: 20px;
+    padding-top: 20px;
+    width: 30%;
+    height: 100%;
+    display: table-column;
+    float: left;
+    text-align: center;
+    /* background-color: rgb(8, 8, 8); */
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.btn-search {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+div.delete {
+    margin-right: 20px;
+    padding-top: 20px;
+    width: 10%;
+    height: 100%;
+    display: table-column;
+    float: right;
+    text-align: center;
+    /* background-color: rgb(8, 8, 8); */
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+div.page-content {
+    margin: 0px;
+    width: 100%;
+    height: 92%;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    text-align: center;
+}
+
+table.transaction-table {
+    margin: 1%;
+    width: 98%;
+    height: auto;
+    min-width: 98%;
+    table-layout: fixed;
+    /* display: table-cell; */
+    text-align: center;
+    border-radius: 2px 2px 0 0;
+    border-spacing: 0;
+    box-sizing: border-box;
+    border-collapse: collapse;
+    /* background-color: rgb(149, 137, 252); */
+}
+
+table.transaction-table tr {
+    width: 100%;
+    height: 40px;
+}
+
+table.transaction-table tr th {
+    background-color: lightskyblue;
+    border: 1px solid #000000;
+}
+
+th.checkbox-col {
+    width: 5%;
+}
+
+th.no-col {
+    width: 5%;
+    /* display: table-cell; */
+}
+
+th.seller-col {
+    width: 10%;
+    /* display: table-cell; */
+}
+
+th.buyer-col {
+    width: 10%;
+    /* display: table-cell; */
+}
+
+th.name-col {
+    width: 10%;
+    /* display: table-cell; */
+}
+
+th.token-id-col {
+    width: 15%;
+    /* display: table-cell; */
+}
+
+th.price-col {
+    width: 5%;
+    /* display: table-cell; */
+}
+
+th.date-col {
+    width: 10%;
+    /* display: table-cell; */
+}
+
+th.transaction-id-col {
+    width: 15%;
+    /* display: table-cell; */
+}
+
+th.status-col {
+    width: 5%;
+    /* display: table-cell; */
+}
+
+th.action-col {
+    width: 10%;
+    display: table-cell;
+}
+
+table.transaction-table tr td {
+    height: 20px;
+    border: 1px solid #000000;
+}

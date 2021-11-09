@@ -1,0 +1,43 @@
+extends home
+
+block content
+    link(rel='stylesheet', href='/stylesheets/transaction_style.css') 
+    div(class='main-content')
+        div(class='page-header')
+            div(class='search')
+                form(action="/search") 
+                    input(type="text", name="search-textbox")
+                    button(class='btn-search') Search
+            div(class='delete')
+                button(class='btn-delete') Delete
+        div(class='page-content')#transactions
+            table(class='transaction-table')
+                tr
+                    th(class='checkbox-col')
+                        input(type="checkbox", id='ids')
+                    th(class='no-col') No.
+                    th(class='seller-col') Seller
+                    th(class='buyer-col') Buyer
+                    th(class='name-col') Name
+                    th(class='token-id-col') Token ID
+                    th(class='price-col') Price
+                    th(class='date-col') Date
+                    th(class='transaction-id-col') Transaction ID
+                    th(class='status-col') Status
+                    th(class='action-col') Action
+
+                for transaction, index in transactions
+                    tr 
+                        td(class='checkbox-col')
+                            input(type="checkbox", id=transaction.id)
+                        td(class='no-col') #{index + 1}
+                        td(class='seller-col') #{transaction.seller}
+                        td(class='buyer-col') #{transaction.buyer}
+                        td(class='name-col') #{transaction.name}
+                        td(class='token-id-col') #{transaction.token_id}
+                        td(class='price-col') #{transaction.price}
+                        td(class='date-col') #{transaction.date}
+                        td(class='transaction-id-col') #{transaction.transaction_id}
+                        td(class='status-col') #{transaction.status}
+                        td(class='action-col')
+    
