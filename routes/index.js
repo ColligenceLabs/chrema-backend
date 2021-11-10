@@ -4,6 +4,7 @@ const {USER_TABLE} = require('../utils/consts');
 
 /* GET home page. */
 router.get('/backend', function (req, res, next) {
+    console.log("여기");
     res.render('index', {title: 'Home'});
 });
 
