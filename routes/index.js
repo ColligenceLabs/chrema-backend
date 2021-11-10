@@ -3,7 +3,7 @@ var router = express.Router();
 const {USER_TABLE} = require('../utils/consts');
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/backend', function (req, res, next) {
     res.render('index', {title: 'Home'});
 });
 
