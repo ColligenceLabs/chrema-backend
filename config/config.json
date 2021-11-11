@@ -1,5 +1,5 @@
 {
     "development": {
-        "host": "mongodb://colligence:zhfflwjstm@127.0.0.1:27017/talken_nft?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false"
+        "host": ""
     }
 }
