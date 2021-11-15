@@ -7,6 +7,9 @@
 @import "component/login.css";
 @import "component/bg-animation.css";
 
+input[type="radio"], input[type="checkbox"]{
+    min-width: 20px !important;
+}
 
 html {
   --scrollbarBG: #ccc;
