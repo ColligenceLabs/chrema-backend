@@ -9,7 +9,7 @@ const cors = require('cors');
 const i18n = require('i18n');
 const mongoose = require('mongoose');
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/config/config.json')[env]; // use in env
+// const config = require(__dirname + '/config/config.json')[env]; // use in env
 var cron = require('node-cron');
 
 var indexRouter = require('./routes/index');
@@ -37,7 +37,6 @@ app.use('/bootstrap', express.static(path.join(__dirname, '/node_modules/bootstr
 // initialize language package
 app.use(i18n.init);
 mongoose.connect(process.env.MONGO_HOST, {
-    // mongoose.connect(config.host, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,
