@@ -124,8 +124,9 @@ exports.convertTimezone = (time, timezone = TIMEZONE) => {
 exports.imageResize = async (imgInput, imgOutput) => {
     sharp(imgInput).resize({ width: 500 }).toFile(imgOutput)
         .then(function(newFileInfo) {
+            // 2021.11.15 don't delete original image
             // delete original image
-            fs.unlinkSync(imgInput);
+            // fs.unlinkSync(imgInput);
             console.log("Success")
         })
         .catch(function(err) {
