@@ -86,7 +86,7 @@ module.exports = {
         PROJECT_SECRET: 'dcc6463257ade11f564330b305d1f8ad',
     },
     IPFS_URL: 'https://ipfs.io/ipfs/',
-    ALT_URL: 'https://domain.../uploads/',
+    ALT_URL: 'https://nftbe.talken.io/uploads/',
     STATISTICS: {
         LINE: {
             NFT_REVENUE: 'nft_revenue',
