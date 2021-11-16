@@ -127,11 +127,24 @@ exports.imageResize = async (imgInput, imgOutput) => {
             // 2021.11.15 don't delete original image
             // delete original image
             // fs.unlinkSync(imgInput);
-            console.log("Success")
+            console.log("resize Success")
         })
         .catch(function(err) {
             // rename image when resize fails
-            fs.rename(imgInput, imgOutput)
             console.log("Error occured", err);
         });
+};
+
+exports.imageRename = async (imgInput, renameOutput) => {
+    fs.rename(imgInput, renameOutput, (err) => {
+        console.log("rename success");
+        if (err) console.log("error:", err);
+    })
+}
+
+exports.writeJson = async(linkHash,data) => {
+    fs.writeFile(linkHash , data, (err) => {
+        console.log("write json file success");
+        if (err) res.status(500).send(err.stack);
+     });
 };

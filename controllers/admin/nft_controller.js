@@ -9,6 +9,7 @@ const nftBlockchain = require('../blockchain/nft_controller');
 const companyRepository = require('../../repositories/company_repository');
 const uploadRepository = require('../../repositories/upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
+const fs = require('fs');
 
 const {
     _errorFormatter,
@@ -19,6 +20,8 @@ const {
     checkTimeCurrent,
     convertTimezone,
     imageResize,
+    imageRename,
+    writeJson,
 } = require('../../utils/helper');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {
@@ -26,6 +29,7 @@ const {
     NFT_TYPE,
     SERIAL_STATUS,
     IPFS_URL,
+    ALT_URL,
     SELLING_STATUS,
 } = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
@@ -46,18 +50,22 @@ module.exports = {
             await uploadRepository(req, res);
             let my_file = req.file;
 
-            //resize
-            let imgName = my_file.filename.split('.');
-            let imgInput = my_file.filename;
-            let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
-            await imageResize('./uploads/' + imgInput, './uploads/' + imgOutput);
-
             errors = validateCreateNft(req, res);
             if (errors) {
                 return handlerError(req, res, errors[0]);
             }
 
             let result = await nftRepository.addFileToIPFS(my_file);
+            let imgName = my_file.filename.split('.');
+            let imgInput = my_file.filename;
+            let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
+            let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
+            
+            //rename
+            await imageRename('./uploads/' + imgInput, './uploads/' + renameOutput);
+
+            //resize
+            await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
 
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
@@ -98,12 +106,13 @@ module.exports = {
             let newNft = {
                 metadata: {
                     name: req.body.name,
-                    properties: my_file.size,
-                    image: IPFS_URL + result.Hash,
+                    original_file_size: my_file.size,
+                    content: IPFS_URL + result.Hash,
+                    alternative_content: ALT_URL + imgOutput,
                     external_link: IPFS_URL,
                     description: req.body.description,
                     rarity: req.body.rarity,
-                    path: '/uploads/' + imgOutput,
+                    path: '/uploads/' + imgOutput
                 },
                 company_id: req.body.company_id,
                 type: req.body.type * 1,
@@ -125,6 +134,7 @@ module.exports = {
             delete metadata_ipfs.external_link;
 
             let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
+
             newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
             if (
                 req.body?.status === NFT_STATUS.SUSPEND ||
@@ -132,6 +142,9 @@ module.exports = {
             ) {
                 newNft.quantity_selling = 0;
             }
+
+            // write json file
+            await writeJson("./uploads/metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
 
             if (newNft.start_date && newNft.end_date) {
                 let current_time = new Date();
@@ -170,7 +183,7 @@ module.exports = {
             for (let i = 0; i < tokenIds.length; i++) {
                 let to = admin_address;
                 let newTokenId = tokenIds[i];
-                let tokenUri = IPFS_URL + result.Hash;
+                let tokenUri = newNft.ipfs_link//IPFS_URL + result.Hash;
                 // mint nft
                 let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
