@@ -109,7 +109,6 @@ module.exports = {
                     name: req.body.name,
                     original_file_size: my_file.size,
                     content: IPFS_URL + result.Hash,
-                    alternative_content: ALT_URL + renameOutput,
                     external_link: IPFS_URL,
                     description: req.body.description,
                     rarity: req.body.rarity,
