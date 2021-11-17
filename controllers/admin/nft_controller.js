@@ -98,21 +98,27 @@ module.exports = {
 
             let quantity = req.body.quantity;
             let tokenIds = [];
+            let decimalTokenIds = [];
 
             for (let i = 0; i < quantity; i++) {
                 let newTokenId = tokenId + 1 + i;
                 tokenIds.push('0x' + newTokenId.toString(16));
+                decimalTokenIds.push(newTokenId.toString());
             }
             //nft default
             let newNft = {
                 metadata: {
                     name: req.body.name,
-                    original_file_size: my_file.size,
-                    content: IPFS_URL + result.Hash,
-                    external_link: IPFS_URL,
                     description: req.body.description,
-                    rarity: req.body.rarity,
-                    path: '/uploads/' + imgOutput
+                    image: IPFS_URL + result.Hash,
+                    alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                    content_Type: imgName[imgName.length -1],
+                    cid: result.Hash,
+                    tokenId: decimalTokenIds,
+                    total_minted: "",
+                    external_url: "",
+                    attributes: [],
+                    minted_by: "Talken (https://talken.io)"
                 },
                 company_id: req.body.company_id,
                 type: req.body.type * 1,
@@ -128,10 +134,11 @@ module.exports = {
 
             let metadata_ipfs = newNft.metadata;
             if (req.body.category) {
-                metadata_ipfs.category = JSON.parse(req.body.category);
+                // metadata_ipfs.category = JSON.parse(req.body.category);
             }
-            delete metadata_ipfs.path;
-            delete metadata_ipfs.external_link;
+            if (req.body.quantity) {
+                metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+            }
 
             let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
 
