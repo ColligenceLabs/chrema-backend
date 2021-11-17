@@ -632,8 +632,8 @@ const View = {
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Image:</label>
-                                <input type="file" class="form-control data-image" id="file_meta" accept="image/*">
+                                <label>Content:</label>
+                                <input type="file" class="form-control data-image" id="file_meta" accept="video/*|image/*">
                             </div>
                             <div class="form-group">
                                 <label for="description">Description:</label>

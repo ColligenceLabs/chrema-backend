@@ -597,8 +597,8 @@ const View = {
                         <input type="text" class="form-control data-name" id="name">
                     </div>
                     <div class="form-group">
-                        <label>Image:</label>
-                        <input type="file" class="form-control data-image" id="file_meta" accept="image/*">
+                        <label>Content:</label>
+                        <input type="file" class="form-control data-image" id="file_meta" accept="video/*|image/*">
                     </div>
                     <div class="form-group">
                         <label for="description">Description:</label>

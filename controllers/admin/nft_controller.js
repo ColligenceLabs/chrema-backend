@@ -65,6 +65,7 @@ module.exports = {
             await imageRename('./uploads/' + imgInput, './uploads/' + renameOutput);
 
             //resize
+            if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
 
             //get all nft from blockchain service
@@ -108,7 +109,7 @@ module.exports = {
                     name: req.body.name,
                     original_file_size: my_file.size,
                     content: IPFS_URL + result.Hash,
-                    alternative_content: ALT_URL + imgOutput,
+                    alternative_content: ALT_URL + renameOutput,
                     external_link: IPFS_URL,
                     description: req.body.description,
                     rarity: req.body.rarity,
