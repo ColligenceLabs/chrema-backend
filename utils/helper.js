@@ -137,14 +137,23 @@ exports.imageResize = async (imgInput, imgOutput) => {
 
 exports.imageRename = async (imgInput, renameOutput) => {
     fs.rename(imgInput, renameOutput, (err) => {
-        console.log("rename success");
-        if (err) console.log("error:", err);
+
+        if (err) {
+            console.log("error:", err);
+        } else {
+            console.log("rename success");
+        }
     })
 }
 
 exports.writeJson = async(linkHash,data) => {
     fs.writeFile(linkHash , data, (err) => {
-        console.log("write json file success");
-        if (err) res.status(500).send(err.stack);
+
+        if (err) {
+            res.status(500).send(err.stack);
+            console.log("error : ", err);
+        } else {
+            console.log("write json file success");
+        }
      });
 };
