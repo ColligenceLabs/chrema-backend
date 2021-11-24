@@ -210,6 +210,7 @@ module.exports = {
 
             let collected = false;
             let transfered = false;
+            let ownTokenId = "";
 
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
@@ -217,6 +218,7 @@ module.exports = {
                         if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
                             collected = true;
                             transfered = false;
+                            ownTokenId = serials[i].token_id.toString(10);
                             break;
                         }
                     }
@@ -224,6 +226,7 @@ module.exports = {
             }
             nft.collected = collected;
             nft.transfered = transfered;
+            nft.ownTokenId = ownTokenId;
             nft.onSale = onSale;
 
             return handlerSuccess(req, res, nft);
