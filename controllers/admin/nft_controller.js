@@ -107,6 +107,7 @@ module.exports = {
             let decimalTokenIds = [];
             let newNfts = [];
             let newSerials = [];
+            let ipfs_links = [];
 
             for (let i = 0; i < quantity; i++) {
                 let newTokenId = tokenId + 1 + i;
@@ -151,7 +152,12 @@ module.exports = {
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
-    
+                let ipfs_link_item = {
+                    tokenId: decimalTokenIds[i],
+                    path: IPFS_URL + metadata_ipfs_link.Hash
+                }
+                ipfs_links.push(ipfs_link_item);
+                newNft.ipfs_links = ipfs_links;
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
@@ -191,7 +197,6 @@ module.exports = {
                 if (newNft.type === 1) {
                     newNft.price = 0;
                 }
-
                 newNfts.push(newNft);
                 newSerials.push(newSerial);
             }
@@ -278,7 +283,7 @@ module.exports = {
             for (let i = 0; i < tokenIds.length; i++) {
                 let to = admin_address;
                 let newTokenId = tokenIds[i];
-                let tokenUri = newNfts[i].ipfs_link//IPFS_URL + result.Hash;
+                let tokenUri = newNfts[i].ipfs_links[i].path;
                 // mint nft
                 let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {

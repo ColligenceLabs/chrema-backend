@@ -13,6 +13,10 @@ const NftSchema = new Schema(
         ipfs_link: {
             type: String,
         },
+        ipfs_links: {
+            type: Schema.Types.Mixed,
+            default: null,
+        },
         quantity: {
             type: Number,
             required: false,
