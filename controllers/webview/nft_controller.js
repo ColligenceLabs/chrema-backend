@@ -220,14 +220,19 @@ module.exports = {
                             collected = true;
                             transfered = false;
                             ownTokenId = parseInt(serials[i].token_id,16).toString();
-                            if (nft.ipfs_links[i].tokenId == ownTokenId) { 
-                                ownIpfsLink = nft.ipfs_links[i].path; 
-                            }
                             break;
                         }
                     }
                 }
             }
+
+            for (let i = 0; i < serials.length; i++) {
+                if (nft.ipfs_links[i].tokenId == ownTokenId) { 
+                    ownIpfsLink = nft.ipfs_links[i].path; 
+                    break;
+                }
+            }
+            
             nft.collected = collected;
             nft.transfered = transfered;
             nft.ownTokenId = ownTokenId;
