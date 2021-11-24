@@ -218,7 +218,7 @@ module.exports = {
                         if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
                             collected = true;
                             transfered = false;
-                            ownTokenId = parseInt(serials[i].token_id,16);
+                            ownTokenId = parseInt(serials[i].token_id,16).toString();
                             break;
                         }
                     }
