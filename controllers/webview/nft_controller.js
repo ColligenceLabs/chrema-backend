@@ -211,6 +211,7 @@ module.exports = {
             let collected = false;
             let transfered = false;
             let ownTokenId = "";
+            let ownIpfsLink = "";
 
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
@@ -219,6 +220,9 @@ module.exports = {
                             collected = true;
                             transfered = false;
                             ownTokenId = parseInt(serials[i].token_id,16).toString();
+                            if (nft.ipfs_links[i].tokenId == ownTokenId) { 
+                                ownIpfsLink = nft.ipfs_links[i].path; 
+                            }
                             break;
                         }
                     }
@@ -228,6 +232,7 @@ module.exports = {
             nft.transfered = transfered;
             nft.ownTokenId = ownTokenId;
             nft.onSale = onSale;
+            nft.ownIpfsLink = ownIpfsLink;
 
             return handlerSuccess(req, res, nft);
         } catch (error) {
