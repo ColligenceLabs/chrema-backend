@@ -202,6 +202,7 @@ module.exports = {
     },
 
     addFileToIPFS: async function (my_file) {
+        console.log("start file upload to ipfs...")
         var auth =
             'Basic ' +
             Buffer.from(consts.IPFS.PROJECT_ID + ':' + consts.IPFS.PROJECT_SECRET).toString(
@@ -227,18 +228,19 @@ module.exports = {
         let getResponse = await new Promise(function (resolve, reject) {
             request(options, async function (error, response) {
                 if (!error && response.statusCode == 200) {
+                    console.log("add file to ipfs success")
                     resolve(response.body);
                 } else {
                     reject(error);
                 }
             });
         });
-
         getResponse = JSON.parse(getResponse);
         return getResponse;
     },
 
     addJsonToIPFS: async function (metadata) {
+        console.log("start json upload to ipfs...")
         var auth =
             'Basic ' +
             Buffer.from(consts.IPFS.PROJECT_ID + ':' + consts.IPFS.PROJECT_SECRET).toString(
@@ -259,6 +261,7 @@ module.exports = {
         let getResponse = await new Promise(function (resolve, reject) {
             request(options, async function (error, response) {
                 if (!error && response.statusCode == 200) {
+                    console.log("add json to ipfs success")
                     resolve(response.body);
                 } else {
                     reject(error);
