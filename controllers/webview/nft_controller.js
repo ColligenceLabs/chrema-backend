@@ -227,7 +227,7 @@ module.exports = {
             }
 
             for (let i = 0; i < serials.length; i++) {
-                if (nft.ipfs_links[i].tokenId != null) {
+                if (nft.ipfs_links[i] != null) {
                     if (nft.ipfs_links[i].tokenId == ownTokenId) { 
                         ownIpfsLink = nft.ipfs_links[i].path; 
                         break;
