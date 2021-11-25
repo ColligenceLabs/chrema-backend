@@ -226,14 +226,16 @@ module.exports = {
                 }
             }
 
-            // for (let i = 0; i < serials.length; i++) {
-            //     if (nft.ipfs_links[i] != null) {
-            //         if (nft.ipfs_links[i].tokenId == ownTokenId) { 
-            //             ownIpfsLink = nft.ipfs_links[i].path; 
-            //             break;
-            //         }
-            //     }
-            // }
+            for (let i = 0; i < serials.length; i++) {
+                if (serials[i].owner_id != null) {
+                    if (nft.ipfs_links != null) {
+                        if (nft.ipfs_links[i].tokenId == ownTokenId) { 
+                            ownIpfsLink = nft.ipfs_links[i].path; 
+                            break;
+                        }
+                    }
+                }
+            }
 
             nft.collected = collected;
             nft.transfered = transfered;
