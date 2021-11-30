@@ -263,12 +263,20 @@ const Api = {
             perPage: pageSize ?? '30',
         }
     });
+    Api.Company.GetOne = (id) => $.ajax({
+        url: `/admin-api/company/detail/${id}`,
+        method: 'GET',
+    });
     Api.Company.Create = (data) => $.ajax({
         url: `/admin-api/company/create`,
         method: 'POST',
-        'data': JSON.stringify(data),
-        'processData': false,
-        'contentType': 'application/json'
+        data: data,
+        contentType: false,
+        processData: false,
+    });
+    Api.Company.Delete = (id) => $.ajax({
+        url: `/admin-api/company/delete/${id}`,
+        method: 'DELETE',
     });
 
 

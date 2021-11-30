@@ -3,15 +3,13 @@ const multer = require('multer');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.cwd() + '/uploads/');
+        cb(null, process.cwd() + '/uploads/company');
     },
     filename: (req, file, cb) => {
         var uniqueSuffix = Date.now() + '-';
         cb(null, uniqueSuffix + file.originalname);
-        console.log("cb???",cb);
     },
 });
-
 let uploadFile = multer({
     storage: storage,
 }).single('file');

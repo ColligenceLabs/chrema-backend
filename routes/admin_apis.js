@@ -133,6 +133,8 @@ router.post('/company/create', isAuth.validateToken, companyController.createCom
 
 router.put('/company/update/:id', isAuth.validateToken, companyController.updateCompany);
 
+router.delete('/company/delete/:id',isAuth.validateToken, companyController.deleteCompany);
+
 //Reward apis
 router.get('/reward/indexs', isAuth.validateToken, rewardController.indexRewards);
 

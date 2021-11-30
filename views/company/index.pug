@@ -5,8 +5,10 @@ block content
   .card
     .card-body
       .d-flex.justify-content-between.m-b-10
-        h5 User Management
-        
+        h5 Company Management
+        button.btn.btn-create(atr='Create')
+          i.anticon.anticon-plus.m-r-10
+          | Register Company       
       .tab-content.m-t-15
         .tab-pane.fade.show.active(role='tabpanel')
           .m-b-10
@@ -32,7 +34,7 @@ block content
       .m-t-25
         table#data-table.table  
 block modal
-  #user-create.modal.fade
+  #company-create.modal.fade
     .modal-dialog
       #story-form-update.modal-content
         .modal-header
@@ -43,7 +45,7 @@ block modal
         .modal-footer
           button.btn.btn-default(type='button' data-dismiss='modal') Cancel
           button.btn.btn-primary.modal-action(atr='Save') Confirm
-  #user-update.modal.fade
+  #company-update.modal.fade
     .modal-dialog
       #story-form-update.modal-content
         .modal-header
@@ -53,7 +55,7 @@ block modal
         .modal-body
         .modal-footer
           button.btn.btn-default(type='button' data-dismiss='modal') Close
-  #user-status-update.modal.fade
+  #company-status-update.modal.fade
     .modal-dialog
       #story-form-update.modal-content
         .modal-header
@@ -64,7 +66,7 @@ block modal
         .modal-footer
           button.btn.btn-default(type='button' data-dismiss='modal') Cancel
           button.btn.btn-primary.modal-action(atr='Save') Confirm
-  #user-delete.modal.fade
+  #company-delete.modal.fade
     .modal-dialog
       #story-form-update.modal-content
         .modal-header

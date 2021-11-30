@@ -1,10 +1,13 @@
-var companyRepository = require('../../repositories/company_repository');
-var {validationResult} = require('express-validator');
-var ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
-var {addMongooseParam, getHeaders} = require('../../utils/helper');
-var {handlerSuccess, handlerError} = require('../../utils/handler_response');
-var {isEmptyObject, validateRouter, _errorFormatter} = require('../../utils/helper');
-const {COMPANY_STATUS} = require('../../utils/consts');
+const companyRepository = require('../../repositories/company_repository');
+const companyUploadRepository = require('../../repositories/company_upload_repository');
+const listenerRepository = require('../../repositories/listener_repository');
+const {validationResult} = require('express-validator');
+const logger = require('../../utils/logger');
+const {addMongooseParam, getHeaders} = require('../../utils/helper');
+const {handlerSuccess, handlerError} = require('../../utils/handler_response');
+const {isEmptyObject, validateRouter, _errorFormatter} = require('../../utils/helper');
+const {COMPANY_STATUS, ALT_URL} = require('../../utils/consts');
+const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -16,16 +19,21 @@ module.exports = {
             if (!errors.isEmpty()) {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
-            }
+            }                  
 
             var company = await companyRepository.findByName(req.body.name);
             if (company.length) {
+                console.log(ErrorMessage.COMPANY_IS_EXISTED);
                 return handlerError(req, res, ErrorMessage.COMPANY_IS_EXISTED);
             }
+            //upload file
+            await companyUploadRepository(req, res);
+            let my_file = req.file;    
 
             var newCompany = {
                 name: req.body.name,
                 description: req.body.description,
+                image: ALT_URL + 'company/' + my_file.filename,
             };
 
             let result = await companyRepository.create(newCompany);
@@ -116,6 +124,30 @@ module.exports = {
             }
 
             return handlerSuccess(req, res, updateCompany);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    //it works, but not use yet
+    async deleteCompany(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const company = await companyRepository.findById(req.params.id);
+
+            if (!company) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            const deleteCompany = await companyRepository.delete(req.params.id);
+
+            return handlerSuccess(req, res, {
+                // serial: deleteCompany,
+            });
         } catch (error) {
             logger.error(new Error(error));
             next(error);

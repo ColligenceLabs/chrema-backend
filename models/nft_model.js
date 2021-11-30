@@ -50,7 +50,7 @@ const NftSchema = new Schema(
         company_id: {
             type: Schema.Types.ObjectId,
             ref: 'Company',
-            required: true,
+            required: false,
         },
         collection_id: {
             type: Schema.Types.ObjectId,

@@ -1,6 +1,6 @@
 const View = {
     filter: {
-        searchBy: 'address',
+        searchBy: 'name',
         keyword: {
             get val() {
                 return $('.filter-search').val();
@@ -87,7 +87,7 @@ const View = {
                 `<div class="d-flex align-items-center" data-id="${data._id}">
                     <div class="row-action bg-hover m-r-10" atr="Update Status"><i class="anticon anticon-sync"></i></div>
                     <div class="row-action bg-hover m-r-10" style="cursor: pointer" atr="View" data-toggle="modal" data-target="#exampleModal"><i class="anticon anticon-eye"></i></div>
-                    <div class="row-action bg-hover" style="cursor: pointer" atr="Delete" data-toggle="modal" data-target="#exampleModal"><i class="anticon anticon-delete"></i></div>
+                    <div class="row-action bg-hover" style="cursor: pointer" atr="" data-toggle="modal" data-target="#exampleModal"><i class="anticon anticon-delete"></i></div>
                 </div> `,
             ];
         },
@@ -421,8 +421,8 @@ const View = {
     selectedAction: {
         searchItem: null,
         selectedMap: [
-            'Address',
-            'Status',
+            'Update',
+            'Delete',
         ],
         onSelect(callback){
             $(document).on('click', '.selectedAction .dropdown-item', function() {
@@ -434,7 +434,7 @@ const View = {
             $('.search-select .search-selected').text(data)
         },
         init(){
-            View.selectedAction.setSearch('Address');
+            View.selectedAction.setSearch('Update');
             // render dropdown action
             $('.selectedAction .dropdown-item').remove()
             for (var selected of this.selectedMap) {
@@ -494,8 +494,8 @@ const View = {
         },
     },
     modals: {
-        CreateUser: {
-            resource: '#user-create',
+        CreateCompany: {
+            resource: '#company-create',
             show(){
                 $(`${this.resource}`).modal(true);
             },
@@ -506,34 +506,61 @@ const View = {
 
             },
             setVal(){
-                $(`${this.resource}`).find('.modal-title').html(`User create`);
+                $(`${this.resource}`).find('.modal-title').html(`Register Company`);
             },
             getVal(){
                 return {
-                    'address' : $(`${this.resource}`).find('.data-address').val()
+                    'name' : $(`${this.resource}`).find('.data-name').val(),
+                    'description' : $(`${this.resource}`).find('.data-description').val(),
+                    'file' : $('#file_meta')[0].files,
                 }
             },
             unbindAll() {
                 $(document).off('click', `${this.resource} .modal-action`);
             },
             onPush(name, callback) {
+                var resource = this.resource;
                 $(document).on('click', `${this.resource} .modal-action`, function() {
                     if($(this).attr('atr').trim() == name) {
-                        callback();
+                        $('.js-errors').find('.error').remove()
+                        var fd = new FormData();
+                        var onPushData = true;
+
+                        var files = $('#file_meta')[0].files;
+                        var name_company  = $(`${resource}`).find('#name').val();
+                        var description  = $(`${resource}`).find('#description').val();
+                        if (files.length <= 0) { $('.js-errors').append(`<li class="error">Please select a file.</li>`); onPushData = false }
+                        if (name_company == '') { $('.js-errors').append(`<li class="error">Name is required</li>`); onPushData = false }
+                        if (description == '') { $('.js-errors').append(`<li class="error">Description is required</li>`); onPushData = false }  
+                        if (onPushData) {
+                            fd.append('file',files[0]);
+                            fd.append('name', $('#name').val());
+                            fd.append('description', $('#description').val());
+                            callback(fd);
+                        }
                     }
                 });
             },
             init() {
                 $(`${this.resource} .modal-body`).html(`
+                    <ul class="js-errors"></ul>
                     <div class="form-group">
-                        <label for="address">Address:</label>
-                        <input type="text" class="form-control data-address" id="address">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control data-name" id="name">
                     </div>
+                    <div class="form-group">
+                    <label for="description">Description:</label>
+                    <input type="text" class="form-control data-description" id="description">
+                    </div>
+                    <div class="form-group">
+                    <label for="description">Image:</label>
+                    <input type="file" class="form-control data-image" id="file_meta" accept="image/*">
+                    </div>                    
                 `);
             }
         },
-        UpdateUser: {
-            resource: '#user-update',
+        UpdateCompany: {
+            resource: '#company-update',
             show(){
                 $(`${this.resource}`).modal(true);
             },
@@ -544,40 +571,68 @@ const View = {
 
             },
             setVal(data){
-                $(`${this.resource}`).find('.modal-title').html(`<i class="anticon anticon-info-circle m-r-5"></i> User detail`);
-                $(`${this.resource}`).find('.data-address').val(data.address);
+                console.log("data???",data);
+                $(`${this.resource}`).find('.modal-title').html(`<i class="anticon anticon-info-circle m-r-5"></i> Company detail`);
                 $(`${this.resource}`).find('.data-id').val(data.id);
+                $(`${this.resource}`).find('.data-name').val(data.name);
+                $(`${this.resource}`).find('.data-description').val(data.description);
+                $(`${this.resource}`).find('.data-image').val(data.image);
             },
             getVal(){
                 return {
-                    'address' : $(`${this.resource}`).find('.data-address').val()
+                    'name' : $(`${this.resource}`).find('.data-name').val(),
+                    'description' : $(`${this.resource}`).find('.data-description').val(),
                 }
             },
             unbindAll() {
                 $(document).off('click', `${this.resource} .modal-action`);
             },
             onPush(name, callback) {
+                var resource = this.resource;
                 $(document).on('click', `${this.resource} .modal-action`, function() {
                     if($(this).attr('atr').trim() == name) {
-                        callback();
+                        $('.js-errors').find('.error').remove()
+                        var fd = new FormData();
+                        var onPushData = true;
+
+                        // var files = $('#file_meta')[0].files;
+                        var name_company  = $(`${resource}`).find('#name').val();
+                        var description  = $(`${resource}`).find('#description').val();
+
+                        // if (files.length <= 0) { $('.js-errors').append(`<li class="error">Please select a file.</li>`); onPushData = false }
+                        if (name_company == '') { $('.js-errors').append(`<li class="error">Name is required</li>`); onPushData = false }
+                        if (description == '') { $('.js-errors').append(`<li class="error">Description is required</li>`); onPushData = false }
+                        if (onPushData) {
+                            fd.append('name', $('#name').val());
+                            fd.append('description', $('#description').val());
+                            callback(fd);
+                        }
                     }
                 });
             },
             init() {
                 $(`${this.resource} .modal-body`).html(`
                     <div class="form-group">
-                        <label for="id">User id:</label>
+                        <label for="id">Company id:</label>
                         <input type="text" class="form-control data-id" id="id" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="address">Address:</label>
-                        <input type="text" class="form-control data-address" id="address" disabled>
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control data-name" id="name" disabled>
                     </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control data-description" id="description" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Company Image:</label>
+                        <input type="text" class="form-control data-image" id="image" disabled>
+                    </div>                                          
                 `);
             }
         },
         UpdateStatus: {
-            resource: '#user-status-update',
+            resource: '#company-status-update',
             show(){
                 $(`${this.resource}`).modal(true);
             },
@@ -586,7 +641,7 @@ const View = {
             },
             setDefaul(){ },
             setVal(){
-                $(`${this.resource}`).find('.modal-title').html(`Update status user`);
+                $(`${this.resource}`).find('.modal-title').html(`Update status company`);
             },
             getVal(){
                 return {
@@ -607,8 +662,8 @@ const View = {
 
             }
         },
-        DeleteOneUser: {
-            resource: '#user-delete',
+        DeleteOneCompany: {
+            resource: '#company-delete',
             show(){
                 $(`${this.resource}`).modal(true);
             },
@@ -619,7 +674,7 @@ const View = {
 
             },
             setVal(){
-                $(`${this.resource}`).find('.modal-title').html(`Delete user`);
+                $(`${this.resource}`).find('.modal-title').html(`Delete company`);
             },
             getVal(){
                 return {
@@ -640,8 +695,8 @@ const View = {
 
             }
         },
-        DeleteUser: {
-            resource: '#user-delete',
+        DeleteCompany: {
+            resource: '#company-delete',
             show(){
                 $(`${this.resource}`).modal(true);
             },
@@ -650,7 +705,7 @@ const View = {
             },
             setDefaul(){ },
             setVal(data){
-                $(`${this.resource}`).find('.modal-title').html(`Delete ${data} user`);
+                $(`${this.resource}`).find('.modal-title').html(`Delete ${data} company`);
             },
             getVal(){
                 return {
@@ -672,7 +727,7 @@ const View = {
             }
         },
         init() {
-            this.DeleteUser.init();
+            this.DeleteCompany.init();
         }
     },
     configTime(time){
@@ -724,8 +779,8 @@ const View = {
         LoadData();
     })
     View.table.onMultiDelete("Delete Multi", () => {
-        View.modals.DeleteUser.setVal(Object.entries(View.table.__selected).length);
-        View.modals.DeleteUser.show();
+        View.modals.DeleteCompany.setVal(Object.entries(View.table.__selected).length);
+        View.modals.DeleteCompany.show();
     })
     View.filter.reset.onClick("Remove Filter", () => {
         View.filter.setFilterDefaul();
@@ -743,27 +798,31 @@ const View = {
         LoadData();
     })
 
-    // View.table.onCreate("Create", () => {
-    //     View.modals.CreateUser.init();
-    //     View.modals.CreateUser.show();
-    //     View.modals.CreateUser.setVal();
-    //     View.modals.CreateUser.unbindAll();
-    //     View.modals.CreateUser.onPush("Save", () => {
-    //         View.helper.showToastProcessing('Processing', 'Create user !');
-    //         Api.User.Create(View.modals.CreateUser.getVal())
-    //             .done(res => {
-    //                 View.helper.showToastSuccess('Success', 'Create successful'); 
-    //                 View.modals.CreateUser.hide();
-    //                 LoadData();
-    //             })
-    //             .fail(err => {
-    //                 View.helper.showToastError('Error', 'Something Wrong'); 
-    //             })
-    //             .always(() => {
-    //             });
-    //     });
+    View.table.onCreate("Create", () => {
+        View.modals.CreateCompany.init();
+        View.modals.CreateCompany.show();
+        View.modals.CreateCompany.setVal();
+        View.modals.CreateCompany.unbindAll();
+        View.modals.CreateCompany.onPush("Save", (fd) => {
+            View.helper.showToastProcessing('Processing', 'Create Company !');
+            Api.Company.Create(fd)
+                .done(res => {
+                    if(res.status != 1) {
+                        View.helper.showToastError('Error', res.message);  
+                        return;                       
+                    }
+                    View.helper.showToastSuccess('Success', 'Create successful'); 
+                    View.modals.CreateCompany.hide();
+                    LoadData();
+                })
+                .fail(err => {
+                    View.helper.showToastError('Error', err.responseJSON.message); 
+                })
+                .always(() => {
+                });
+        });
 
-    // })
+    })
     View.table.onRowUpdateStatus("Update Status", (item) => {
         var id = item.parent().attr('data-id')
         var status = item.parent().parent().parent().find('.status_name').attr('data-status-change')
@@ -779,6 +838,10 @@ const View = {
             View.modals.UpdateStatus.hide();
             Api.Company.UpdateStatus(id, data)
                 .done(res => {
+                    if(res.status != 1) {
+                        View.helper.showToastError('Error', res.message);  
+                        return;                       
+                    }
                     View.helper.showToastSuccess('Success', 'Update successful'); 
                     View.table.updateColumn(id, status, 3)
                 })
@@ -792,18 +855,24 @@ const View = {
     View.table.onRowAction("View", (id) => {
         Api.Company.GetOne(id)
             .done(res => {
-                View.modals.UpdateUser.init();
-                View.modals.UpdateUser.show();
+                View.modals.UpdateCompany.init();
+                View.modals.UpdateCompany.show();
                 data = {
-                    'address' : res.data.address,
+                    'name' : res.data.name,
                     'id' : res.data._id,
+                    'description' : res.data.description,
+                    'image' : res.data.image,
                 }
-                View.modals.UpdateUser.setVal(data);
-                View.modals.UpdateUser.unbindAll();
-                View.modals.UpdateUser.onPush("Save", () => {
+                View.modals.UpdateCompany.setVal(data);
+                View.modals.UpdateCompany.unbindAll();
+                View.modals.UpdateCompany.onPush("Save", () => {
                     View.helper.showToastProcessing('Processing', 'Update status !');
-                    Api.Company.UpdateStatus(id, View.modals.UpdateUser.getVal())
+                    Api.Company.UpdateStatus(id, View.modals.UpdateCompany.getVal())
                         .done(res => {
+                            if(res.status != 1) {
+                                View.helper.showToastError('Error', res.message);  
+                                return;                       
+                            }
                             View.helper.showToastSuccess('Success', 'Update successful'); 
                             View.table.updateColumn(id, status, 2)
                         })
@@ -821,15 +890,19 @@ const View = {
             });
     })
     View.table.onRowAction("Delete", (id) => {
-        View.modals.DeleteOneUser.show();
-        View.modals.DeleteOneUser.setVal();
-        View.modals.DeleteOneUser.unbindAll();
-        View.modals.DeleteOneUser.onPush("Save", () => {
-            View.helper.showToastProcessing('Processing', 'Delete user !');
+        View.modals.DeleteOneCompany.show();
+        View.modals.DeleteOneCompany.setVal();
+        View.modals.DeleteOneCompany.unbindAll();
+        View.modals.DeleteOneCompany.onPush("Save", () => {
+            View.helper.showToastProcessing('Processing', 'Delete company !');
             Api.Company.Delete(id)
                 .done(res => {
+                    if(res.status != 1) {
+                        View.helper.showToastError('Error', res.message);  
+                        return;                       
+                    }
                     View.helper.showToastSuccess('Success', 'Delete successful'); 
-                    View.modals.DeleteOneUser.hide();
+                    View.modals.DeleteOneCompany.hide();
                     LoadData();
                 })
                 .fail(err => {

@@ -11,6 +11,9 @@ const CompanySchema = new Schema(
         description: {
             type: String,
         },
+        image: {
+            type: String,
+        },
         status: {
             type: String,
             enum: getValueInEnum(COMPANY_STATUS),

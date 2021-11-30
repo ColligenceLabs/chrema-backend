@@ -83,7 +83,7 @@ const View = {
                 data.description == null ?  '-' : data.description,
                 (data.selling == true ? `<span class="badge badge-pill badge-green m-b-5">On sale</span>` : `<span class="badge badge-pill badge-light m-b-5">Off sale</span>` )+ `<span class="badge badge-pill badge-magenta m-b-5">Total Mint: ${data.quantity}</span>
                 <span class="badge badge-pill badge-geekblue m-b-5">Selling Quantity: ${data.quantity_selling}</span>`,
-                data.company_id.name == null ?  '-' : (data.company_id.name == null ? data.company_id : data.company_id.name),
+                data.company_id == null ?  '-' : (data.company_id.name == null ? data.company_id : data.company_id.name),
                 `<div class="d-flex align-items-center relative" data-id="${data._id}">
                     <div class="badge badge-${this.__barge[data.status]} badge-dot m-r-10"></div>
                     <div class="status_name" data-status-change="${status_push}">${this.__bargeText[data.status]}</div>

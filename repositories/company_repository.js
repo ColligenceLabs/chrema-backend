@@ -57,4 +57,13 @@ module.exports = {
             return error;
         }
     },
+
+    delete: async function (id) {
+        try {
+            let deleteDocument = await CompanyModel.deleteOne({_id: id});
+            return deleteDocument;
+        } catch (error) {
+            return error;
+        }
+    },
 };
