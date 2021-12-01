@@ -8,13 +8,15 @@ var storage = multer.diskStorage({
     filename: (req, file, cb) => {
         var uniqueSuffix = Date.now() + '-';
         cb(null, uniqueSuffix + file.originalname);
-        console.log("cb???",cb);
     },
 });
 
+// let uploadFile = multer({
+//     storage: storage,
+// }).single('file');
 let uploadFile = multer({
     storage: storage,
-}).single('file');
+}).fields([{name: 'file'}, {name: 'thumbnail'}]);
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 

@@ -54,7 +54,7 @@ module.exports = {
 
             //upload file
             await uploadRepository(req, res);
-            let my_file = req.file;
+            let my_file = req.files.file[0];
 
             errors = validateCreateNft(req, res);
             if (errors) {
@@ -64,9 +64,10 @@ module.exports = {
             let result = await nftRepository.addFileToIPFS(my_file);
             let imgName = my_file.filename.split('.');
             let imgInput = my_file.filename;
+
             let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
             let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
-            
+
             //rename
             await imageRename('./uploads/' + imgInput, './uploads/' + renameOutput);
 
@@ -129,7 +130,8 @@ module.exports = {
                         total_minted: "",
                         external_url: "",
                         attributes: [],
-                        minted_by: "Talken (https://talken.io)"
+                        minted_by: "Talken (https://talken.io)",
+                        thumbnail: "",
                     },
                     company_id: req.body.company_id,
                     type: req.body.type * 1,
@@ -149,6 +151,20 @@ module.exports = {
                 }
                 if (req.body.quantity) {
                     metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+                }
+                if (typeof req.files.thumbnail != 'undefined') {
+
+                }
+
+                //thumbnail check
+                if (typeof req.files.thumbnail != 'undefined') {
+                    let my_thumbnail = req.files.thumbnail[0];
+                    let thumbName = my_thumbnail.filename.split('.');
+                    let thumbnailInput = my_thumbnail.filename;
+                    let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+                    await imageRename('./uploads/' + thumbnailInput, './uploads/thumbnail/' + thumbnailOutput);
+                    
+                    metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);

@@ -61,7 +61,7 @@ app.use('/nft-api', apisBlockchainRouter);
 
 // serve static files
 app.use('/images', express.static('images'));
-app.use('/uploads', express.static('uploads'));
+app.use('/talkenNft', express.static('uploads'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

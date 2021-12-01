@@ -586,6 +586,7 @@ const View = {
 
                         var name_product  = $(`${resource}`).find('#name').val();
                         var files = $('#file_meta')[0].files;
+                        var thumbnail = $('#thumbnail')[0].files;
                         var quantity  = $(`${resource}`).find('#quantity').val();
                         var rarity  = $(`${resource}`).find('#rarity').val();
                         var description  = $(`${resource}`).find('#description').val();
@@ -604,6 +605,7 @@ const View = {
 
                         if (onPushData) {
                             fd.append('name', $('#name').val());
+                            fd.append('thumbnail', thumbnail[0]);
                             fd.append('file', files[0]);
                             fd.append('type', 0);
                             fd.append('quantity', $('#quantity').val());
@@ -633,8 +635,12 @@ const View = {
                             </div>
                             <div class="form-group">
                                 <label>Content:</label>
-                                <input type="file" class="form-control data-image" id="file_meta" accept="video/*|image/*">
+                                <input type="file" class="form-control data-image" id="file_meta" accept="video/mp4,image/*">
                             </div>
+                            <div class="form-group">
+                                <label>Thumbnail:</label>
+                                <input type="file" class="form-control data-thumbnail" id="thumbnail" accept="image/*">
+                            </div>                            
                             <div class="form-group">
                                 <label for="description">Description:</label>
                                 <input type="text" class="form-control data-description" id="description">
