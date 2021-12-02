@@ -6,9 +6,14 @@ const UserSchema = new Schema(
     {
         address: {
             type: String,
-            required: true,
             trim: true,
             default: null,
+        },
+        uid: {
+            type: String,
+            trim: true,
+            default: null,
+            required: true,
         },
         status: {
             type: String,

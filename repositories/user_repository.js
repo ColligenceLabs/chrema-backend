@@ -6,13 +6,18 @@ const mongoose = require('mongoose');
 module.exports = {
     createUser: async function (newUser) {
         try {
-            const user = await UserModel.findOne({address: newUser.address}).select(USER_FIELD);
+            const user = await UserModel.findOne(
+                {
+                    uid: newUser.uid,
+                }
+            ).select(USER_FIELD);
             if (!user) {
                 const user = await UserModel.create(newUser);
                 return {
                     _id: user.id,
                     status: user.status,
                     address: user.address || '-',
+                    uid: user.uid,
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt,
                 };
@@ -21,6 +26,7 @@ module.exports = {
             return error;
         }
     },
+    
     findById: async function (id) {
         const user = await UserModel.findOne({_id: id}).select(USER_FIELD);
         if (!user) {
@@ -28,6 +34,7 @@ module.exports = {
         }
         return user;
     },
+
     findIdsUserByAddress: async function (address) {
         let findParams = {};
         findParams.address = addMongooseParam(findParams.address, '$regex', address);
@@ -45,8 +52,33 @@ module.exports = {
         }
     },
 
+    findIdsUserByUid: async function (uid) {
+        let findParams = {};
+        findParams.uid = addMongooseParam(findParams.uid, '$regex', uid);
+        try {
+            const users = await UserModel.find(findParams).lean();
+            const userIds = [];
+
+            users.map((item) => {
+                userIds.push(item._id);
+            });
+
+            return userIds;
+        } catch (error) {
+            return null;
+        }
+    },
+
     findByUserAddress: async function (address) {
         const user = await UserModel.findOne({address: address}).select(USER_FIELD);
+        if (!user) {
+            return null;
+        }
+        return user;
+    },
+
+    findByUid: async function (uid) {
+        const user = UserModel.findOne({uid: uid}).select(USER_FIELD);
         if (!user) {
             return null;
         }

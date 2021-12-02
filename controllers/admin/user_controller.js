@@ -19,7 +19,7 @@ module.exports = {
     createUser: async (req, res, next) => {
         try {
             let newUser = {
-                address: req.body.address,
+                uid: req.body.uid,
                 ...(req.body?.status && {status: req.body.status}),
             };
 

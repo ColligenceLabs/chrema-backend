@@ -127,7 +127,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            const user = await userRepository.findByUserAddress(req.body.user_address);
+            const user = await userRepository.findByUid(req.body.uid);
             if (!user) {
                 return handlerError(req, res, ErrorMessage.USER_ADDRESS_IS_INVALID);
             }
@@ -330,10 +330,13 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            let checkUserIsExist = await userRepository.findByUserAddress(req.body.address);
+            // user key changed. userAddress -> uid
+            // let checkUserIsExist = await userRepository.findByUserAddress(req.body.address);
+            let checkUserIsExist = await userRepository.findByUid(req.body.uid);
             if (!checkUserIsExist) {
                 let newUser = {
                     address: req.body.address,
+                    uid: req.body.uid,
                     status: consts.USER_STATUS.ACTIVE,
                 };
 
@@ -400,11 +403,13 @@ module.exports = {
 
     async myNFTs(req, res, next) {
         try {
-            let address = req.query.address;
+            // let address = req.query.address;
+            let uid = req.query.uid;
             let page = +req.query.page || 1;
             let perPage = +req.query.perPage || 20;
 
-            let user = await userRepository.findByUserAddress(address);
+            // let user = await userRepository.findByUserAddress(address);
+            let user = await userRepository.findByUid(uid);
             if (!user) {
                 return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
             }

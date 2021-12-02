@@ -189,6 +189,7 @@ module.exports = {
             }
 
             let address = req.query.address;
+            let uid = req.query.uid;
 
             let nft = await nftRepository.findById(req.params.id);
             if (!nft) {
@@ -215,7 +216,7 @@ module.exports = {
 
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
-                    if (serials[i].owner_id.address == address) {
+                    if (serials[i].owner_id.uid == uid) {
                         if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
                             collected = true;
                             transfered = false;
