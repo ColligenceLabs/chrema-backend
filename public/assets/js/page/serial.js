@@ -100,7 +100,7 @@ const View = {
                 (View.table.pagination.pageSize * (View.table.pagination.page-1)) + k + 1,
                 data.nft_id.metadata.name ?? '-',
                 data.index,
-                data.owner_id ? View.start_and_end(data.owner_id.address) : '-',
+                data.owner_id ? View.start_and_end(data.owner_id.uid) : '-',
                 // data.owner_id ? parseInt(data.owner_id.address, 16) : '-',
                 parseInt(data.token_id, 16),
                 `<div class="d-flex align-items-center relative" data-id="${data._id}">
@@ -602,7 +602,7 @@ const View = {
                 $(`${this.resource}`).find('.data-name').val(data.nft_id.metadata.name ?? '-');
                 $(`${this.resource}`).find('.data-serial-index').val(data.index ?? '-');
                 $(`${this.resource}`).find('.data-token').val(parseInt(data.token_id, 16) ?? '-');
-                $(`${this.resource}`).find('.data-own').val(data.owner_id.address ?? '-');
+                $(`${this.resource}`).find('.data-own').val(data.owner_id.uid ?? '-');
             },
             getVal(){
                 return {
