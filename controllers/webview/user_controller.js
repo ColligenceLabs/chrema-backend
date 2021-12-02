@@ -27,7 +27,9 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            const user = await userRepository.findByUserAddress(req.body.user_address);
+            // const user = await userRepository.findByUserAddress(req.body.user_address);
+            const user = await userRepository.findByUid(req.body.uid);
+
             if (!user) {
                 return handlerError(req, res, ErrorMessage.USER_ADDRESS_IS_INVALID);
             }
