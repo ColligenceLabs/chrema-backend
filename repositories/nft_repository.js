@@ -310,4 +310,12 @@ module.exports = {
         }
         return nfts;
     },
+
+    findQuantitySelling: async function (where) {
+        let nfts = await NftModel.find(where,{"quantity_selling":1});
+        if (!nfts) {
+            return null;
+        }
+        return nfts;
+    },
 };

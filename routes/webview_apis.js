@@ -46,6 +46,8 @@ router.post('/nft/transfer-to-wallet', validateNft.nftTransfer(), userController
 
 router.get('/nft/get-top-artists', nftWebViewController.getTopArtists);
 
+router.get('/nft/selling-count/:id',nftWebViewController.getSellingCount);
+
 //Collection apis
 router.get('/collection/get-all', collectionWebViewController.indexCollections);
 

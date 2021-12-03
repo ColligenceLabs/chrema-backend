@@ -182,6 +182,24 @@ module.exports = {
         }
     },
 
+    async getSellingCount(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+            let data = {_id: req.params.id};
+            let nft = await nftRepository.findQuantitySelling(data);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async getDetailNft(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {
@@ -212,37 +230,41 @@ module.exports = {
             let collected = false;
             let transfered = false;
             let ownTokenId = "";
-            let ownIpfsLink = "";
+            let collects = [];
+            let ownTokens = [];
 
-            for (let i = 0; i < serials.length; i++) {
-                if (serials[i].owner_id != null) {
-                    if (serials[i].owner_id.uid == uid) {
-                        if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
-                            collected = true;
-                            transfered = false;
-                            ownTokenId = parseInt(serials[i].token_id,16).toString();
-                            break;
+            if(uid) {
+                for (let i = 0; i < serials.length; i++) {
+                    if (serials[i].owner_id != null) {
+                        if (serials[i].owner_id.uid == uid) {
+                            if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
+                                // collected = true;
+                                transfered = false;
+                                ownTokenId = parseInt(serials[i].token_id,16).toString();
+                                collects.push(ownTokenId);
+                            }
                         }
                     }
                 }
-            }
 
-            for (let i = 0; i < serials.length; i++) {
-                if (serials[i].owner_id != null) {
-                    if (nft.ipfs_links != null) {
-                        if (nft.ipfs_links[i].tokenId == ownTokenId) { 
-                            ownIpfsLink = nft.ipfs_links[i].path; 
-                            break;
+                for (let i = 0; i < serials.length; i++) {
+                        if (nft.ipfs_links != null) {
+                            for (let j = 0; j < collects.length; j++) {
+                                if (nft.ipfs_links[i].tokenId == collects[j]) {
+                                    let collectData = {
+                                        ownTokenId: nft.ipfs_links[i].tokenId,
+                                        ownIpfsLink: nft.ipfs_links[i].path
+                                    }
+                                    ownTokens.push(collectData); 
+                                }
+                            }
                         }
-                    }
                 }
-            }
-
+                nft.ownTokens = ownTokens;
+        }
             nft.collected = collected;
             nft.transfered = transfered;
-            nft.ownTokenId = ownTokenId;
             nft.onSale = onSale;
-            nft.ownIpfsLink = ownIpfsLink;
 
             return handlerSuccess(req, res, nft);
         } catch (error) {
