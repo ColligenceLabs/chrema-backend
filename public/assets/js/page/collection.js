@@ -75,6 +75,7 @@ const View = {
         __generateDTRow(data, k) {
             const checked = this.__selected[data._id] ? 'checked' : '';
             var status_push = data.status == "active" ? "inactive" : "active";
+            console.log("data???",data);
             return [
                 data._id,
                 `<input type="checkbox" class="form-control" style="min-height:20px;box-shadow:none;" ${checked}>`,

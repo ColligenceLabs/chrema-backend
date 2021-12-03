@@ -19,9 +19,9 @@ module.exports = {
         try {
             validateRouter(req, res);
 
-            if (req.query.address) {
-                let address = req.query.address;
-                let user = await userRepository.findByUserAddress(address);
+            if (req.query.uid) {
+                let uid = req.query.uid;
+                let user = await userRepository.findByUid(uid);
                 if (!user) {
                     return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
                 }

@@ -86,7 +86,7 @@ module.exports = {
             //upload file
             await uploadRepository(req, res);
 
-            let my_file = req.file;
+            let my_file = req.files.file[0];
 
             //resize
             let imgName = my_file.filename.split('.');
