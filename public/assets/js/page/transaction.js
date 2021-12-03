@@ -81,10 +81,11 @@ const View = {
         },
         __generateDTRow(data, k) {
             var status_push = data.status == "success" ? "error" : "success";
+            console.log(data)
             return [
                 (View.table.pagination.pageSize * (View.table.pagination.page-1)) + k + 1,
                 View.table.start_and_end(data.seller.admin_address),
-                View.table.start_and_end(data.buyer.address),
+                View.table.start_and_end(data.buyer.uid),
                 parseInt(data.serial_id.token_id, 16),
                 data.price,
                 View.table.start_and_end(data.tx_id),
@@ -542,7 +543,7 @@ const View = {
             setVal(data){
                 $(`${this.resource}`).find('.modal-title').html(`<i class="anticon anticon-info-circle m-r-5"></i> Transaction detail`);
                 $(`${this.resource}`).find('.data-seller').val(data.seller.address);
-                $(`${this.resource}`).find('.data-buyer').val(data.buyer.address);
+                $(`${this.resource}`).find('.data-buyer').val(data.buyer.uid);
                 $(`${this.resource}`).find('.data-name').val(data.name);
                 $(`${this.resource}`).find('.data-token').val(parseInt(data.serial_id.token_id, 16));
                 $(`${this.resource}`).find('.data-price').val(data.price);
