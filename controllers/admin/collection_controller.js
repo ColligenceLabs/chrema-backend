@@ -7,7 +7,7 @@ const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
-var uploadRepository = require('../../repositories/upload_repository');
+var collectionUploadRepository = require('../../repositories/collection_upload_repository');
 const consts = require('../../utils/consts');
 var ObjectID = require('mongodb').ObjectID;
 
@@ -84,7 +84,7 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
             //upload file
-            await uploadRepository(req, res);
+            await collectionUploadRepository(req, res);
 
             let my_file = req.files.file[0];
 
@@ -92,7 +92,7 @@ module.exports = {
             let imgName = my_file.filename.split('.');
             let imgInput = my_file.filename;
             let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
-            await imageResize('./uploads/' + imgInput, './uploads/' + imgOutput);
+            await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
 
             let cover_image = await nftRepository.addFileToIPFS(my_file);
 
@@ -100,7 +100,7 @@ module.exports = {
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
                 company_id: req.body.company_id,
-                path: '/uploads/' + imgOutput,
+                path: '/talkenNft/cover/' + imgOutput,
                 ...(req.body?.category && {category: JSON.parse(req.body.category)}),
             };
             let nft_id = JSON.parse(req.body.nft_id);
