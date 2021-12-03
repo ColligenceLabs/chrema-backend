@@ -189,6 +189,7 @@ module.exports = {
             }
             let data = {_id: req.params.id};
             let nft = await nftRepository.findQuantitySelling(data);
+            nft = JSON.parse(JSON.stringify(nft));
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
