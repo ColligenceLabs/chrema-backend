@@ -699,7 +699,7 @@ const View = {
         }
         Api.Transaction.GetAll(View.table.pagination.page, View.table.pagination.pageSize, filter)
             .done(res => {
-                console.log("resultt", res);
+                console.log("result", res);
                 loadOrders(res);
             });
     }
