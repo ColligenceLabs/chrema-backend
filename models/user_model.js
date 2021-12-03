@@ -35,6 +35,6 @@ const UserSchema = new Schema(
     },
     {usePushEach: true},
 );
-UserSchema.index({address: 1}, {background: true});
+UserSchema.index({uid: 1}, {background: true});
 
 module.exports = mongoose.model('User', UserSchema);

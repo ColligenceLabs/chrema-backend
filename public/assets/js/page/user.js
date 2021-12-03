@@ -1,6 +1,6 @@
 const View = {
     filter: {
-        searchBy: 'address',
+        searchBy: 'uid',
         keyword: {
             get val() {
                 return $('.filter-search').val();
@@ -77,7 +77,7 @@ const View = {
             return [
                 data._id,
                 `<input type="checkbox" class="form-control" style="min-height:20px;box-shadow:none;" ${checked}>`,
-                data.address,
+                data.uid,
                 `<div class="d-flex align-items-center relative" data-id="${data._id}">
                     <div class="badge badge-${this.__barge[data.status]} badge-dot m-r-10"></div>
                     <div class="status_name" data-status-change="${status_push}">${this.__bargeText[data.status]}</div>
@@ -337,8 +337,8 @@ const View = {
                         width: '5%',
                     },
                     {
-                        title: 'Address',
-                        name: 'address',
+                        title: 'UID',
+                        name: 'uid',
                         orderable: false,
                     },
                     {
@@ -417,7 +417,7 @@ const View = {
     selectedAction: {
         searchItem: null,
         selectedMap: [
-            'Address',
+            'UID',
             'Status',
         ],
         onSelect(callback){
@@ -430,7 +430,7 @@ const View = {
             $('.search-select .search-selected').text(data)
         },
         init(){
-            View.selectedAction.setSearch('Address');
+            View.selectedAction.setSearch('UID');
             // render dropdown action
             $('.selectedAction .dropdown-item').remove()
             for (var selected of this.selectedMap) {
@@ -506,7 +506,7 @@ const View = {
             },
             getVal(){
                 return {
-                    'address' : $(`${this.resource}`).find('.data-address').val()
+                    'uid' : $(`${this.resource}`).find('.data-uid').val()
                 }
             },
             unbindAll() {
@@ -522,8 +522,8 @@ const View = {
             init() {
                 $(`${this.resource} .modal-body`).html(`
                     <div class="form-group">
-                        <label for="address">Address:</label>
-                        <input type="text" class="form-control data-address" id="address">
+                        <label for="uid">UID:</label>
+                        <input type="text" class="form-control data-uid" id="uid">
                     </div>
                 `);
             }
@@ -541,12 +541,12 @@ const View = {
             },
             setVal(data){
                 $(`${this.resource}`).find('.modal-title').html(`<i class="anticon anticon-info-circle m-r-5"></i> User detail`);
-                $(`${this.resource}`).find('.data-address').val(data.address);
                 $(`${this.resource}`).find('.data-id').val(data.id);
+                $(`${this.resource}`).find('.data-uid').val(data.uid);                
             },
             getVal(){
                 return {
-                    'address' : $(`${this.resource}`).find('.data-address').val()
+                    'uid' : $(`${this.resource}`).find('.data-uid').val()
                 }
             },
             unbindAll() {
@@ -566,8 +566,8 @@ const View = {
                         <input type="text" class="form-control data-id" id="id" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="address">Address:</label>
-                        <input type="text" class="form-control data-address" id="address" disabled>
+                        <label for="uid">UID:</label>
+                        <input type="text" class="form-control data-uid" id="uid" disabled>
                     </div>
                 `);
             }
@@ -793,8 +793,8 @@ const View = {
                 View.modals.UpdateUser.init();
                 View.modals.UpdateUser.show();
                 data = {
-                    'address' : res.data.address,
                     'id' : res.data._id,
+                    'uid' : res.data.uid,
                 }
                 View.modals.UpdateUser.setVal(data);
                 View.modals.UpdateUser.unbindAll();

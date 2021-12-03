@@ -74,7 +74,7 @@ module.exports = {
     },
     USER_TABLE: [{name: 'No'}, {name: 'Address'}, {name: 'Status'}, {name: 'Action'}],
     ADMIN_FIELD: '_id full_name email admin_address createdAt updatedAt',
-    USER_FIELD: '_id address status createdAt updatedAt tp_amount',
+    USER_FIELD: '_id uid address status createdAt updatedAt tp_amount',
     STATISTICS_LINE_FIELD: '_id type name value date createdAt updatedAt',
     STATISTICS_CHART_FIELD:
         '_id type name nft_id company_id collection_id value date createdAt updatedAt',
