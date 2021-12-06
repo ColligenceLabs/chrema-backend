@@ -227,7 +227,7 @@ module.exports = {
             for (let i = 0; i < tokenIds.length; i++) {
                 let to = admin_address;
                 let newTokenId = tokenIds[i];
-                let tokenUri = ipfs_links[i].path;
+                let tokenUri = newNfts[i].ipfs_links[i];
                 // mint nft
                 let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
