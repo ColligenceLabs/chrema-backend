@@ -152,6 +152,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
             }
 
+            console.log("serial,seller,buyer?::::",serial._id,admin.id,user.id);
             const tx = await txRepository.findOneTx({
                 serial_id: serial._id,
                 seller: admin.id,
