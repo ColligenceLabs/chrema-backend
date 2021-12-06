@@ -168,12 +168,12 @@ module.exports = {
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
-                let ipfs_link_item = {
-                    tokenId: decimalTokenIds[i],
-                    path: IPFS_URL + metadata_ipfs_link.Hash
-                }
-                ipfs_links.push(ipfs_link_item);
-                newNft.ipfs_links = ipfs_links;
+                // let ipfs_link_item = {
+                //     tokenId: decimalTokenIds[i],
+                //     path: IPFS_URL + metadata_ipfs_link.Hash
+                // }
+                // ipfs_links.push(ipfs_link_item);
+                // newNft.ipfs_links = ipfs_links;
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
