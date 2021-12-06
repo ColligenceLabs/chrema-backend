@@ -174,7 +174,9 @@ module.exports = {
                 // }
                 // ipfs_links.push(ipfs_link_item);
                 // newNft.ipfs_links = ipfs_links;
+                ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
                     req.body?.status === NFT_STATUS.INACTIVE
@@ -216,81 +218,7 @@ module.exports = {
                 newNfts.push(newNft);
                 newSerials.push(newSerial);
             }
-            // let newNft = {
-            //     metadata: {
-            //         name: req.body.name,
-            //         description: req.body.description,
-            //         image: IPFS_URL + result.Hash,
-            //         alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
-            //         content_Type: imgName[imgName.length -1],
-            //         cid: result.Hash,
-            //         tokenId: decimalTokenIds,
-            //         total_minted: "",
-            //         external_url: "",
-            //         attributes: [],
-            //         minted_by: "Talken (https://talken.io)"
-            //     },
-            //     company_id: req.body.company_id,
-            //     type: req.body.type * 1,
-            //     ...(req.body?.price && {price: req.body.price}),
-            //     ...(req.body?.quantity && {quantity: req.body.quantity}),
-            //     ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
-            //     ...(req.body?.start_date && {start_date: req.body.start_date}),
-            //     ...(req.body?.end_date && {end_date: req.body.end_date}),
-            //     ...(req.body?.status && {status: req.body.status}),
-            //     ...(req.body?.category && {category: JSON.parse(req.body.category)}),
-            //     ...(req.body?.description && {description: req.body.description}),
-            // };
 
-            // let metadata_ipfs = newNft.metadata;
-            // if (req.body.category) {
-            //     // metadata_ipfs.category = JSON.parse(req.body.category);
-            // }
-            // if (req.body.quantity) {
-            //     metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
-            // }
-
-            // let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
-
-            // newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
-            // if (
-            //     req.body?.status === NFT_STATUS.SUSPEND ||
-            //     req.body?.status === NFT_STATUS.INACTIVE
-            // ) {
-            //     newNft.quantity_selling = 0;
-            // }
-
-            // // write json file
-            // await writeJson("./uploads/metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
-
-            // if (newNft.start_date && newNft.end_date) {
-            //     let current_time = new Date();
-
-            //     let startDate = new Date(convertTimezone(newNft.start_date).setSeconds(0, 0));
-            //     if (startDate > current_time) {
-            //         newNft.start_date = startDate;
-            //     } else {
-            //         return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
-            //     }
-
-            //     // check end_date
-            //     let endDate = new Date(convertTimezone(newNft.end_date).setSeconds(0, 0));
-            //     if (endDate > current_time && endDate > startDate) {
-            //         newNft.end_date = endDate;
-            //     } else {
-            //         return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
-            //     }
-            // }
-
-            // // serial default
-            // const newSerial = {
-            //     type: req.body.type,
-            //     ...(req.body?.status && {status: req.body.status}),
-            // };
-
-            // if (newNft.type === 1) {
-            //     newNft.price = 0;
-            // }
             let nft = await nftRepository.create(newNfts[0], newSerials[0], tokenIds);
 
             if (!nft) {
@@ -299,7 +227,7 @@ module.exports = {
             for (let i = 0; i < tokenIds.length; i++) {
                 let to = admin_address;
                 let newTokenId = tokenIds[i];
-                let tokenUri = newNfts[i].ipfs_links[i].path;
+                let tokenUri = ipfs_links[i].path;
                 // mint nft
                 let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
