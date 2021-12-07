@@ -192,8 +192,8 @@ module.exports = {
 
     async myCollection(req, res, next) {
         try {
-            let address = req.query.address;
-            let user = await userRepository.findByUserAddress(address);
+            let uid = req.query.uid;
+            let user = await userRepository.findByUid(uid);
             if (!user) {
                 return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
             }
