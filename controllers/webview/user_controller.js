@@ -393,6 +393,8 @@ module.exports = {
                 status: consts.NFT_STATUS.ACTIVE,
                 collection_id: null,
             };
+            console.log("nftList????",nftList);
+            console.log("{$in: nftList}",{$in: nftList});
             let nfts = await nftRepository.findAll(inputData, {page, perPage});
             nfts = JSON.parse(JSON.stringify(nfts));
             const count = await nftRepository.count(inputData);
