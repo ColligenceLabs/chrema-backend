@@ -394,8 +394,9 @@ module.exports = {
                 collection_id: null,
             };
             let nfts = await nftRepository.findAll(inputData, {page, perPage});
+            nfts = JSON.parse(JSON.stringify(nfts));
             const count = await nftRepository.count(inputData);
-
+            console.log("nfts???",nfts[0]);
             const responseHeaders = getHeaders(count, page, perPage);
             return handlerSuccess(req, res, {
                 items: nfts,
