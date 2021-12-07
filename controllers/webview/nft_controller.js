@@ -207,7 +207,6 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
             }
 
-            let address = req.query.address;
             let uid = req.query.uid;
 
             let nft = await nftRepository.findById(req.params.id);
@@ -231,7 +230,6 @@ module.exports = {
             let collected = false;
             let transfered = false;
             let ownTokenId = "";
-            // let ownIpfsLink = "";
 
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
@@ -245,17 +243,6 @@ module.exports = {
                     }
                 }
             }
-            // remove ipfs links from metadata
-            // for (let i = 0; i < serials.length; i++) {
-            //     if (serials[i].owner_id != null) {
-            //         if (nft.ipfs_links != null) {
-            //             if (nft.ipfs_links[i].tokenId == ownTokenId) { 
-            //                 ownIpfsLink = nft.ipfs_links[i].path; 
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
 
             nft.collected = collected;
             nft.transfered = transfered;
@@ -268,6 +255,57 @@ module.exports = {
             next(error);
         }
     },
+
+    async getDetailNftBySerial(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+            let uid = req.query.uid;
+            let serialId = req.query.serialId;
+
+            let nft = await nftRepository.findById(req.params.id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            let onSale = false;
+            let current_time = new Date();
+
+            if (checkTimeCurrent(nft.start_date, current_time, nft.end_date) === true) {
+                if (nft.quantity_selling > 0) {
+                    onSale = true;
+                }
+            }
+
+            nft = JSON.parse(JSON.stringify(nft));
+
+            const serial = await serialRepository.findByIdSerial(serialId);
+            let collected = false;
+            let transfered = false;
+            let ownTokenId = "";
+            if (serial.owner_id != null) {
+                if (serial.owner_id.uid == uid) {
+                    if (serial.transfered == consts.TRANSFERED.NOT_TRANSFER) {
+                        collected = true;
+                        transfered = false;
+                        ownTokenId = parseInt(serial.token_id,16).toString();
+                   }
+                }
+            }
+            nft.serialId = serial;
+            nft.collected = collected;
+            nft.transfered = transfered;
+            nft.ownTokenId = ownTokenId;
+            nft.onSale = onSale;
+
+            return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+    
 
     // async getDetailNft(req, res, next) {
     //     try {

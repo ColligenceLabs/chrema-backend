@@ -32,6 +32,8 @@ router.get('/transaction/detail/:id', transactionAdminController.getDetailTx);
 //NFTs apis
 router.get('/nft/detail/:id', nftWebViewController.getDetailNft);
 
+router.get('/nft/detail-by-serial/:id', nftWebViewController.getDetailNftBySerial);
+
 router.post('/user/send-serial', userController.sendSerial);
 
 router.get('/nft/get-all', nftWebViewController.indexNfts);
