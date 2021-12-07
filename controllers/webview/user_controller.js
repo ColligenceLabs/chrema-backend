@@ -434,6 +434,8 @@ module.exports = {
             for (let i = 0; i < transactions.length; i++) {
                 nftList.push(transactions[i].serial_id.nft_id);
                 let nft = await nftRepository.findById(transactions[i].serial_id.nft_id);
+                nft = JSON.parse(JSON.stringify(nft));
+                nft.own_serial_id = transactions[i].serial_id._id;
                 nfts.push(nft);
             }
 
