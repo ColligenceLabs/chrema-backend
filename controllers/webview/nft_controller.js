@@ -245,7 +245,7 @@ module.exports = {
                     }
                 }
             }
-
+            // remove ipfs links from metadata
             // for (let i = 0; i < serials.length; i++) {
             //     if (serials[i].owner_id != null) {
             //         if (nft.ipfs_links != null) {

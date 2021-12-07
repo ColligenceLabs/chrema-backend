@@ -41,6 +41,7 @@ module.exports = {
     //                 2. json 업로드 (db, ipfs)
     //                 3. db저장
     //                 4. 민팅
+    // TODOS: 대량의 민트 (2000개 이상)를 안정적으로 하는 로직 만들기
 
 
     createNft: async (req, res, next) => {
@@ -168,6 +169,7 @@ module.exports = {
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
+                // remove ipfs links array from metadata
                 // let ipfs_link_item = {
                 //     tokenId: decimalTokenIds[i],
                 //     path: IPFS_URL + metadata_ipfs_link.Hash
