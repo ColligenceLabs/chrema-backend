@@ -148,6 +148,7 @@ module.exports = {
                 nft_id: req.body.nft_id,
                 transfered: consts.TRANSFERED.NOT_TRANSFER,
             });
+            console.log("test::::serial",serial);
 
             if (!serial) {
                 return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
