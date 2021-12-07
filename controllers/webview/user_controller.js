@@ -142,7 +142,7 @@ module.exports = {
             }
 
             const serial = await serialRepository.findOneSerial({
-                // id: request.body.serial_id,
+                id: req.body.serial_id,
                 status: consts.SERIAL_STATUS.ACTIVE,
                 owner_id: user._id,
                 nft_id: req.body.nft_id,
