@@ -399,7 +399,7 @@ module.exports = {
             const count = await nftRepository.count(inputData);
             const responseHeaders = getHeaders(count, page, perPage);
             return handlerSuccess(req, res, {
-                items: nfts,
+                items: inputData,
                 headers: responseHeaders,
             });
         } catch (error) {
