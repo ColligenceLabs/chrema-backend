@@ -388,8 +388,13 @@ module.exports = {
             let page = +req.query.page || 1;
             let perPage = +req.query.perPage || 20;
 
+            // let inputData = {
+            //     _id: {$in: nftList},
+            //     status: consts.NFT_STATUS.ACTIVE,
+            //     collection_id: null,
+            // };
             let inputData = {
-                _id: {$in: nftList},
+                _id: [{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af25ac7a22dd5bbf9fcc37"}],
                 status: consts.NFT_STATUS.ACTIVE,
                 collection_id: null,
             };
