@@ -226,7 +226,9 @@ module.exports = {
             nft = JSON.parse(JSON.stringify(nft));
 
             const serials = await serialRepository.findByNftId(nft._id);
-
+            
+            // serial에 owner가 박혀있다면 체크 (한번이라도 collect를 한적이 있다면 체크됨)
+            let ownerCheck = false;
             let collected = false;
             let transfered = false;
             let ownTokenId = "";
@@ -234,6 +236,7 @@ module.exports = {
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
                     if (serials[i].owner_id.uid == uid) {
+                            collectCheck = true;
                         if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
                             collected = true;
                             transfered = false;
@@ -244,6 +247,7 @@ module.exports = {
                 }
             }
 
+            nft.ownerCheck = ownerCheck;
             nft.collected = collected;
             nft.transfered = transfered;
             nft.ownTokenId = ownTokenId;
