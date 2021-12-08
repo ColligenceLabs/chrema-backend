@@ -394,7 +394,7 @@ module.exports = {
             //     collection_id: null,
             // };
             let inputData = {
-                _id: [{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af25ac7a22dd5bbf9fcc37"}],
+                _id: [{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af25ac7a22dd5bbf9fcc37"}],
                 status: consts.NFT_STATUS.ACTIVE,
                 collection_id: null,
             };
