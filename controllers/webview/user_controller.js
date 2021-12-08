@@ -395,6 +395,7 @@ module.exports = {
             };
             let nfts = await nftRepository.findAll(inputData, {page, perPage});
             nfts = JSON.parse(JSON.stringify(nfts));
+            inputData = JSON.parse(JSON.stringify(ownserSerials));
             const count = await nftRepository.count(inputData);
             const responseHeaders = getHeaders(count, page, perPage);
             return handlerSuccess(req, res, {
