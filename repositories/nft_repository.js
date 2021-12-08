@@ -20,6 +20,7 @@ module.exports = {
     },
     findAll: async function (findParams, pagination = null) {
         try {
+            console.log("pn??",pagination);
             if (pagination) {
                 var nfts = await NftModel.find(findParams)
                     .skip((pagination.page - 1) * pagination.perPage)
