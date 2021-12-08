@@ -388,23 +388,14 @@ module.exports = {
             let page = +req.query.page || 1;
             let perPage = +req.query.perPage || 20;
 
-            // let inputData = {
-            //     _id: {$in: nftList},
-            //     status: consts.NFT_STATUS.ACTIVE,
-            //     collection_id: null,
-            // };
             let inputData = {
-                _id: [{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af320d7a22dd5bbf9fcf5a"},{_id:"61af25ac7a22dd5bbf9fcc37"}],
+                _id: {$in: nftList},
                 status: consts.NFT_STATUS.ACTIVE,
                 collection_id: null,
             };
-            console.log("nftList????",nftList);
-            console.log("{$in: nftList}",{$in: nftList});
             let nfts = await nftRepository.findAll(inputData, {page, perPage});
             nfts = JSON.parse(JSON.stringify(nfts));
             const count = await nftRepository.count(inputData);
-            console.log("nfts???",nfts.length);
-            console.log("serials???",ownserSerials.length);
             const responseHeaders = getHeaders(count, page, perPage);
             return handlerSuccess(req, res, {
                 items: nfts,
