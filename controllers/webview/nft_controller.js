@@ -236,7 +236,7 @@ module.exports = {
             for (let i = 0; i < serials.length; i++) {
                 if (serials[i].owner_id != null) {
                     if (serials[i].owner_id.uid == uid) {
-                            collectCheck = true;
+                            ownerCheck = true;
                         if (serials[i].transfered == consts.TRANSFERED.NOT_TRANSFER) {
                             collected = true;
                             transfered = false;
