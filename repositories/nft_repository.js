@@ -23,7 +23,7 @@ module.exports = {
             console.log("pn??",pagination);
             if (pagination) {
                 var nfts = await NftModel.find(findParams)
-                    .skip((pagination.page - 1) * pagination.perPage)
+                    // .skip((pagination.page - 1) * pagination.perPage)
                     .limit(pagination.perPage)
                     .sort({createdAt: -1, start_date: -1, _id: 1})
                     .populate({path: 'collection_id'})
