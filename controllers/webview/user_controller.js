@@ -398,6 +398,7 @@ module.exports = {
             inputData = JSON.parse(JSON.stringify(ownserSerials));
             console.log("nfts",nfts);
             console.log("inputData",inputData);
+            console.log("length",ownserSerials.length);
             const count = await nftRepository.count(inputData);
             const responseHeaders = getHeaders(count, page, perPage);
             return handlerSuccess(req, res, {
