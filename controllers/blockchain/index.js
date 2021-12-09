@@ -1,5 +1,5 @@
 const Web3 = require('web3');
-const web3 = new Web3('https://api.baobab.klaytn.net:8651');
+const web3 = new Web3(process.env.PROVIDER_URL);
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
 const fs = require('fs');
 var nftRepository = require('../../repositories/nft_repository');
