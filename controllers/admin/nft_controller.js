@@ -219,6 +219,7 @@ module.exports = {
                 }
                 newNfts.push(newNft);
                 newSerials.push(newSerial);
+                console.log("count : ",i);
             }
 
             let nft = await nftRepository.create(newNfts[0], newSerials[0], tokenIds);
