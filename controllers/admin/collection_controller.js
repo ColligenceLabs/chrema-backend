@@ -91,8 +91,9 @@ module.exports = {
             //resize
             let imgName = my_file.filename.split('.');
             let imgInput = my_file.filename;
-            let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
-            await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
+            // do not resize cover
+            // let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
+            // await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
 
             let cover_image = await nftRepository.addFileToIPFS(my_file);
 
@@ -100,7 +101,7 @@ module.exports = {
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
                 company_id: req.body.company_id,
-                path: '/talkenNft/cover/' + imgOutput,
+                path: '/talkenNft/cover/' + imgInput,
                 ...(req.body?.category && {category: JSON.parse(req.body.category)}),
             };
             let nft_id = JSON.parse(req.body.nft_id);
