@@ -278,9 +278,9 @@ module.exports = {
         var options = {
             method: 'GET',
             url:
-                consts.KLAYTN_URL +
+                consts.BCN_KLAYTN_URL +
                 'getTokenListKip17?contractAddress=' +
-                consts.CONTRACT_ADMIN_ADDRESS,
+                consts.NFT_CONTRACT_ADDR,
             headers: {
                 'x-api-key': 'd37b7327-1657-42f0-8066-e8ebb65fefaa',
             },

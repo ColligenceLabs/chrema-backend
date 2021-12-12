@@ -28,7 +28,8 @@ const AdminSchema = new Schema(
         },
         contract_admin_address: {
             type: String,
-            default: '0xc144893e7102a591ac67de1b9e867ae9275b7bf6',
+            default: '',
+            // default: '0xc144893e7102a591ac67de1b9e867ae9275b7bf6',
         },
         createdAt: {
             type: Date,

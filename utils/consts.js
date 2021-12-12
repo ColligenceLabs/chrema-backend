@@ -78,12 +78,12 @@ module.exports = {
     STATISTICS_LINE_FIELD: '_id type name value date createdAt updatedAt',
     STATISTICS_CHART_FIELD:
         '_id type name nft_id company_id collection_id value date createdAt updatedAt',
-    ADMIN_ADDRESS: '0x7b8340205dddee16f2f9e582c185ff5f05f4cb6e',
-    CONTRACT_ADMIN_ADDRESS: '0x5739944fb2e1edd34881e293392d73c66f682bf4',
-    KLAYTN_URL: 'http://139.180.191.58:8081/klaytn/',
+    ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
+    NFT_CONTRACT_ADDR: process.env.NFT_CONTRACT_ADDR,
+    BCN_KLAYTN_URL: process.env.BCN_KLAYTN_URL,
     IPFS: {
-        PROJECT_ID: '1wKv6epGPX2O1pWmi11VVIDvpGN',
-        PROJECT_SECRET: 'dcc6463257ade11f564330b305d1f8ad',
+        INFURA_IPFS_PROJECT_ID: process.env.INFURA_IPFS_PROJECT_ID,
+        INFURA_IPFS_PROJECT_SECRET: process.env.INFURA_IPFS_PROJECT_SECRET,
     },
     IPFS_URL: 'https://ipfs.io/ipfs/',
     ALT_URL: 'https://nftbe.talken.io/talkenNft/',

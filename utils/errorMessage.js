@@ -7,7 +7,7 @@ exports.ErrorMessage = {
     ID_IS_INVALID: 'Id is invalid!',
     FIELD_UPDATE_IS_NOT_BLANK: 'Field update is not blank!',
     STATUS_UPDATE_INVALID: 'Status update invalid!',
-    ADMIN_ADDRESS_IS_INVALID: 'Addmin address is invalid!',
+    ADMIN_ADDRESS_IS_INVALID: 'Admin address is invalid!',
     INTERNAL_SERVER_ERROR: 'Internal server error!',
     NO_ELEMENT_HAS_UPDATED: 'No element has updated!',
     // STATUS_IS_NOT_UPDATE: 'Status is not update!',
