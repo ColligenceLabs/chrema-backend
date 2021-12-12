@@ -421,7 +421,7 @@ module.exports = {
 
             let findParams = {
                 buyer: user._id,
-                status: consts.TRANSACTION_STATUS.PROCESSING,
+                status: {$or: [consts.TRANSACTION_STATUS.PROCESSING, consts.TRANSACTION_STATUS.ERROR]},
             };
             let transactions = await txRepository.findTxs(findParams, {page, perPage});
 
