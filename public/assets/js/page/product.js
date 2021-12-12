@@ -1162,14 +1162,12 @@ const View = {
     View.table.onRowAction("View", (id) => {
         Api.Product.GetOne(id)
             .done(res => {
-                console.log(res);
                 View.modals.UpdateProduct.init();
                 View.modals.UpdateProduct.show();
                 View.modals.UpdateProduct.setVal(res.data);
                 View.modals.UpdateProduct.unbindAll();
                 View.modals.UpdateProduct.onPush("Save", () => {
                     View.helper.showToastProcessing('Processing', 'Update status !');
-                    console.log(View.modals.UpdateProduct.getVal());
                     Api.Product.UpdateStatus(id, View.modals.UpdateProduct.getVal())
                         .done(res => {
                             View.helper.showToastSuccess('Success', 'Update successful'); 
@@ -1225,7 +1223,6 @@ const View = {
         item.find('.slider').toggleClass('active');
         var data_id = item.attr('data-id')
         var data_status = item.attr('data-status')
-        console.log(data_id);
         Api.Product.UpdateSelling(data_id, data_status)
             .done(res => {
                 console.log(res);
@@ -1251,7 +1248,6 @@ const View = {
             'status'        : status_data
         }
         filter[`${searchBy}`] = keyword;
-        console.log(filter);
 
         if (keyword != '' || status != '') View.filter.reset.isOn();
         else View.filter.reset.isOff();
