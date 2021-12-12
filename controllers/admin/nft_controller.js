@@ -71,11 +71,11 @@ module.exports = {
 
             //rename
             await imageRename('./uploads/' + imgInput, './uploads/' + renameOutput);
-
+            console.log("beforeimageResize:::");
             //resize
             if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
-
+            console.log("afterimageResize:::");
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
             //sort with value
@@ -85,7 +85,7 @@ module.exports = {
                     parseInt(a.tokenId.replace('0x', ''), 16)
                 );
             });
-
+            console.log("itemList:::");
             // get last tokenId in db
             let lastTokenId = await listenerRepository.findLastTokenId();
 
