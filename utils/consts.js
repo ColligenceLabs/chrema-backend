@@ -86,7 +86,7 @@ module.exports = {
         INFURA_IPFS_PROJECT_SECRET: process.env.INFURA_IPFS_PROJECT_SECRET,
     },
     IPFS_URL: 'https://ipfs.io/ipfs/',
-    ALT_URL: 'https://nftbe.talken.io/talkenNft/',
+    ALT_URL: process.env.ALT_URL,
     STATISTICS: {
         LINE: {
             NFT_REVENUE: 'nft_revenue',
