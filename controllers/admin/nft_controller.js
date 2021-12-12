@@ -144,6 +144,7 @@ module.exports = {
                     ...(req.body?.status && {status: req.body.status}),
                     ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                     ...(req.body?.description && {description: req.body.description}),
+                    ...(req.body?.rarity && {rarity: req.body.rarity}),
                 };
     
                 let metadata_ipfs = newNft.metadata;

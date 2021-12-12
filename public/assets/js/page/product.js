@@ -583,12 +583,25 @@ const View = {
                         $('.js-errors').find('.error').remove()
                         var fd = new FormData();
                         var onPushData = true;
-
                         var name_product  = $(`${resource}`).find('#name').val();
                         var files = $('#file_meta')[0].files;
                         var thumbnail = $('#thumbnail')[0].files;
                         var quantity  = $(`${resource}`).find('#quantity').val();
-                        var rarity  = $(`${resource}`).find('#rarity').val();
+                        // var rarity  = $(`${resource}`).find('#rarity').val();
+                        
+                        var rarity = '';
+                        if (quantity > 3001) {
+                            rarity = 1;
+                        } else if (quantity > 2000) {
+                            rarity = 2;                            
+                        } else if (quantity > 500) {
+                            rarity = 3;
+                        } else if (quantity > 2) {
+                            rarity = 4;
+                        } else if (quantity == 1) {
+                            rarity = 5;
+                        }
+
                         var description  = $(`${resource}`).find('#description').val();
                         var price  = $(`${resource}`).find('#price').val();
                         var category  = JSON.stringify($(`${resource}`).find('.data-category').val());
@@ -609,7 +622,7 @@ const View = {
                             fd.append('file', files[0]);
                             fd.append('type', 0);
                             fd.append('quantity', $('#quantity').val());
-                            fd.append('rarity', $('#rarity').val());
+                            fd.append('rarity', rarity);
                             fd.append('description', $('#description').val());
                             fd.append('price', $('#price').val());
                             fd.append('category', JSON.stringify($(`${resource}`).find('.data-category').val()));
@@ -652,10 +665,6 @@ const View = {
                                 <select name="" class="form-control data-company" id="company"> </select>
                             </div>
                             <div class="form-group">
-                                <label for="rarity">Rarity :</label>
-                                <input type="number" class="form-control data-rarity" id="rarity" min="0">
-                            </div>
-                            <div class="form-group">
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" class="form-control data-quantity" id="quantity" min="0">
                             </div>
@@ -691,6 +700,7 @@ const View = {
                 $(`${this.resource}`).find('.data-metadata').val(data.metadata.name ?? '-');
                 $(`${this.resource}`).find('.data-quantity').val(data.quantity);
                 $(`${this.resource}`).find('.data-company').val(data.company_id.name);
+                $(`${this.resource}`).find('.data-rarity').val(data.rarity);
                 $(`${this.resource}`).find('.data-price').val(data.price);
                 $(`${this.resource}`).find('.data-start-date').val(data.start_date == null ? '-' : moment.tz(data.start_date, 'Asia/Seoul').format('D/M/YYYY, k:mm:ss'));
                 $(`${this.resource}`).find('.data-end-date').val(data.end_date == null ? '-' : moment.tz(data.end_date, 'Asia/Seoul').format('D/M/YYYY, k:mm:ss'));
@@ -730,6 +740,11 @@ const View = {
                     <div class="form-group">
                         <label for="company">Company:</label>
                         <input type="text" class="form-control data-company" id="company" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rarity">Rarity:</label>
+                        <input type="text" class="form-control data-rarity" id="rarity" disabled>
                     </div>
 
                     <div class="form-group">
