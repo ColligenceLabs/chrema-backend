@@ -56,7 +56,7 @@ const NftSchema = new Schema(
             type: Number,
             required: false,
             trim: true,
-        }
+        },
         collection_id: {
             type: Schema.Types.ObjectId,
             ref: 'Collection',
