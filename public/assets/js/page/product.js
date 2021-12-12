@@ -601,7 +601,7 @@ const View = {
                         } else if (quantity == 1) {
                             rarity = 5;
                         }
-
+                        console.log("rarity???",rarity);
                         var description  = $(`${resource}`).find('#description').val();
                         var price  = $(`${resource}`).find('#price').val();
                         var category  = JSON.stringify($(`${resource}`).find('.data-category').val());
