@@ -202,7 +202,7 @@ module.exports = {
     },
 
     addFileToIPFS: async function (my_file) {
-        console.log("start file upload to ipfs...")
+        // console.log("start file upload to ipfs...")
         var auth =
             'Basic ' +
             Buffer.from(consts.IPFS.INFURA_IPFS_PROJECT_ID + ':' + consts.IPFS.INFURA_IPFS_PROJECT_SECRET).toString(
@@ -228,7 +228,7 @@ module.exports = {
         let getResponse = await new Promise(function (resolve, reject) {
             request(options, async function (error, response) {
                 if (!error && response.statusCode == 200) {
-                    console.log("add file to ipfs success")
+                    // console.log("add file to ipfs success")
                     resolve(response.body);
                 } else {
                     reject(error);
@@ -240,7 +240,7 @@ module.exports = {
     },
 
     addJsonToIPFS: async function (metadata) {
-        console.log("start json upload to ipfs...")
+        // console.log("start json upload to ipfs...")
         var auth =
             'Basic ' +
             Buffer.from(consts.IPFS.INFURA_IPFS_PROJECT_ID + ':' + consts.IPFS.INFURA_IPFS_PROJECT_SECRET).toString(
@@ -261,7 +261,7 @@ module.exports = {
         let getResponse = await new Promise(function (resolve, reject) {
             request(options, async function (error, response) {
                 if (!error && response.statusCode == 200) {
-                    console.log("add json to ipfs success")
+                    // console.log("add json to ipfs success")
                     resolve(response.body);
                 } else {
                     reject(error);
@@ -287,12 +287,10 @@ module.exports = {
         };
         let itemList = await new Promise(function (resolve) {
             request(options, function (error, response) {
-                console.log("response::",response)
                 if (error) throw new Error(error);
                 resolve(response.body);
             });
         });
-        console.log("itemList::",itemList)
         itemList = JSON.parse(itemList);
         return itemList;
     },
