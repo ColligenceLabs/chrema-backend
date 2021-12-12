@@ -575,7 +575,7 @@ const View = {
                             rarity = 2;                            
                         } else if (quantity > 500) {
                             rarity = 3;
-                        } else if (quantity > 2) {
+                        } else if (quantity > 1) {
                             rarity = 4;
                         } else if (quantity == 1) {
                             rarity = 5;
