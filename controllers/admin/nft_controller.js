@@ -117,7 +117,6 @@ module.exports = {
                 decimalTokenIds.push(newTokenId.toString());
             }
             //nft default
-            console.log("req.body.rarity?",req.body.rarity);
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
@@ -219,6 +218,7 @@ module.exports = {
                 if (newNft.type === 1) {
                     newNft.price = 0;
                 }
+                console.log("newNft?",newNft);
                 newNfts.push(newNft);
                 newSerials.push(newSerial);
                 console.log("count : ",i);
