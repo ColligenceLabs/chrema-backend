@@ -92,7 +92,7 @@ module.exports = {
             let tokenIdBlockchain = itemList.items[0].tokenId;
             let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
 
-            if (lastTokenId) {
+            if (lastTokenId && lastTokenId.length !== 0) {
                 if (tokenId < lastTokenId[0].token_id) {
                     tokenId = parseInt(lastTokenId[0].token_id);
                 }
