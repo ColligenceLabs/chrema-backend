@@ -205,7 +205,7 @@ module.exports = {
         console.log("start file upload to ipfs...")
         var auth =
             'Basic ' +
-            Buffer.from(consts.IPFS.PROJECT_ID + ':' + consts.IPFS.PROJECT_SECRET).toString(
+            Buffer.from(consts.IPFS.INFURA_IPFS_PROJECT_ID + ':' + consts.IPFS.INFURA_IPFS_PROJECT_SECRET).toString(
                 'base64',
             );
         var options = {
@@ -243,7 +243,7 @@ module.exports = {
         console.log("start json upload to ipfs...")
         var auth =
             'Basic ' +
-            Buffer.from(consts.IPFS.PROJECT_ID + ':' + consts.IPFS.PROJECT_SECRET).toString(
+            Buffer.from(consts.IPFS.INFURA_IPFS_PROJECT_ID + ':' + consts.IPFS.INFURA_IPFS_PROJECT_SECRET).toString(
                 'base64',
             );
 
