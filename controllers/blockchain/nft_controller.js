@@ -6,13 +6,12 @@ const chainId = process.env.KLAYTN_CHAIN_ID | 0;
 const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
-const option = {
-    headers: [
+const option = [
         // { name: 'Authorization', value: 'Basic ' + Buffer.from(accessKeyId + ':' + secretAccessKey).toString('base64') },
         // { name: 'x-chain-id', value: chainId },
         { name: "x-krn", value:"krn:8217:wallet:ebf2bc57-9c0f-48f7-afc5-e260cbb57ec3:account-pool:NFTMarketplace" },
     ]
-}
+
 
 const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey, option);
 
