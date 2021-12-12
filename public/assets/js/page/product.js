@@ -596,12 +596,11 @@ const View = {
                             rarity = 2;                            
                         } else if (quantity > 500) {
                             rarity = 3;
-                        } else if (quantity > 2) {
+                        } else if (quantity > 1) {
                             rarity = 4;
                         } else if (quantity == 1) {
                             rarity = 5;
                         }
-                        console.log("rarity???",rarity);
                         var description  = $(`${resource}`).find('#description').val();
                         var price  = $(`${resource}`).find('#price').val();
                         var category  = JSON.stringify($(`${resource}`).find('.data-category').val());
@@ -664,6 +663,10 @@ const View = {
                                 <label for="company">Company:</label>
                                 <select name="" class="form-control data-company" id="company"> </select>
                             </div>
+                            <div class="form-group">
+                                <label for="rarity">Rarity:</label>
+                                <select name="" class="form-control data-rarity" id="rarity" disabled> </select>
+                            </div>                            
                             <div class="form-group">
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" class="form-control data-quantity" id="quantity" min="0">
