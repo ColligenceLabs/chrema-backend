@@ -662,11 +662,7 @@ const View = {
                             <div class="form-group">
                                 <label for="company">Company:</label>
                                 <select name="" class="form-control data-company" id="company"> </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="rarity">Rarity:</label>
-                                <select name="" class="form-control data-rarity" id="rarity" disabled> </select>
-                            </div>                            
+                            </div>                         
                             <div class="form-group">
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" class="form-control data-quantity" id="quantity" min="0">
