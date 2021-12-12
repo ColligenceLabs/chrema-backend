@@ -78,6 +78,7 @@ module.exports = {
             console.log("afterimageResize:::");
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
+            console.log("itemList:::",itemList);
             //sort with value
             itemList.items.sort(function (a, b) {
                 return (

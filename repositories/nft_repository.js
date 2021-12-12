@@ -287,10 +287,12 @@ module.exports = {
         };
         let itemList = await new Promise(function (resolve) {
             request(options, function (error, response) {
+                console.log("response::",response)
                 if (error) throw new Error(error);
                 resolve(response.body);
             });
         });
+        console.log("itemList::",itemList)
         itemList = JSON.parse(itemList);
         return itemList;
     },
