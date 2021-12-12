@@ -33,12 +33,12 @@ function toAddress(hexVal) {
 // get events
 async function getLastEvents() {
     var toBlock = (await web3.eth.getBlockNumber()) * 1;
-    console.log(toBlock);
+    // console.log(toBlock);
     if (toBlock - lastBlock > 4000) {
         toBlock = lastBlock * 1 + 4000;
     }
 
-    console.log(lastBlock, toBlock);
+    // console.log(lastBlock, toBlock);
 
     web3.eth.getPastLogs(
         {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
