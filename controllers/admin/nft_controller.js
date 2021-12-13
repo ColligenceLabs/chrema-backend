@@ -125,7 +125,7 @@ module.exports = {
                         cid: result.Hash,
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
-                        external_url: "",
+                        external_url: req.body.external_url,
                         attributes: [],
                         minted_by: "Talken (https://talken.io)",
                         thumbnail: "",

@@ -583,6 +583,7 @@ const View = {
 
                         var description  = $(`${resource}`).find('#description').val();
                         var company_id  = $(`${resource}`).find('#company').val();
+                        var external_url = $(`${resource}`).find('#data-external_url').val();
 
                         if (files.length <= 0) { $('.js-errors').append(`<li class="error">Please select a file.</li>`); onPushData = false }
                         if (name_product == '') { $('.js-errors').append(`<li class="error">Name is required</li>`); onPushData = false }
@@ -600,6 +601,7 @@ const View = {
                             fd.append('rarity', rarity);
                             fd.append('description', $('#description').val());
                             fd.append('company_id', $('#company').val());
+                            fd.append('external_url', $('#external_url').val());                            
                             callback(fd);
                         } 
                     }
@@ -629,6 +631,10 @@ const View = {
                         <select name="" class="form-control data-company" id="company"> </select>
                     </div>
                     <div class="form-group">
+                        <label for="external_url">External URL:</label>
+                        <input type="text" class="form-control data-external_url" id="external_url">
+                    </div>                         
+                    <div class="form-group">
                         <label for="quantity">Quantity:</label>
                         <input type="number" class="form-control data-quantity" id="quantity" min="0">
                     </div>
@@ -651,6 +657,7 @@ const View = {
                 $(`${this.resource}`).find('.data-description').val(data.description);
                 $(`${this.resource}`).find('.data-metadata').val(data.metadata.name ?? '-');
                 $(`${this.resource}`).find('.data-quantity').val(data.quantity);
+                $(`${this.resource}`).find('.data-external_url').val(data.metadata.external_url);
                 $(`${this.resource}`).find('.data-company').val(data.company_id.name);
                 $(`${this.resource}`).find('.data-rarity').val(data.rarity);
                 $(`${this.resource}`).find('.data-start-date').val(data.start_date == null ? '-' : moment.tz(data.start_date, 'Asia/Seoul').format('D/M/YYYY, k:mm:ss'));
@@ -687,6 +694,11 @@ const View = {
                 <label for="quantity">Quantity:</label>
                 <input type="text" class="form-control data-quantity" id="quantity" disabled>
             </div>
+
+            <div class="form-group">
+                <label for="external_url">External URL:</label>
+                <input type="text" class="form-control data-external_url" id="external_url" disabled>
+            </div>      
 
             <div class="form-group">
                 <label for="company">Company:</label>
