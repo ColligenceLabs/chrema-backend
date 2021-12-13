@@ -3,6 +3,13 @@ var router = express.Router();
 const {USER_TABLE} = require('../utils/consts');
 
 /* GET home page. */
+const ipCheck = (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    if (ip && ip === "106.243.97.163") next();
+    else res.status(401).json({ error: "Auth Error from authcheck" });
+};
+router.use(ipCheck);
+
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Home'});
 });

@@ -7,7 +7,7 @@ const ViewIndex = {
         localStorage.removeItem("accessToken"); 
         localStorage.removeItem("refreshToken"); 
         localStorage.removeItem("infor"); 
-        window.location.href = '/login';
+        window.location.href = '/admp/login';
     })
     try {
         // cài đặt open menu khi chuyển trang

@@ -20,7 +20,7 @@ const View = {
             localStorage.setItem('refreshToken', data.data.refreshToken || null);
             localStorage.setItem('infor', JSON.stringify(data.data.infor) || null);
             
-            window.location.href = '/';
+            window.location.href = '/admp';
 		},
 		onError(message){
 			$('.notification').find('.alert').remove();
@@ -36,7 +36,7 @@ const View = {
     View.init();
 
     if (localStorage.getItem('accessToken')) {
-    	window.location.href = '/';
+    	window.location.href = '/admp';
     }
 
 

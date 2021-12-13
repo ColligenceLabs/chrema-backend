@@ -22,6 +22,13 @@ var validateReward = require('../requests/validate_reward');
 var isAuth = require('../utils/validate_token');
 
 //Admin apis
+const ipCheck = (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    if (ip && ip === "106.243.97.163") next();
+    else res.status(401).json({ error: "Auth Error from authcheck" });
+};
+router.use(ipCheck);
+
 router.post('/admin/register', validateAdmin.register(), adminController.adminRegister);
 
 router.post('/admin/login', validateAdmin.login(), adminController.adminlogin);

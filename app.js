@@ -48,7 +48,7 @@ i18n.configure({
     defaultLocale: 'en',
 });
 
-app.use('/', indexRouter);
+app.use('/admp', indexRouter);
 app.use('/user-api', apisRouter);
 app.use('/admin-api', apisAdminRouter);
 
@@ -65,7 +65,8 @@ app.use('/talkenNft', express.static('uploads'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+    // next(createError(404));
+    res.status(404).json({ error: "Page Not Found" });
 });
 
 // error handler

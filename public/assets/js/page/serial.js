@@ -255,7 +255,7 @@ const View = {
                 $('#data-table tfoot input[type="checkbox"]').prop('checked', true);
             }
             // check no data
-            $('.dataTables_empty').html(`<img class="" style="width: 50%" src="assets/images/artboard_empty.jpeg" alt="Logo">`)
+            $('.dataTables_empty').html(`<img class="" style="width: 50%" src="/assets/images/artboard_empty.jpeg" alt="Logo">`)
         },
         getRowIDWithTitle(data){
             for (var i = 0; i < View.table.__rows.length; i++) {
