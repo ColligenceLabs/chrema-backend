@@ -605,6 +605,7 @@ const View = {
                         var price  = $(`${resource}`).find('#price').val();
                         var category  = JSON.stringify($(`${resource}`).find('.data-category').val());
                         var company_id  = $(`${resource}`).find('#company').val();
+                        var external_url = $(`${resource}`).find('#external_url').val();
 
                         if (files.length <= 0) { $('.js-errors').append(`<li class="error">Please select a file.</li>`); onPushData = false }
                         if (name_product == '') { $('.js-errors').append(`<li class="error">Name is required</li>`); onPushData = false }
@@ -614,7 +615,7 @@ const View = {
                         if (price == '') { $('.js-errors').append(`<li class="error">Price is required</li>`); onPushData = false }
                         if (category == '') { $('.js-errors').append(`<li class="error">Category is required</li>`); onPushData = false }
                         if (company_id == '') { $('.js-errors').append(`<li class="error">Company is required</li>`); onPushData = false }
-
+                        console.log("test?",external_url);
                         if (onPushData) {
                             fd.append('name', $('#name').val());
                             fd.append('thumbnail', thumbnail[0]);
@@ -626,6 +627,7 @@ const View = {
                             fd.append('price', $('#price').val());
                             fd.append('category', JSON.stringify($(`${resource}`).find('.data-category').val()));
                             fd.append('company_id', $('#company').val());
+                            fd.append('external_url', $('#external_url').val());
                             callback(fd);
                         }
                     }
@@ -662,7 +664,11 @@ const View = {
                             <div class="form-group">
                                 <label for="company">Company:</label>
                                 <select name="" class="form-control data-company" id="company"> </select>
-                            </div>                         
+                            </div>
+                            <div class="form-group">
+                                <label for="external_url">External URL:</label>
+                                <input type="text" class="form-control data-external_url" id="external_url">
+                            </div>                                                     
                             <div class="form-group">
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" class="form-control data-quantity" id="quantity" min="0">
@@ -698,6 +704,7 @@ const View = {
                 $(`${this.resource}`).find('.data-description').val(data.description);
                 $(`${this.resource}`).find('.data-metadata').val(data.metadata.name ?? '-');
                 $(`${this.resource}`).find('.data-quantity').val(data.quantity);
+                $(`${this.resource}`).find('.data-external_url').val(data.metadata.external_url);
                 $(`${this.resource}`).find('.data-company').val(data.company_id.name);
                 $(`${this.resource}`).find('.data-rarity').val(data.rarity);
                 $(`${this.resource}`).find('.data-price').val(data.price);
@@ -735,6 +742,11 @@ const View = {
                         <label for="quantity">Quantity:</label>
                         <input type="text" class="form-control data-quantity" id="quantity" disabled>
                     </div>
+
+                    <div class="form-group">
+                        <label for="external_url">External URL:</label>
+                        <input type="text" class="form-control data-external_url" id="external_url" disabled>
+                    </div>                    
 
                     <div class="form-group">
                         <label for="company">Company:</label>
