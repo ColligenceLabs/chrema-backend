@@ -127,7 +127,7 @@ module.exports = {
                         total_minted: "",
                         external_url: req.body.external_url,
                         attributes: [],
-                        minted_by: "Talken (https://talken.io)",
+                        minted_by: "Talken",
                         thumbnail: "",
                     },
                     company_id: req.body.company_id,
