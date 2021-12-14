@@ -398,11 +398,9 @@ module.exports = {
             nfts = JSON.parse(JSON.stringify(nfts));
             for (let i = 0; i < ownserSerials.length; i++) {
                 for (let j = 0; j < nfts.length; j++) {
-                    console.log("????",nfts[0]._id);
-                    console.log("!!!!",ownserSerials[i].nft_id._id)
-                   if (nfts[j].id == ownserSerials[i].nft_id) {
+                   if (nfts[j].id == ownserSerials[i].nft_id._id) {
                        console.log("yes");
-                       nfts[j].own_serial_id = ownserSerials[i]._id;
+                       nfts[j].own_serial_id = ownserSerials[i].nft_id._id;
                    }
                 }
             }
