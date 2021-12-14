@@ -400,6 +400,7 @@ module.exports = {
                 for (let j = 0; j < nfts.length; j++) {
                     console.log(nfts[j]);
                    if (nfts[j]._id == ownserSerials[i].nft_id) {
+                       console.log("yes");
                        nfts[j].own_serial_id = ownserSerials[i]._id;
                    }
                 }
