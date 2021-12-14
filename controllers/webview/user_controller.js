@@ -247,6 +247,7 @@ module.exports = {
                     for (let z = 0; z < ownserSerials.length; z++) {
                         if (ownserSerials[z].nft_id._id == nfts[j]._id) {
                             collected = true;
+                            own_serial_id = ownserSerials[z]._id;
                             break;
                         }
                     }
