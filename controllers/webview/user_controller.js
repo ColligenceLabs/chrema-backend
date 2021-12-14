@@ -234,7 +234,7 @@ module.exports = {
             const responseHeaders = getHeaders(count, page, perPage);
 
             let collections = await collectionRepository.findAll(inputData, {page, perPage});
-
+            let own_serial_id ="";
             collections = JSON.parse(JSON.stringify(collections));
 
             for (let i = 0; i < collections.length; i++) {
@@ -253,6 +253,7 @@ module.exports = {
                     }
 
                     nfts[j].collected = collected;
+                    nfts[j].own_serial_id = own_serial_id;
                 }
 
                 collections[i].nfts = nfts;
