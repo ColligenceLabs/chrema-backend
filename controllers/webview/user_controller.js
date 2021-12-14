@@ -396,9 +396,9 @@ module.exports = {
             };
             let nfts = await nftRepository.findAll(inputData, {page, perPage});
             nfts = JSON.parse(JSON.stringify(nfts));
-            console.log("test",nfts);
             for (let i = 0; i < ownserSerials.length; i++) {
                 for (let j = 0; j < nfts.length; j++) {
+                    console.log(nfts[j]);
                    if (nfts[j]._id == ownserSerials[i].nft_id) {
                        nfts[j].own_serial_id = ownserSerials[i]._id;
                    }
