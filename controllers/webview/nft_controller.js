@@ -2,6 +2,7 @@ var {validationResult} = require('express-validator');
 var nftRepository = require('../../repositories/nft_repository');
 var serialRepository = require('../../repositories/serial_repository');
 var companyRepository = require('../../repositories/company_repository');
+var txRepository = require('../../repositories/transaction_repository');
 const {addMongooseParam, getHeaders, checkTimeCurrent} = require('../../utils/helper');
 const userRepository = require('../../repositories/user_repository');
 var ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
@@ -294,14 +295,20 @@ module.exports = {
                         collected = true;
                         transfered = false;
                         ownTokenId = parseInt(serial.token_id,16).toString();
+                   } else if (serial.transfered == consts.TRANSFERED.TRANSFERED) {
+                        collected = true;
+                        transfered = true;
+                        ownTokenId = parseInt(serial.token_id,16).toString();
                    }
                 }
             }
+            const tx = await txRepository.findOneTx({serial_id: serialId});
             nft.serialId = serial;
             nft.collected = collected;
             nft.transfered = transfered;
             nft.ownTokenId = ownTokenId;
             nft.onSale = onSale;
+            nft.transaction = tx;
 
             return handlerSuccess(req, res, nft);
         } catch (error) {
