@@ -13,6 +13,7 @@ var consts = require('../../utils/consts');
 var nftBlockchain = require('../blockchain/nft_controller');
 var {v4: uuidv4} = require('uuid');
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
+var _ = require('lodash');
 
 module.exports = {
     classname: 'UserController',
@@ -205,7 +206,7 @@ module.exports = {
             };
 
             let ownserSerials = await serialRepository.findAllSerialWithCondition(findParams);
-
+            let ownserSerialsCount = _.countBy(ownserSerials, function(item) { return item.nft_id._id; });
             let collectionList = [];
 
             for (let i = 0; i < ownserSerials.length; i++) {
@@ -251,7 +252,7 @@ module.exports = {
                             break;
                         }
                     }
-
+                    nfts[j].serials_count = ownserSerialsCount[nfts[j]._id] || 1;
                     nfts[j].collected = collected;
                     nfts[j].own_serial_id = own_serial_id;
                 }
