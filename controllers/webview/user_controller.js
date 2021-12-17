@@ -50,9 +50,13 @@ module.exports = {
             });
             console.log("serial::::",serial);
             if (!serial) {
+                console.log("serialError::::");
                 return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
             }
 
+            console.log("beforeReward::::");
+            console.log(consts.REWARD_TYPE.BUY);
+            console.log(consts.REWARD_STATUS.ACTIVE);
             let findReward = {
                 remaining_amount: {$gt: 0},
                 type: consts.REWARD_TYPE.BUY,
