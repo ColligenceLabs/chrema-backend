@@ -30,14 +30,13 @@ module.exports = {
 
             // const user = await userRepository.findByUserAddress(req.body.user_address);
             const user = await userRepository.findByUid(req.body.uid);
-            console.log("user::::",user);
 
             if (!user) {
                 return handlerError(req, res, ErrorMessage.USER_ADDRESS_IS_INVALID);
             }
 
             let adminAddress = await adminRepository.getAdminAddress();
-            console.log("adminAddress::::",adminAddress);
+
             const admin = await adminRepository.findByAdminAddress(adminAddress[0]);
             if (!admin) {
                 return handlerError(req, res, ErrorMessage.ADMIN_ADDRESS_IS_INVALID);
@@ -48,22 +47,19 @@ module.exports = {
                 owner_id: null,
                 nft_id: req.body.nft_id,
             });
-            console.log("serial::::",serial);
+
             if (!serial) {
-                console.log("serialError::::");
                 return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
             }
 
-            console.log("beforeReward::::");
-            console.log(consts.REWARD_TYPE.BUY);
-            console.log(consts.REWARD_STATUS.ACTIVE);
             let findReward = {
                 remaining_amount: {$gt: 0},
                 type: consts.REWARD_TYPE.BUY,
                 status: consts.REWARD_STATUS.ACTIVE,
             };
+
             let reward = await rewardRepository.findByParam(findReward);
-            console.log("reward::::",reward);
+
             if (!reward.length) {
                 reward = [
                     {
@@ -103,7 +99,6 @@ module.exports = {
             };
 
             const tx = await txRepository.createTx(newTx);
-            console.log("tx::::",tx);
             if (!tx) {
                 return handlerError(req, res, ErrorMessage.CREATE_TX_IS_NOT_SUCCESS);
             }
@@ -113,7 +108,6 @@ module.exports = {
                 status: consts.SERIAL_STATUS.ACTIVE,
             });
             let quantitySelling = calcQuantitySellingNumber(serialList);
-            console.log("quantitySelling::::",quantitySelling);
             await nftRepository.update(req.body.nft_id, {
                 quantity_selling: quantitySelling,
             });
@@ -406,7 +400,7 @@ module.exports = {
             for (let i = 0; i < ownserSerials.length; i++) {
                 for (let j = 0; j < nfts.length; j++) {
                    if (nfts[j]._id == ownserSerials[i].nft_id._id) {
-                       console.log("yes");
+                    //    console.log("yes");
                        nfts[j].own_serial_id = ownserSerials[i]._id;
                    }
                 }
