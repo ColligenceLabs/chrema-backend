@@ -62,9 +62,8 @@ module.exports = {
                 type: consts.REWARD_TYPE.BUY,
                 status: consts.REWARD_STATUS.ACTIVE,
             };
-            console.log("reward::::",reward);
             let reward = await rewardRepository.findByParam(findReward);
-
+            console.log("reward::::",reward);
             if (!reward.length) {
                 reward = [
                     {
