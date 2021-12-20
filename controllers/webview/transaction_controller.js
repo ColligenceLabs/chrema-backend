@@ -11,8 +11,8 @@ module.exports = {
     classname: 'TransactionController',
     async history(req, res, next) {
         try {
-            let userAddress = req.query.user_address;
-            let user = await userRepository.findByUserAddress(userAddress);
+            let uid = req.query.uid;
+            let user = await userRepository.findByUid(uid);
             let adminIds = await adminRepository.getAdminIds();
 
             if (!user) {
