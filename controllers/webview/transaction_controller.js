@@ -23,7 +23,7 @@ module.exports = {
                 seller: {$in: adminIds},
                 buyer: ownerId,
                 status: {
-                    $in: [consts.TRANSACTION_STATUS.SUCCESS, consts.TRANSACTION_STATUS.PROCESSING],
+                    $in: [consts.TRANSACTION_STATUS.SUCCESS, consts.TRANSACTION_STATUS.PROCESSING, consts.TRANSACTION_STATUS.ERROR],
                 },
             });
 
