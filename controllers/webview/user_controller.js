@@ -27,7 +27,7 @@ module.exports = {
             if (ObjectID.isValid(req.body.nft_id) === false) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
-
+            console.log("req.body",req.body);
             // const user = await userRepository.findByUserAddress(req.body.user_address);
             const user = await userRepository.findByUid(req.body.uid);
 
@@ -83,7 +83,7 @@ module.exports = {
             await serialRepository.update(
                 {_id: serial._id},
                 {owner_id: user._id},
-                {tranfered: consts.TRANSFERED.NOT_TRANSFER},
+                {transfered: consts.TRANSFERED.NOT_TRANSFER},
             );
 
             const newTx = {
@@ -96,6 +96,7 @@ module.exports = {
                 // type: type,
                 date: Date.now(),
                 status: consts.TRANSACTION_STATUS.PROCESSING,
+                iap_info: req.body.nativeResponse
             };
 
             const tx = await txRepository.createTx(newTx);

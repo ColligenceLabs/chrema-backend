@@ -33,6 +33,10 @@ const TransactionSchema = new Schema(
             type: Number,
             default: 0,
         },
+        iap_info: {
+            type: String,
+            default: null
+        },
         tp_amount: {
             type: Number,
             default: 0,
