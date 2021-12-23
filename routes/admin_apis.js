@@ -11,6 +11,7 @@ var userController = require('../controllers/admin/user_controller');
 var companyController = require('../controllers/admin/company_controller');
 var rewardController = require('../controllers/admin/reward_controller');
 var statisticsController = require('../controllers/admin/statistics_controller');
+var historyController = require('../controllers/admin/history_controller');
 
 // Require request validators
 var validateAdmin = require('../requests/validate_admin');
@@ -117,6 +118,17 @@ router.put('/transaction/update/:id', isAuth.validateToken, transactionControlle
 router.delete('/transaction/delete/:id', isAuth.validateToken, transactionController.deleteTx);
 
 router.get('/transaction/detail/:id', isAuth.validateToken, transactionController.getDetailTx);
+
+//History apis
+router.post('/history/create', isAuth.validateToken, historyController.createTx);
+
+router.get('/history/indexs', isAuth.validateToken, historyController.indexTxs);
+
+router.put('/history/update/:id', isAuth.validateToken, historyController.updateTx);
+
+router.delete('/history/delete/:id', isAuth.validateToken, historyController.deleteTx);
+
+router.get('/history/detail/:id', isAuth.validateToken, historyController.getDetailTx);
 
 //User apis
 router.get('/user/indexs', isAuth.validateToken, userController.indexUsers);

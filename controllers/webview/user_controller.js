@@ -3,6 +3,7 @@ var serialRepository = require('../../repositories/serial_repository');
 var nftRepository = require('../../repositories/nft_repository');
 var collectionRepository = require('../../repositories/collection_repository');
 var txRepository = require('../../repositories/transaction_repository');
+var historyRepository = require('../../repositories/history_repository');
 const userRepository = require('../../repositories/user_repository');
 var rewardRepository = require('../../repositories/reward_repository');
 const adminRepository = require('../../repositories/admin_repository');
@@ -27,7 +28,6 @@ module.exports = {
             if (ObjectID.isValid(req.body.nft_id) === false) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
-            console.log("req.body",req.body);
             // const user = await userRepository.findByUserAddress(req.body.user_address);
             const user = await userRepository.findByUid(req.body.uid);
 
@@ -86,6 +86,7 @@ module.exports = {
                 {transfered: consts.TRANSFERED.NOT_TRANSFER},
             );
 
+            let memo = serial.nft_id.price > 0 ? "Payment" : "NFT Airdrop";
             const newTx = {
                 serial_id: serial._id,
                 seller: admin.id,
@@ -96,12 +97,17 @@ module.exports = {
                 // type: type,
                 date: Date.now(),
                 status: consts.TRANSACTION_STATUS.PROCESSING,
-                iap_info: req.body.nativeResponse
+                iap_info: req.body.nativeResponse,
+                memo: memo,
             };
 
             const tx = await txRepository.createTx(newTx);
             if (!tx) {
                 return handlerError(req, res, ErrorMessage.CREATE_TX_IS_NOT_SUCCESS);
+            }
+            const history = await historyRepository.createTx(newTx);
+            if (!history) {
+                return handlerError(req, res, ErrorMessage.CREATE_HISTORY_IS_NOT_SUCCESS);
             }
 
             let serialList = await serialRepository.findAllSerialWithCondition({
@@ -177,14 +183,20 @@ module.exports = {
             // Update owner of serial
             if (transfer.status === 200) {
                 tx.tx_id = transfer.result.transactionHash;
+                tx.date = Date.now();
+                tx.memo = "Wallet Transfer";
                 await tx.save();
+                await historyRepository.createTx(tx);
                 return handlerSuccess(req, res, {transaction: transfer.result});
             }
 
             // Update status of transaction to ERROR
             if (transfer.status !== 200) {
                 tx.status = consts.TRANSACTION_STATUS.ERROR;
+                tx.date = Date.now();
+                tx.memo = "transaction Error";
                 await tx.save();
+                await historyRepository.createTx(tx);
                 return handlerError(req, res, {transaction: transfer.error});
             }
         } catch (error) {

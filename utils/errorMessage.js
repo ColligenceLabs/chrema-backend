@@ -35,6 +35,12 @@ exports.ErrorMessage = {
     UPDATE_TX_IS_NOT_SUCCESS: 'Update transaction is not success!',
     DELETE_TX_IS_NOT_SUCCESS: 'Delete transaction is not success!',
 
+    //history error
+    CREATE_HISTORY_IS_NOT_SUCCESS: 'Create history is not success!',
+    HISTORY_IS_NOT_FOUND: 'History is not found!',
+    UPDATE_HISTORY_IS_NOT_SUCCESS: 'Update history is not success!',
+    DELETE_HISTORY_IS_NOT_SUCCESS: 'Delete history is not success!',
+
     //NFT error
     CREATE_NFT_IS_NOT_SUCCESS: 'Create nft is not success!',
     NFT_IS_NOT_FOUND: 'Nft is not found!',

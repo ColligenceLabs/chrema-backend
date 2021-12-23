@@ -9,4 +9,5 @@ module.exports = {
     RewardModel: require('./reward_model'),
     StatisticsModel: require('./statistics_model'),
     ListenerModel: require('./listener_model'),
+    HistoryModel: require('./history_model'),
 };
