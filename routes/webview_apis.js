@@ -9,6 +9,7 @@ var transactionWebViewController = require('../controllers/webview/transaction_c
 var transactionAdminController = require('../controllers/admin/transaction_controller');
 var nftWebViewController = require('../controllers/webview/nft_controller');
 var companyWebViewController = require('../controllers/admin/company_controller');
+var historyWebViewController = require('../controllers/webview/history_controller');
 
 // Require request validators
 var validateNft = require('../requests/validate_webapp');
@@ -28,6 +29,9 @@ router.get('/user/nft/my-collection', userController.myNFTs);
 router.get('/transaction/history', transactionWebViewController.history);
 
 router.get('/transaction/detail/:id', transactionAdminController.getDetailTx);
+
+//History apis
+router.get('/history', historyWebViewController.history);
 
 //NFTs apis
 router.get('/nft/detail/:id', nftWebViewController.getDetailNft);

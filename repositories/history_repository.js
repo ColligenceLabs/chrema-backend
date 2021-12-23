@@ -154,7 +154,7 @@ module.exports = {
     getTxBybuyer: async function (input) {
         try {
             let txs = await HistoryModel.find(input)
-                .sort({createdAt: -1, _id: 1})
+                .sort({updatedAt: -1, _id: 1})
                 .populate('serial_id')
                 .populate({path: 'seller', select: 'admin_address'})
                 .populate({path: 'buyer', select: 'uid'});
