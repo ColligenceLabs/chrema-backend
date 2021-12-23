@@ -86,7 +86,7 @@ module.exports = {
                 {transfered: consts.TRANSFERED.NOT_TRANSFER},
             );
 
-            let memo = serial.nft_id.price > 0 ? "Payment" : "NFT Airdrop";
+            let memo = serial.nft_id.price > 0 ? consts.HISTORY_MEMO.PAYMENT : consts.HISTORY_MEMO.NFT_AIRDROP;
             const newTx = {
                 serial_id: serial._id,
                 seller: admin.id,
@@ -189,7 +189,7 @@ module.exports = {
                 
                 // create new history
                 let hs = JSON.parse(JSON.stringify(tx));
-                hs.memo = "Wallet Transfer";
+                hs.memo = consts.HISTORY_MEMO.WALLET_TRANSFER;
                 hs.status = consts.TRANSACTION_STATUS.SUCCESS;
                 await historyRepository.createTx(hs);
 
@@ -205,7 +205,7 @@ module.exports = {
 
                 // create new history                
                 let hs = JSON.parse(JSON.stringify(tx));
-                hs.memo = "transfer ERROR";
+                hs.memo = consts.HISTORY_MEMO.TRANSFER_ERROR;
                 await historyRepository.createTx(hs);
                 return handlerError(req, res, {transaction: transfer.error});
             }

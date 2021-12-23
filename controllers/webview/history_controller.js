@@ -12,6 +12,7 @@ module.exports = {
     async history(req, res, next) {
         try {
             let uid = req.query.uid;
+            let serialId = req.query.serialId;
             let user = await userRepository.findByUid(uid);
             let adminIds = await adminRepository.getAdminIds();
 
@@ -22,6 +23,7 @@ module.exports = {
             let txList = await historyRepository.getTxBybuyer({
                 seller: {$in: adminIds},
                 buyer: ownerId,
+                serial_id:serialId,
                 status: {
                     $in: [consts.TRANSACTION_STATUS.SUCCESS, consts.TRANSACTION_STATUS.PROCESSING, consts.TRANSACTION_STATUS.ERROR],
                 },

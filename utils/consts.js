@@ -165,4 +165,10 @@ module.exports = {
             title: 'Instrumental',
         },
     },
+    HISTORY_MEMO: {
+        PAYMENT: 'Payment',
+        NFT_AIRDROP: 'NFT Airdrop',
+        WALLET_TRANSFER: 'Wallet Transfer',
+        TRANSFER_ERROR: 'Transfer Error',
+    }
 };
