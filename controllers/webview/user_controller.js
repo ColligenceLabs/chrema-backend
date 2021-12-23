@@ -190,6 +190,7 @@ module.exports = {
                 // create new history
                 let hs = JSON.parse(JSON.stringify(tx));
                 hs.memo = "Wallet Transfer";
+                hs.status = consts.TRANSACTION_STATUS.SUCCESS;
                 await historyRepository.createTx(hs);
 
                 return handlerSuccess(req, res, {transaction: transfer.result});
