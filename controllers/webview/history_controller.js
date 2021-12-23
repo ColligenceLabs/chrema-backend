@@ -5,6 +5,7 @@ var nftRepository = require('../../repositories/nft_repository');
 var ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 var consts = require('../../utils/consts');
 const logger = require('../../utils/logger');
+const ObjectId = require('mongodb').ObjectID;
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 
 module.exports = {
