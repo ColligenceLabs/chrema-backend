@@ -184,10 +184,9 @@ module.exports = {
             if (transfer.status === 200) {
                 tx.tx_id = transfer.result.transactionHash;
                 tx.date = Date.now();
-                tx.memo = "Wallet Transfer";
                 await tx.save();
-                console.log("tx?",tx);
                 let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = "Wallet Transfer";
                 await historyRepository.createTx(hs);
                 return handlerSuccess(req, res, {transaction: transfer.result});
             }
@@ -196,10 +195,9 @@ module.exports = {
             if (transfer.status !== 200) {
                 tx.status = consts.TRANSACTION_STATUS.ERROR;
                 tx.date = Date.now();
-                tx.memo = "transaction Error";
                 await tx.save();
-                console.log("tx?",tx);
                 let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = "transfer ERROR";
                 await historyRepository.createTx(hs);
                 return handlerError(req, res, {transaction: transfer.error});
             }
