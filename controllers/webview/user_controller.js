@@ -186,7 +186,9 @@ module.exports = {
                 tx.date = Date.now();
                 tx.memo = "Wallet Transfer";
                 await tx.save();
-                await historyRepository.createTx(tx);
+                console.log("tx?",tx);
+                let hs = JSON.parse(JSON.stringify(tx));
+                await historyRepository.createTx(hs);
                 return handlerSuccess(req, res, {transaction: transfer.result});
             }
 
@@ -196,7 +198,9 @@ module.exports = {
                 tx.date = Date.now();
                 tx.memo = "transaction Error";
                 await tx.save();
-                await historyRepository.createTx(tx);
+                console.log("tx?",tx);
+                let hs = JSON.parse(JSON.stringify(tx));
+                await historyRepository.createTx(hs);
                 return handlerError(req, res, {transaction: transfer.error});
             }
         } catch (error) {
