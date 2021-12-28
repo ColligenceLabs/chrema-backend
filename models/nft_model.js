@@ -64,7 +64,7 @@ const NftSchema = new Schema(
             default: null,
         },
         contract_id: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: 'Contract',
         },
         start_date: {

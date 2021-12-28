@@ -50,7 +50,7 @@ const TransactionSchema = new Schema(
             default: TRANSACTION_STATUS.PENDING,
         },
         contract_id: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: 'Contract',
         },
         createdAt: {

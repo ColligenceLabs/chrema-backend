@@ -20,7 +20,7 @@ const CompanySchema = new Schema(
             default: COMPANY_STATUS.ACTIVE,
         },
         contract_id: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: 'Contract',
         },
         createdAt: {
