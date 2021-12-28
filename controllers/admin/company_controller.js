@@ -16,28 +16,24 @@ module.exports = {
 
     createCompany: async (req, res, next) => {
         try {
-            console.log("111111111111::::");
             var errors = validationResult(req);
             if (!errors.isEmpty()) {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }                  
-            console.log("222222222222222::::");
+
             var company = await companyRepository.findByName(req.body.name);
             if (company.length) {
                 console.log(ErrorMessage.COMPANY_IS_EXISTED);
                 return handlerError(req, res, ErrorMessage.COMPANY_IS_EXISTED);
             }
-            console.log("333333333333333::::");
             //upload file
             await companyUploadRepository(req, res);
             let my_file = req.file;   
-            console.log("44444444444444444444::::");
+            
             //find contract
             // TODO: 추후 수정할 수 도있음. DB에 직접 contract를 추가하도록 한다.
-            console.log("createCompany::::");
             let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
-            console.log("contract::::",contract);
             let contractId = new ObjectID(contract._id);
             var newCompany = {
                 name: req.body.name,
