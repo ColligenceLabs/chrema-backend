@@ -1,6 +1,6 @@
 const util = require('util');
 const multer = require('multer');
-const consts = require('../../utils/consts')
+const consts = require('../utils/consts')
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
