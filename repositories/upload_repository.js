@@ -4,7 +4,7 @@ const consts = require('../utils/consts')
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.cwd() + consts.UPLOAD_PATH);
+        cb(null, process.cwd() + '/uploads/' + consts.NFT_CONTRACT_ADDR);
     },
     filename: (req, file, cb) => {
         var uniqueSuffix = Date.now() + '-';
