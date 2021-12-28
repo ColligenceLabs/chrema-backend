@@ -1,9 +1,10 @@
 const util = require('util');
 const multer = require('multer');
+const consts = require('../../utils/consts')
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.cwd() + '/uploads/');
+        cb(null, process.cwd() + consts.UPLOAD_PATH);
     },
     filename: (req, file, cb) => {
         var uniqueSuffix = Date.now() + '-';
