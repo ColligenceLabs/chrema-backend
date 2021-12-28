@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const web3 = new Web3(process.env.PROVIDER_URL);
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
 const fs = require('fs');
+var ObjectID = require('mongodb').ObjectID;
 var nftRepository = require('../../repositories/nft_repository');
 var serialRepository = require('../../repositories/serial_repository');
 var txRepository = require('../../repositories/transaction_repository');
@@ -70,12 +71,14 @@ async function getLastEvents() {
                                     console.log('transactionHash', result[i].transactionHash);
 
                                     // save tokenID
+                                    // TODO: 2021.12.28 추후 수정할 수 도있음. 지금은 DB에 직접 contract를 추가하도록 한다.
                                     let contract = await contractRepository.findByContractAddress(contractAddress);
+                                    let contractId = new ObjectID(contract._id);
                                     let listener_save = {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.MINT,
-                                        contract_id: contract._id,
+                                        contract_id: contractId,
                                     };
 
                                     await listenerRepository.create(listener_save);

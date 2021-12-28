@@ -105,7 +105,9 @@ module.exports = {
             }
 
             //check contract
+            // TODO: 2021.12.28 추후 수정할 수 도 있음. 지금은 DB에 직접 contract를 추가하도록 한다.
             let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
+            let contractId = new ObjectID(contract._id);
 
             let quantity = req.body.quantity;
             let tokenIds = [];
@@ -148,7 +150,7 @@ module.exports = {
                     ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                     ...(req.body?.description && {description: req.body.description}),
                     ...(req.body?.rarity && {rarity: req.body.rarity}),
-                    contract_id: contract._id,
+                    contract_id: contractId,
                 };
     
                 let metadata_ipfs = newNft.metadata;

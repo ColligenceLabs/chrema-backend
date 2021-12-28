@@ -32,12 +32,14 @@ module.exports = {
             let my_file = req.file;   
             
             //find contract
+            // TODO: 추후 수정할 수 도있음. DB에 직접 contract를 추가하도록 한다.
             let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
+            let contractId = new ObjectID(contract._id);
             var newCompany = {
                 name: req.body.name,
                 description: req.body.description,
                 image: ALT_URL + 'company/' + my_file.filename,
-                contract_id: contract._id,
+                contract_id: contractId,
             };
 
             let result = await companyRepository.create(newCompany);

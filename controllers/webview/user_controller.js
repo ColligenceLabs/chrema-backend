@@ -86,7 +86,11 @@ module.exports = {
                 {owner_id: user._id},
                 {transfered: consts.TRANSFERED.NOT_TRANSFER},
             );
+            //find contract
+            // TODO: 2021.12.28 추후 수정할 수 도있음. 지금은 DB에 직접 contract를 추가하도록 한다.
             let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
+            let contractId = new ObjectID(contract._id);
+
             let memo = serial.nft_id.price > 0 ? consts.HISTORY_MEMO.PAYMENT : consts.HISTORY_MEMO.NFT_AIRDROP;
             const newTx = {
                 serial_id: serial._id,
@@ -100,7 +104,7 @@ module.exports = {
                 status: consts.TRANSACTION_STATUS.PROCESSING,
                 iap_info: req.body.nativeResponse,
                 memo: memo,
-                contract_id: contract._id
+                contract_id: contractId
             };
 
             const tx = await txRepository.createTx(newTx);
