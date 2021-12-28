@@ -1,6 +1,7 @@
 const companyRepository = require('../../repositories/company_repository');
 const companyUploadRepository = require('../../repositories/company_upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
+const contractRepository = require('../../repositories/contract_repository');
 const {validationResult} = require('express-validator');
 const logger = require('../../utils/logger');
 const {addMongooseParam, getHeaders} = require('../../utils/helper');
@@ -28,12 +29,15 @@ module.exports = {
             }
             //upload file
             await companyUploadRepository(req, res);
-            let my_file = req.file;    
-
+            let my_file = req.file;   
+            
+            //find contract
+            let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
             var newCompany = {
                 name: req.body.name,
                 description: req.body.description,
                 image: ALT_URL + 'company/' + my_file.filename,
+                contract_id: contract._id,
             };
 
             let result = await companyRepository.create(newCompany);

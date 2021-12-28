@@ -9,6 +9,7 @@ const nftBlockchain = require('../blockchain/nft_controller');
 const companyRepository = require('../../repositories/company_repository');
 const uploadRepository = require('../../repositories/upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
+const contractRepository = require('../../repositories/contract_repository');
 const consts = require('../../utils/consts');
 const fs = require('fs');
 
@@ -103,6 +104,9 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
             }
 
+            //check contract
+            let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
+
             let quantity = req.body.quantity;
             let tokenIds = [];
             let decimalTokenIds = [];
@@ -144,6 +148,7 @@ module.exports = {
                     ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                     ...(req.body?.description && {description: req.body.description}),
                     ...(req.body?.rarity && {rarity: req.body.rarity}),
+                    contract_id: contract._id,
                 };
     
                 let metadata_ipfs = newNft.metadata;

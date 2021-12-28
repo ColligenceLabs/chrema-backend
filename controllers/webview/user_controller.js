@@ -4,6 +4,7 @@ var nftRepository = require('../../repositories/nft_repository');
 var collectionRepository = require('../../repositories/collection_repository');
 var txRepository = require('../../repositories/transaction_repository');
 var historyRepository = require('../../repositories/history_repository');
+var contractRepository = require('../../repositories/contract_repository');
 const userRepository = require('../../repositories/user_repository');
 var rewardRepository = require('../../repositories/reward_repository');
 const adminRepository = require('../../repositories/admin_repository');
@@ -85,7 +86,7 @@ module.exports = {
                 {owner_id: user._id},
                 {transfered: consts.TRANSFERED.NOT_TRANSFER},
             );
-
+            let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
             let memo = serial.nft_id.price > 0 ? consts.HISTORY_MEMO.PAYMENT : consts.HISTORY_MEMO.NFT_AIRDROP;
             const newTx = {
                 serial_id: serial._id,
@@ -99,6 +100,7 @@ module.exports = {
                 status: consts.TRANSACTION_STATUS.PROCESSING,
                 iap_info: req.body.nativeResponse,
                 memo: memo,
+                contract_id: contract._id
             };
 
             const tx = await txRepository.createTx(newTx);

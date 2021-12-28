@@ -63,6 +63,10 @@ const NftSchema = new Schema(
             required: false,
             default: null,
         },
+        contract_id: {
+            type: String,
+            ref: 'Contract',
+        },
         start_date: {
             type: Date,
             default: null,

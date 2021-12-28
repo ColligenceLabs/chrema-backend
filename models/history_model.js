@@ -53,6 +53,10 @@ const HistorySchema = new Schema(
             type: String,
             default: null,
         },
+        contract_id: {
+            type: String,
+            ref: 'Contract',
+        },
         createdAt: {
             type: Date,
             default: Date.now,

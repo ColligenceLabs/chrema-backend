@@ -6,6 +6,7 @@ var nftRepository = require('../../repositories/nft_repository');
 var serialRepository = require('../../repositories/serial_repository');
 var txRepository = require('../../repositories/transaction_repository');
 var listenerRepository = require('../../repositories/listener_repository');
+var contractRepository = require('../../repositories/contract_repository');
 var consts = require('../../utils/consts');
 var {calcQuantitySellingNumber} = require('../../utils/helper');
 var lastBlock = 0;
@@ -69,10 +70,12 @@ async function getLastEvents() {
                                     console.log('transactionHash', result[i].transactionHash);
 
                                     // save tokenID
+                                    let contract = await contractRepository.findByContractAddress(contractAddress);
                                     let listener_save = {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.MINT,
+                                        contract_id: contract._id,
                                     };
 
                                     await listenerRepository.create(listener_save);

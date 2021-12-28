@@ -10,4 +10,5 @@ module.exports = {
     StatisticsModel: require('./statistics_model'),
     ListenerModel: require('./listener_model'),
     HistoryModel: require('./history_model'),
+    ContractModel: require('./contract_model'),
 };

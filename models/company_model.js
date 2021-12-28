@@ -19,6 +19,10 @@ const CompanySchema = new Schema(
             enum: getValueInEnum(COMPANY_STATUS),
             default: COMPANY_STATUS.ACTIVE,
         },
+        contract_id: {
+            type: String,
+            ref: 'Contract',
+        },
         createdAt: {
             type: Date,
             default: Date.now,

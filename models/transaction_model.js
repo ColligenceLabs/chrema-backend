@@ -49,6 +49,10 @@ const TransactionSchema = new Schema(
             enum: getValueInEnum(TRANSACTION_STATUS),
             default: TRANSACTION_STATUS.PENDING,
         },
+        contract_id: {
+            type: String,
+            ref: 'Contract',
+        },
         createdAt: {
             type: Date,
             default: Date.now,

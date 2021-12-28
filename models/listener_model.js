@@ -15,6 +15,10 @@ const ListenerSchema = new Schema(
             type: String,
             required: true,
         },
+        contract_id: {
+            type: String,
+            ref: 'Contract',
+        },
         createdAt: {
             type: Date,
             default: Date.now,
