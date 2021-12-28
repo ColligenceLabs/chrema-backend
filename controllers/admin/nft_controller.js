@@ -9,6 +9,7 @@ const nftBlockchain = require('../blockchain/nft_controller');
 const companyRepository = require('../../repositories/company_repository');
 const uploadRepository = require('../../repositories/upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
+const consts = require('../../utils/consts');
 const fs = require('fs');
 
 const {
@@ -70,10 +71,12 @@ module.exports = {
             let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
 
             //rename
-            await imageRename('./uploads/' + imgInput, './uploads/' + renameOutput);
-            //resize
-            if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
-            await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
+            await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
+            
+            // //resize
+            // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
+            // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
+            
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
             //sort with value
@@ -160,7 +163,7 @@ module.exports = {
                     let thumbName = my_thumbnail.filename.split('.');
                     let thumbnailInput = my_thumbnail.filename;
                     let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
-                    await imageRename('./uploads/' + thumbnailInput, './uploads/thumbnail/' + thumbnailOutput);
+                    await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
                     
                     metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
@@ -184,7 +187,7 @@ module.exports = {
                 }
     
                 // write json file
-                await writeJson("./uploads/metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
+                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
 
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();

@@ -101,7 +101,7 @@ module.exports = {
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
                 company_id: req.body.company_id,
-                path: '/talkenNft/cover/' + imgInput,
+                path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
                 ...(req.body?.category && {category: JSON.parse(req.body.category)}),
             };
             let nft_id = JSON.parse(req.body.nft_id);
