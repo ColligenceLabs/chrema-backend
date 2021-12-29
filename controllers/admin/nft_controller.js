@@ -73,13 +73,14 @@ module.exports = {
 
             //rename
             await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
-            
+            console.log("afterimageRename:::::");
             // //resize
             // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
             
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
+            console.log("itemList:::::",itemList);
             //sort with value
             itemList.items.sort(function (a, b) {
                 return (
