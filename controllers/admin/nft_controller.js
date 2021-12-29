@@ -92,14 +92,16 @@ module.exports = {
 
             let tokenIdBlockchain = itemList.items[0].tokenId;
             let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
+            console.log("tokenId:::::",tokenId);
             if (lastTokenId && lastTokenId.length !== 0) {
                 if (tokenId < lastTokenId[0].token_id) {
                     tokenId = parseInt(lastTokenId[0].token_id);
                 }
             }
-
+            console.log("lastTokenId:::::",lastTokenId);
             //check company
             let company = await companyRepository.findById(req.body.company_id);
+            console.log("company:::::",company);
             if (!company) {
                 return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
             }
@@ -115,12 +117,13 @@ module.exports = {
             let newNfts = [];
             let newSerials = [];
             let ipfs_links = [];
-
+            console.log("contractId:::::",contractId);
             for (let i = 0; i < quantity; i++) {
                 let newTokenId = tokenId + 1 + i;
                 tokenIds.push('0x' + newTokenId.toString(16));
                 decimalTokenIds.push(newTokenId.toString());
             }
+            console.log("newTokenId:::::",newTokenId);
             //nft default
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
