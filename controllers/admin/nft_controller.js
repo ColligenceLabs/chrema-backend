@@ -99,7 +99,7 @@ module.exports = {
             });
             // get last tokenId in db
             let lastTokenId = await listenerRepository.findLastTokenId();
-            let tokenIdBlockchain = itemList.items.length === 0 ? "0" : itemList.items[0].tokenId;
+            let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
             let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
             if (lastTokenId && lastTokenId.length !== 0) {
                 if (tokenId < lastTokenId[0].token_id) {
