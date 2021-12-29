@@ -78,6 +78,17 @@ module.exports = {
             // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
             
+            //thumbnail check
+            if (typeof req.files.thumbnail != 'undefined') {
+                let my_thumbnail = req.files.thumbnail[0];
+                let thumbName = my_thumbnail.filename.split('.');
+                let thumbnailInput = my_thumbnail.filename;
+                let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+                await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
+                    
+                metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
+            }     
+                   
             //get all nft from blockchain service
             let itemList = await nftRepository.getItemList();
             //sort with value
@@ -161,17 +172,6 @@ module.exports = {
                 }
                 if (typeof req.files.thumbnail != 'undefined') {
 
-                }
-
-                //thumbnail check
-                if (typeof req.files.thumbnail != 'undefined') {
-                    let my_thumbnail = req.files.thumbnail[0];
-                    let thumbName = my_thumbnail.filename.split('.');
-                    let thumbnailInput = my_thumbnail.filename;
-                    let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
-                    await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
-                    
-                    metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
