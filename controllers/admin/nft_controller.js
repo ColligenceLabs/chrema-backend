@@ -79,9 +79,10 @@ module.exports = {
             // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
             
             //thumbnail check
+            let thumbName = null;
             if (typeof req.files.thumbnail != 'undefined') {
                 let my_thumbnail = req.files.thumbnail[0];
-                let thumbName = my_thumbnail.filename.split('.');
+                thumbName = my_thumbnail.filename.split('.');
                 let thumbnailInput = my_thumbnail.filename;
                 let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
                 await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
