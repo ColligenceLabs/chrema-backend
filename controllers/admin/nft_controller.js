@@ -89,9 +89,11 @@ module.exports = {
                 );
             });
             // get last tokenId in db
+            console.log("1111111111111111111");
             let lastTokenId = await listenerRepository.findLastTokenId();
-
+            console.log("lastTokenId2222222:::::",lastTokenId);
             let tokenIdBlockchain = itemList.items[0].tokenId;
+            console.log("lastTokenId333333333:::::",lastTokenId);
             let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
             console.log("tokenId:::::",tokenId);
             if (lastTokenId && lastTokenId.length !== 0) {
