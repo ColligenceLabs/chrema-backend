@@ -89,19 +89,14 @@ module.exports = {
             });
             // get last tokenId in db
             let lastTokenId = await listenerRepository.findLastTokenId();
-            console.log("111111111111",lastTokenId);
-            console.log("111111111111.5::",itemList);
-            let tokenIdBlockchain = itemList.items.length === 0 ? "1" : itemList.items[0].tokenId;
-            console.log("222222222222222",tokenIdBlockchain,tokenIdBlockchain.replace('0x', ''));
+            let tokenIdBlockchain = itemList.items.length === 0 ? "0" : itemList.items[0].tokenId;
             let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
-            console.log("333333333333333",tokenId);
             if (lastTokenId && lastTokenId.length !== 0) {
                 if (tokenId < lastTokenId[0].token_id) {
                     tokenId = parseInt(lastTokenId[0].token_id);
                 }
             }
 
-            console.log("44444444444444444");
             //check company
             let company = await companyRepository.findById(req.body.company_id);
             if (!company) {
