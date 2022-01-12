@@ -9,6 +9,7 @@ const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {isEmptyObject, validateRouter, _errorFormatter} = require('../../utils/helper');
 const {COMPANY_STATUS, ALT_URL} = require('../../utils/consts');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
+const consts = require('../../utils/consts');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
