@@ -33,8 +33,10 @@ module.exports = {
             let imgName = my_file.filename.split('.');  
             let renameOutput = req.body.name + '.' + imgName[imgName.length -1];
 
+            console.log("my_file?????",my_file);
+            console.log("my_file.name??????",my_file.filename);
             //rename
-            // await imageRename(consts.UPLOAD_PATH + "company/" + my_file.filename, consts.UPLOAD_PATH + "company/" + renameOutput);            
+            await imageRename(consts.UPLOAD_PATH + "company/" + my_file.filename, consts.UPLOAD_PATH + "company/" + renameOutput);            
             
             //find contract
             // TODO: 추후 수정할 수 도있음. DB에 직접 contract를 추가하도록 한다.
