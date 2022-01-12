@@ -35,6 +35,8 @@ module.exports = {
 
             console.log("my_file?????",my_file);
             console.log("my_file.name??????",my_file.filename);
+            console.log("rename arg1",consts.UPLOAD_PATH + "company/" + my_file.filename);
+            console.log("rename arg2",consts.UPLOAD_PATH + "company/" + renameOutput);
             //rename
             await imageRename(consts.UPLOAD_PATH + "company/" + my_file.filename, consts.UPLOAD_PATH + "company/" + renameOutput);            
             
