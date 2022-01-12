@@ -117,54 +117,54 @@ module.exports = {
             value: 'game',
             title: 'Game',
         },
-        KPOP: {
-            value: 'kpop',
-            title: 'Kpop',
-        },
-        POP: {
-            value: 'pop',
-            title: 'Pop',
-        },
-        BALLAD: {
-            value: 'ballad',
-            title: 'Ballad',
-        },
-        USUK: {
-            value: 'usuk',
-            title: 'US-UK',
-        },
-        DANCE: {
-            value: 'dance',
-            title: 'Dance',
-        },
-        DISCO: {
-            value: 'disco',
-            title: 'Disco',
-        },
-        JAZZ: {
-            value: 'jazz',
-            title: 'Jazz',
-        },
-        BLUES: {
-            value: 'blues',
-            title: 'Blues',
-        },
-        HIPHOP: {
-            value: 'hiphop',
-            title: 'Hip hop',
-        },
-        FOLK: {
-            value: 'folk',
-            title: 'Folk',
-        },
-        ROCK: {
-            value: 'rock',
-            title: 'Rock',
-        },
-        INSTRUMENTAL: {
-            value: 'instrumental',
-            title: 'Instrumental',
-        },
+        // KPOP: {
+        //     value: 'kpop',
+        //     title: 'Kpop',
+        // },
+        // POP: {
+        //     value: 'pop',
+        //     title: 'Pop',
+        // },
+        // BALLAD: {
+        //     value: 'ballad',
+        //     title: 'Ballad',
+        // },
+        // USUK: {
+        //     value: 'usuk',
+        //     title: 'US-UK',
+        // },
+        // DANCE: {
+        //     value: 'dance',
+        //     title: 'Dance',
+        // },
+        // DISCO: {
+        //     value: 'disco',
+        //     title: 'Disco',
+        // },
+        // JAZZ: {
+        //     value: 'jazz',
+        //     title: 'Jazz',
+        // },
+        // BLUES: {
+        //     value: 'blues',
+        //     title: 'Blues',
+        // },
+        // HIPHOP: {
+        //     value: 'hiphop',
+        //     title: 'Hip hop',
+        // },
+        // FOLK: {
+        //     value: 'folk',
+        //     title: 'Folk',
+        // },
+        // ROCK: {
+        //     value: 'rock',
+        //     title: 'Rock',
+        // },
+        // INSTRUMENTAL: {
+        //     value: 'instrumental',
+        //     title: 'Instrumental',
+        // },
     },
     HISTORY_MEMO: {
         PAYMENT: 'Payment',
