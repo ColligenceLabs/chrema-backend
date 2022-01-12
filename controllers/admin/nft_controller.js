@@ -44,6 +44,7 @@ module.exports = {
     //                 3. db저장
     //                 4. 민팅
     // TODOS: 대량의 민트 (2000개 이상)를 안정적으로 하는 로직 만들기
+    // TODOS: category 추가하기 (배열로)
 
 
     createNft: async (req, res, next) => {
@@ -149,7 +150,7 @@ module.exports = {
                         thumbnail: "",
                         creator_name: company.name,
                         creator_icon: company.image,
-                        category: "",
+                        category: [],
                     },
                     company_id: req.body.company_id,
                     type: req.body.type * 1,
@@ -167,7 +168,8 @@ module.exports = {
     
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
-                    // metadata_ipfs.category = JSON.parse(req.body.category);
+                    metadata_ipfs.category = JSON.parse(req.body.category);
+                    newNft.metadata.category = JSON.parse(req.body.category);
                 }
                 if (req.body.quantity) {
                     metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
