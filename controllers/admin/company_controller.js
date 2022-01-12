@@ -29,7 +29,12 @@ module.exports = {
             }
             //upload file
             await companyUploadRepository(req, res);
-            let my_file = req.file;   
+            let my_file = req.file;
+            let imgName = my_file.filename.split('.');  
+            let renameOutput = req.body.name + '.' + imgName[imgName.length -1];
+
+            //rename
+            await imageRename(consts.UPLOAD_PATH + "company/" + my_file.filename, consts.UPLOAD_PATH + "company/" + renameOutput);            
             
             //find contract
             // TODO: 추후 수정할 수 도있음. DB에 직접 contract를 추가하도록 한다.
@@ -38,7 +43,7 @@ module.exports = {
             var newCompany = {
                 name: req.body.name,
                 description: req.body.description,
-                image: ALT_URL + 'company/' + my_file.filename,
+                image: ALT_URL + 'company/' + renameOutput,
                 contract_id: contractId,
             };
 
