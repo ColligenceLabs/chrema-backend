@@ -28,7 +28,7 @@ module.exports = {
                 status: NFT_STATUS.ACTIVE,
                 collection_id: null,
                 // start_date: {$lte: new Date()},
-                end_date: {$gt: new Date()},
+                // end_date: {$gt: new Date()},
                 quantity_selling: {$gt: 0},
                 selling_status: {$ne: consts.SELLING_STATUS.STOP},
             };
