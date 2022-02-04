@@ -118,3 +118,8 @@ dist
 
 # last checked block
 lastcheckedblock.conf
+
+# ide
+.idea
+
+logs
