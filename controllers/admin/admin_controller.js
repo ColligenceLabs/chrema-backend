@@ -6,6 +6,7 @@ const {validateRouter, addMongooseParam, getHeaders} = require('../../utils/help
 const logger = require('../../utils/logger');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const bcrypt = require('bcryptjs');
+const {ADMIN_STATUS} = require('../../utils/consts');
 let SALT_WORK_FACTOR = 10;
 
 var ObjectID = require('mongodb').ObjectID;
@@ -25,6 +26,7 @@ module.exports = {
                 full_name: req.body.full_name,
                 email: req.body.email,
                 password: req.body.password,
+                level: req.body.level
             };
 
             let admin = await adminRepository.findByEmail(newAccountAdmin.email);
@@ -56,6 +58,9 @@ module.exports = {
             let admin = await adminRepository.findByEmail(accountAdmin.email);
             if (!admin) {
                 return handlerError(req, res, ErrorMessage.USERNAME_AND_PASSWORD_IS_INCORRECT);
+            }
+            if (admin.status !== ADMIN_STATUS.ACTIVE) {
+                return handlerError(req, res, ErrorMessage.ADMIN_IS_NOT_ACTIVE);
             }
             await admin.comparePassword(accountAdmin.password).then((data) => {
                 comparePassword = data;
