@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const {ADMIN_STATUS} = require('../utils/consts');
 const Schema = mongoose.Schema;
 let SALT_WORK_FACTOR = 10;
 
@@ -30,6 +31,16 @@ const AdminSchema = new Schema(
             type: String,
             default: '',
             // default: '0xc144893e7102a591ac67de1b9e867ae9275b7bf6',
+        },
+        level: {
+            type: String,
+            require: true,
+            trim: true,
+        },
+        status: {
+            type: String,
+            enum: ADMIN_STATUS,
+            default: ADMIN_STATUS.INACTIVE,
         },
         createdAt: {
             type: Date,
