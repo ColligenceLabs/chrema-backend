@@ -12,6 +12,7 @@ var companyController = require('../controllers/admin/company_controller');
 var rewardController = require('../controllers/admin/reward_controller');
 var statisticsController = require('../controllers/admin/statistics_controller');
 var historyController = require('../controllers/admin/history_controller');
+var creatorController = require('../controllers/admin/creator_controller');
 
 // Require request validators
 var validateAdmin = require('../requests/validate_admin');
@@ -22,13 +23,16 @@ var validateReward = require('../requests/validate_reward');
 // Require utils
 var isAuth = require('../utils/validate_token');
 
+var multer  = require('multer');
+var upload  = multer({ dest: './uploads/' });
+
 //Admin apis
 const ipCheck = (req, res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     if (ip && ip === "106.243.97.163") next();
     else res.status(401).json({ error: "Auth Error from authcheck" });
 };
-router.use(ipCheck);
+// router.use(ipCheck);
 
 router.post('/admin/register', validateAdmin.register(), adminController.adminRegister);
 
@@ -153,6 +157,18 @@ router.post('/company/create', isAuth.validateToken, companyController.createCom
 router.put('/company/update/:id', isAuth.validateToken, companyController.updateCompany);
 
 router.delete('/company/delete/:id',isAuth.validateToken, companyController.deleteCompany);
+
+//Creator apis
+router.get('/creator/indexs', isAuth.validateToken, creatorController.indexCreator);
+
+router.get('/creator/detail/:id', isAuth.validateToken, creatorController.getCreatorDetail);
+
+router.post('/creator/create', upload.single('image'), isAuth.validateToken, creatorController.createCreator);
+// router.post('/creator/create', isAuth.validateToken, creatorController.createCreator);
+
+router.put('/creator/update/:id', isAuth.validateToken, creatorController.updateCreator);
+
+router.delete('/creator/delete/:id',isAuth.validateToken, creatorController.deleteCreator);
 
 //Reward apis
 router.get('/reward/indexs', isAuth.validateToken, rewardController.indexRewards);
