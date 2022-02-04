@@ -1,5 +1,6 @@
 exports.ErrorMessage = {
     //auth error
+    ADMIN_IS_NOT_ACTIVE: "Account is not active!",
     USERNAME_AND_PASSWORD_IS_INCORRECT: 'Username and password is incorrect!',
     ACCOUNT_IS_ALREADY_EXISTED: 'Account is already existed!',
     PARAMETER_IS_NOT_ENOUGH: 'Parameter is not enough!',
@@ -71,6 +72,12 @@ exports.ErrorMessage = {
     UPDATE_COMPANY_IS_NOT_SUCCESS: 'Update company is not success!',
     COMPANY_IS_EXISTED: 'Company is existed!',
     CREATE_COMPANY_IS_NOT_SUCCESS: 'Create company is not success!',
+
+    //creator error
+    CREATOR_IS_NOT_FOUND: 'Company is not found!',
+    UPDATE_CREATOR_IS_NOT_SUCCESS: 'Update company is not success!',
+    CREATOR_IS_EXISTED: 'Company is existed!',
+    CREATE_CREATOR_IS_NOT_SUCCESS: 'Create company is not success!',
 
     //reward error
     CREATE_REWARD_IS_NOT_SUCCESS: 'Create reward is not success!',
