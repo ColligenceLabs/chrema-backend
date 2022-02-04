@@ -1,10 +1,12 @@
 const Api = {
     Auth: {},
+    Admin: {},
     User: {},
     Product: {},
     Edition: {},
     Transaction: {},
     Company: {},
+    Creator: {},
     Collection: {},
     Category: {},
     Reward: {},
@@ -57,6 +59,28 @@ const Api = {
     Api.Auth.Detail = (id) => $.ajax({
         url: `/admin-api/admin/detail/${id}`,
         method: 'GET',
+    });
+})();
+
+// Admin
+(() => {
+    Api.Auth.Register = (data) => $.ajax({
+        url: `/admin-api/admin/register`,
+        method: 'POST',
+        'data': JSON.stringify(data),
+        'processData': false,
+        'contentType': 'application/json'
+    });
+    Api.Auth.GetAll = (page, pageSize, filter) => $.ajax({
+        url: `/admin-api/admin/indexs`,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            page: page ?? '1',
+            perPage: pageSize ?? '10',
+            status: filter.status ?? '',
+            address: filter.address ?? '',
+        }
     });
 })();
 
@@ -175,10 +199,7 @@ const Api = {
         'processData': false,
         'contentType': 'application/json'
     });
-
-
 })();
-
 
 // Edition
 (() => {
@@ -278,11 +299,35 @@ const Api = {
         url: `/admin-api/company/delete/${id}`,
         method: 'DELETE',
     });
-
-
 })();
 
-
+// Creator
+(() => {
+    Api.Creator.GetAll = (page, pageSize) => $.ajax({
+        url: `/admin-api/creator/indexs`,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            page: page ?? '1',
+            perPage: pageSize ?? '30',
+        }
+    });
+    Api.Creator.GetOne = (id) => $.ajax({
+        url: `/admin-api/creator/detail/${id}`,
+        method: 'GET',
+    });
+    Api.Creator.Create = (data) => $.ajax({
+        url: `/admin-api/creator/create`,
+        method: 'POST',
+        data: data,
+        contentType: false,
+        processData: false,
+    });
+    Api.Creator.Delete = (id) => $.ajax({
+        url: `/admin-api/creator/delete/${id}`,
+        method: 'DELETE',
+    });
+})();
 
 // Collection
 (() => {
@@ -403,5 +448,4 @@ const Api = {
         url: `/admin-api/statistics/summarypie`,
         method: 'GET',
     });
-
 })();
