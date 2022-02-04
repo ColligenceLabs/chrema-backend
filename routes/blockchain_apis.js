@@ -11,7 +11,7 @@ const ipCheck = (req, res, next) => {
     if (ip && ip === "106.243.97.163") next();
     else res.status(401).json({ error: "Auth Error from authcheck" });
 };
-router.use(ipCheck);
+// router.use(ipCheck);
 
 router.get('/list', nftController.tokenList);
 router.post('/mint', nftController.mint);
