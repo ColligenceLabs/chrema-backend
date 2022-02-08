@@ -127,6 +127,10 @@ module.exports = {
             value: 'game',
             title: 'Game',
         },
+        GRAFFITI: {
+            value: 'graffiti',
+            title: 'Graffiti',
+        },
         // KPOP: {
         //     value: 'kpop',
         //     title: 'Kpop',

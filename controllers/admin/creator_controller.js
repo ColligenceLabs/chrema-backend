@@ -23,7 +23,6 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
             const email = req.body.email;
-            console.log('1 ===>', email);
             var creator = await creatorRepository.findByEmail(req.body.email);
             if (creator.length) {
                 console.log(ErrorMessage.CREATOR_IS_EXISTED);
@@ -33,10 +32,8 @@ module.exports = {
             // await creatorUploadRepository(req, res);
             let my_file = req.file;
             let imgName = my_file.filename.split('.');
-            console.log('2 ===>', imgName)
             // let renameOutput = req.body.name + '.' + imgName[imgName.length -1];
             let renameOutput = email + '.' + imgName[imgName.length -1];
-            console.log('3 ===>', renameOutput)
             // let renameOutput = 'peter.png';  <- Test
             //
             //rename

@@ -2,9 +2,9 @@ const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
-const {addMongooseParam, getHeaders} = require('../../utils/helper');
+const {addMongooseParam, getHeaders, _errorFormatter} = require('../../utils/helper');
 const logger = require('../../utils/logger');
-const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL} = require('../../utils/consts');
+const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
 var collectionUploadRepository = require('../../repositories/collection_upload_repository');
@@ -83,10 +83,12 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
-            //upload file
-            await collectionUploadRepository(req, res);
 
-            let my_file = req.files.file[0];
+            //upload file
+            // await collectionUploadRepository(req, res);
+
+            // let my_file = req.files.file[0];
+            let my_file = req.file;
 
             //resize
             let imgName = my_file.filename.split('.');
@@ -95,20 +97,28 @@ module.exports = {
             // let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
             // await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
 
+            // TODO : Collection의 Thumbnail로 변경
             let cover_image = await nftRepository.addFileToIPFS(my_file);
+
+            // TODO : 스타므컨트랙 배포 후 신규 그카트컨트랙 주소 획득
+            const contract_address = '0x37981dad0ac880c072a926dc04aa747a2289b998';
 
             let newCollection = {
                 name: req.body.name,
-                cover_image: IPFS_URL + cover_image.Hash,
-                company_id: req.body.company_id,
-                path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
-                ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+                // cover_image: IPFS_URL + cover_image.Hash,
+                cover_image: ALT_URL + my_file.path,
+                // company_id: req.body.company_id,
+                creator_id: req.body.creator_id,
+                contract_address,
+                // path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
+                // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+                category: req.body?.category
             };
-            let nft_id = JSON.parse(req.body.nft_id);
-
-            if (nft_id.length > 4) {
-                return handlerError(req, res, ErrorMessage.COLLECTION_IS_OVERSIZE);
-            }
+            // let nft_id = JSON.parse(req.body.nft_id);
+            //
+            // if (nft_id.length > 4) {
+            //     return handlerError(req, res, ErrorMessage.COLLECTION_IS_OVERSIZE);
+            // }
 
             // let allNftNotInCollection = true;
             // for (let i = 0; i < req.body.nft_id.length; i++) {
@@ -126,15 +136,15 @@ module.exports = {
             if (!collection) {
                 return handlerError(req, res, ErrorMessage.CREATE_COLLECTION_IS_NOT_SUCCESS);
             }
-            for (let i = 0; i < nft_id.length; i++) {
-                // const nft = await nftRepository.findById(newCollection.nft_id[i]);
-
-                // if (!(nft?.collection_id) || (nft.collection_id === null || '')) {
-                const updateNft = await nftRepository.update(nft_id[i], {
-                    collection_id: collection._id,
-                });
-                // }
-            }
+            // for (let i = 0; i < nft_id.length; i++) {
+            //     // const nft = await nftRepository.findById(newCollection.nft_id[i]);
+            //
+            //     // if (!(nft?.collection_id) || (nft.collection_id === null || '')) {
+            //     const updateNft = await nftRepository.update(nft_id[i], {
+            //         collection_id: collection._id,
+            //     });
+            //     // }
+            // }
             return handlerSuccess(req, res, collection);
             // } else {
             //     return handlerError(req, res, ErrorMessage.NFT_ALREADY_IN_COLLECTION);

@@ -49,7 +49,8 @@ router.get('/collection/getnfts', isAuth.validateToken, collectionController.get
 
 router.get('/collection/category', isAuth.validateToken, collectionController.indexCollectionCategories);
 
-router.post('/collection/create', isAuth.validateToken, collectionController.createCollection);
+router.post('/collection/create', upload.single('image'), isAuth.validateToken, collectionController.createCollection);
+// router.post('/collection/create', isAuth.validateToken, collectionController.createCollection);
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 

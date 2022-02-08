@@ -30,7 +30,17 @@ const CollectionSchema = new Schema(
         company_id: {
             type: Schema.Types.ObjectId,
             ref: 'Company',
+            required: false,
+        },
+        creator_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Creator',
             required: true,
+        },
+        contract_address: {
+            type: String,
+            required: true,
+            trim: true,
         },
         status: {
             type: String,
