@@ -49,11 +49,11 @@ exports.getHeaders = (totalCount, page, perPage) => {
     let pagesCount = Math.ceil(totalCount / perPage);
 
     return {
-        'x-page': page,
-        'x-total-count': totalCount,
-        'x-pages-count': pagesCount,
-        'x-per-page': perPage,
-        'x-next-page': page === pagesCount ? page : page + 1,
+        'x_page': page,
+        'x_total_count': totalCount,
+        'x_pages_count': pagesCount,
+        'x_per_page': perPage,
+        'x_next_page': page === pagesCount ? page : page + 1,
     };
 };
 
