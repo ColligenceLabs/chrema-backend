@@ -161,8 +161,8 @@ module.exports = {
             }
 
             // TODO: admin의 email 주소가 바뀔 경우 주의할 것...
-            const superUser = await adminRepository.findByEmail('admin@gmail.com');
-            if (req.decoded.id !== superUser.id) {
+            const superUser = await adminRepository.findById(req.decoded.id, null);
+            if (!superUser || superUser.level === 'Administrator') {
                 return handlerError(req, res, ErrorMessage.YOUR_ACCOUNT_IS_NOT_PERMISSION_TO_UPDATE);
             }
 
