@@ -34,7 +34,7 @@ const ipCheck = (req, res, next) => {
 };
 // router.use(ipCheck);
 
-router.post('/admin/register', validateAdmin.register(), adminController.adminRegister);
+router.post('/admin/register', upload.single('image'), validateAdmin.register(), adminController.adminRegister);
 
 router.post('/admin/login', validateAdmin.login(), adminController.adminlogin);
 

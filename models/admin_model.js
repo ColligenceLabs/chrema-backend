@@ -37,6 +37,12 @@ const AdminSchema = new Schema(
             require: true,
             trim: true,
         },
+        description: {
+            type: String,
+        },
+        image: {
+            type: String,
+        },
         status: {
             type: String,
             enum: ADMIN_STATUS,
