@@ -50,8 +50,6 @@ module.exports = {
                 description: req.body.description
             };
 
-
-
             let createAdmin = await adminRepository.create(newAccountAdmin);
 
             return handlerSuccess(req, res, createAdmin);
@@ -111,7 +109,7 @@ module.exports = {
         try {
             const findParams = getFindParams(req.query);
             let page = +req.query.page || 1;
-            let perPage = +req.query.perPage || 20;
+            let perPage = +req.query.perPage || 5;
 
             const count = await adminRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
