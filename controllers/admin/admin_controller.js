@@ -220,6 +220,14 @@ function getFindParams(filters) {
         );
     }
 
+    if (filters.level) {
+        findParams.level = addMongooseParam(
+            findParams.level,
+            '$regex',
+            new RegExp(filters.level, 'i'),
+        );
+    }
+
     return findParams;
 }
 
