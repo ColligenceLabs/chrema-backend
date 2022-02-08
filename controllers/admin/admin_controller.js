@@ -160,10 +160,13 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
             }
 
-            if (req.decoded.id !== req.params.id) {
-                return handlerError(req, res, ErrorMessage.YOUR_ACCOUNT_IS_NOT_PERMISSION);
+            // TODO: admin의 email 주소가 바뀔 경우 주의할 것...
+            const superUser = await adminRepository.findByEmail('admin@gmail.com');
+            if (req.decoded.id !== superUser.id) {
+                return handlerError(req, res, ErrorMessage.YOUR_ACCOUNT_IS_NOT_PERMISSION_TO_UPDATE);
             }
 
+            console.log('===>', req.decoded.id, req.params.id)
             const data = await getUpdateBodys(req.body);
 
             if (data.errors.length > 0) {
@@ -248,6 +251,10 @@ async function getUpdateBodys(updates) {
 
         updateBodys.old_password = updates.old_password;
         updateBodys.password = updates.password;
+    }
+
+    if (updates.status) {
+        updateBodys.status = updates.status;
     }
 
     return {updateBodys: updateBodys, errors: errors};
