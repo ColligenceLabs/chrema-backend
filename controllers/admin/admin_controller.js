@@ -89,6 +89,9 @@ module.exports = {
                 id: admin._id,
                 full_name: admin.full_name,
                 email: admin.email,
+                level: admin.level,
+                image: admin.image,
+                description: admin.description
             };
             let accessToken = auth.generateAccessToken(adminInfor);
             let refreshToken = auth.generateRefreshToken({id: admin._id});
