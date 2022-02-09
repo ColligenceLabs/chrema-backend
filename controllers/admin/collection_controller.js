@@ -100,16 +100,13 @@ module.exports = {
             // TODO : Collection의 Thumbnail로 변경
             let cover_image = await nftRepository.addFileToIPFS(my_file);
 
-            // TODO : 스타므컨트랙 배포 후 신규 그카트컨트랙 주소 획득
-            const contract_address = '0x37981dad0ac880c072a926dc04aa747a2289b998';
-
             let newCollection = {
                 name: req.body.name,
                 // cover_image: IPFS_URL + cover_image.Hash,
                 cover_image: ALT_URL + my_file.path,
                 // company_id: req.body.company_id,
                 creator_id: req.body.creator_id,
-                contract_address,
+                contract_address: req.body.contract_address,
                 // path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 category: req.body?.category
