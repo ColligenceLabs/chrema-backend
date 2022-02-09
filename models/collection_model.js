@@ -19,12 +19,13 @@ const CollectionSchema = new Schema(
             required: false,
         },
         category: {
-            type: [
-                {
-                    type: String,
-                    enum: getCollectionCateValueInEnum(COLLECTION_CATE),
-                },
-            ],
+            type: [String],
+            // type: [
+            //     {
+            //         type: String,
+            //         enum: getCollectionCateValueInEnum(COLLECTION_CATE),
+            //     },
+            // ],
             default: [COLLECTION_CATE.OTHER.value],
         },
         company_id: {

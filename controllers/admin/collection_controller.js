@@ -2,7 +2,7 @@ const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
-const {addMongooseParam, getHeaders, _errorFormatter} = require('../../utils/helper');
+const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum} = require('../../utils/helper');
 const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
@@ -109,7 +109,8 @@ module.exports = {
                 contract_address: req.body.contract_address,
                 // path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
-                category: req.body?.category
+                // category: JSON.parse(req.body.category)
+                category: req.body.category
             };
             // let nft_id = JSON.parse(req.body.nft_id);
             //
