@@ -47,6 +47,11 @@ const NftSchema = new Schema(
             ],
             default: [COLLECTION_CATE.OTHER.value],
         },
+        collection_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Collection',
+            required: false,
+        },
         company_id: {
             type: Schema.Types.ObjectId,
             ref: 'Company',
