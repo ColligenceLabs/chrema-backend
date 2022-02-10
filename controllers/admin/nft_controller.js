@@ -624,12 +624,9 @@ module.exports = {
             //     selling_status = SELLING_STATUS.STOP;
             // }
 
-            console.log('===>', nft)
-            console.log('===>', req.params.id, req.body.onchain)
             const updateNft = await nftRepository.update(req.params.id, {
                 onchain: req.body.onchain,
             });
-            console.log('---> ', updateNft)
             if (!updateNft) {
                 return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
             }
