@@ -1071,10 +1071,10 @@ function validateCreateNft(req, res) {
     // }
 
     // TODO : 필수인가?
-    // if (!req.body.description || req.body.description.length === 0) {
-    //     err.push('Missing description parameter');
-    //     return err;
-    // }
+    if (!req.body.description || req.body.description.length === 0) {
+        err.push('Missing description parameter');
+        return err;
+    }
 
     // if (!req.body.company_id || req.body.company_id.length === 0) {
     //     err.push('Missing company_id parameter');
