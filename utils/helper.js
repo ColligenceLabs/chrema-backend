@@ -150,7 +150,7 @@ exports.writeJson = async(linkHash,data) => {
     fs.writeFile(linkHash , data, (err) => {
 
         if (err) {
-            res.status(500).send(err.stack);
+            // res.status(500).send(err.stack);
             console.log("error : ", err);
         } else {
             console.log("write json file success");
