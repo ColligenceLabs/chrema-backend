@@ -259,6 +259,7 @@ module.exports = {
         }
     },
 
+    // TODO : 소스 정리... 기존 로직 Comments 삭제
     createNft: async (req, res, next) => {
         try {
             var errors = validationResult(req);
@@ -539,7 +540,7 @@ module.exports = {
             if (!nfts) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
-            console.log('NFTs =====> ', nfts)
+
             const productRes = convertProductResponse(nfts);
             return handlerSuccess(req, res, {
                 items: productRes,
@@ -972,8 +973,6 @@ function getFindParams(filters) {
     } else {
         searchParams = findParams;
     }
-
-    console.log('2===>', searchParams)
 
     return searchParams;
 }
