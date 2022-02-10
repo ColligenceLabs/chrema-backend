@@ -62,6 +62,12 @@ const NftSchema = new Schema(
             ref: 'Collection',
             required: false,
         },
+        onchain: {
+            type: String,
+            required: true,
+            trim: true,
+            default: 'false',
+        },
         rarity: {
             type: Number,
             required: false,

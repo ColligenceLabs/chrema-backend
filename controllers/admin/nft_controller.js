@@ -603,6 +603,44 @@ module.exports = {
         }
     },
 
+    async updateNftOnchain(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const nft = await nftRepository.findById(req.params.id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            // TODO : Why ?
+            // if (req.body.status === NFT_STATUS.SUSPEND) {
+            //     return handlerError(req, res, ErrorMessage.STATUS_UPDATE_INVALID);
+            // }
+            //
+            // let selling_status = SELLING_STATUS.SELL;
+            // if (nft.selling_status === SELLING_STATUS.SELL) {
+            //     selling_status = SELLING_STATUS.STOP;
+            // }
+
+            console.log('===>', nft)
+            console.log('===>', req.params.id, req.body.onchain)
+            const updateNft = await nftRepository.update(req.params.id, {
+                onchain: req.body.onchain,
+            });
+            console.log('---> ', updateNft)
+            if (!updateNft) {
+                return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateNft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async updateNftStatus(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {
