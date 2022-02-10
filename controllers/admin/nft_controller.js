@@ -393,10 +393,12 @@ module.exports = {
                         creator_name: creator.full_name,
                         creator_icon: creator.image,
                         category: [],
+                        onchain: "false"
                     },
                     // company_id: req.body.company_id,
                     collection_id: req.body.collection_id,
                     type: req.body.type * 1,
+                    contract_type: req.body.contract_type,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
                     ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
@@ -500,6 +502,16 @@ module.exports = {
             //     }
             // }
 
+            if (req.body.auto === 'true') {
+                let to = creator.admin_address;
+                let tokenUri = newNft.ipfs_link;
+                // mint nft
+                let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
+                if (mintResult.status !== 200) {
+                    return handlerError(req, res, {error: mintResult.error});
+                }
+                await nftRepository.update(nft.id, {onchain: "true"})
+            }
             return handlerSuccess(req, res, nft);
         } catch (error) {
             logger.error(new Error(error));
@@ -566,7 +578,7 @@ module.exports = {
             }
 
             let selling_status = SELLING_STATUS.SELL;
-            if (nft.selling_status == SELLING_STATUS.SELL) {
+            if (nft.selling_status === SELLING_STATUS.SELL) {
                 selling_status = SELLING_STATUS.STOP;
             }
 
@@ -600,7 +612,7 @@ module.exports = {
             }
 
             let status = NFT_STATUS.ACTIVE;
-            if (nft.status == NFT_STATUS.ACTIVE) {
+            if (nft.status === NFT_STATUS.ACTIVE) {
                 status = NFT_STATUS.INACTIVE;
             }
 
@@ -609,7 +621,7 @@ module.exports = {
             let serialStatus = [SERIAL_STATUS.ACTIVE, SERIAL_STATUS.INACTIVE];
             let serialIds = [];
             for (let i = 0; i < serials.length; i++) {
-                if (serials[i].owner_id == null && serialStatus.includes(serials[i].status)) {
+                if (serials[i].owner_id === null && serialStatus.includes(serials[i].status)) {
                     serialIds.push(serials[i]._id);
                 }
             }
@@ -757,7 +769,7 @@ module.exports = {
             let status = [SERIAL_STATUS.ACTIVE, SERIAL_STATUS.INACTIVE];
             let serialIds = [];
             for (let i = 0; i < serials.length; i++) {
-                if (serials[i].owner_id == null && status.includes(serials[i].status)) {
+                if (serials[i].owner_id === null && status.includes(serials[i].status)) {
                     serialIds.push(serials[i]._id);
                 }
             }
