@@ -397,6 +397,7 @@ module.exports = {
                     },
                     // company_id: req.body.company_id,
                     collection_id: req.body.collection_id,
+                    creator_id: creator._id,
                     type: req.body.type * 1,
                     contract_type: req.body.contract_type,
                     ...(req.body?.price && {price: req.body.price}),
@@ -507,9 +508,9 @@ module.exports = {
                 let tokenUri = newNft.ipfs_link;
                 // mint nft
                 let mintResult
-                if (req.body.contract_type === 'KIP17') {
+                if (collection.contract_type === 'KIP17') {
                     mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
-                } else if (req.body.contract_type === 'KIP37') {
+                } else if (collection.contract_type === 'KIP37') {
                     mintResult = await nftBlockchain._mint37(collection.contract_address, to, newTokenId, req.body.quality);
                 }
                 // update db

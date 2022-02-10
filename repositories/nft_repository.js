@@ -26,12 +26,12 @@ module.exports = {
                     .limit(pagination.perPage)
                     .sort({createdAt: -1, start_date: -1, _id: 1})
                     .populate({path: 'collection_id'})
-                    .populate({path: 'company_id'});
+                    .populate({path: 'creator_id'});
             } else {
                 var nfts = await NftModel.find(findParams)
                     .sort({createdAt: -1, start_date: -1, _id: 1})
                     .populate({path: 'collection_id'})
-                    .populate({path: 'company_id'});
+                    .populate({path: 'creator_id'});
             }
             return nfts;
         } catch (error) {
