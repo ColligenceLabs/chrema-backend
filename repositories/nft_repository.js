@@ -11,7 +11,7 @@ module.exports = {
         let nft = await NftModel.findOne({
             _id: id,
         })
-            .populate({path: 'company_id'})
+            .populate({path: 'creator_id'})
             .populate({path: 'collection_id'});
         if (!nft) {
             return null;
