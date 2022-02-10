@@ -54,6 +54,8 @@ router.post('/collection/create', upload.single('image'), isAuth.validateToken, 
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 
+router.get('/collection/creator', isAuth.validateToken, collectionController.getMyCollections);
+
 router.get(
     '/collection/detail/:id',
     isAuth.validateToken,
@@ -92,7 +94,7 @@ router.delete('/serial/delete/:id', isAuth.validateToken, serialController.delet
 router.delete('/serial/delete-many', isAuth.validateToken, serialController.deleteManySerial);
 
 //Nft apis
-router.post('/nft/create', isAuth.validateToken, nftController.createNft);
+router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNftNew);
 
 router.get('/nft/indexs', isAuth.validateToken, nftController.indexNfts);
 
