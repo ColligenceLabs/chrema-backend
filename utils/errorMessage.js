@@ -74,10 +74,10 @@ exports.ErrorMessage = {
     CREATE_COMPANY_IS_NOT_SUCCESS: 'Create company is not success!',
 
     //creator error
-    CREATOR_IS_NOT_FOUND: 'Company is not found!',
-    UPDATE_CREATOR_IS_NOT_SUCCESS: 'Update company is not success!',
-    CREATOR_IS_EXISTED: 'Company is existed!',
-    CREATE_CREATOR_IS_NOT_SUCCESS: 'Create company is not success!',
+    CREATOR_IS_NOT_FOUND: 'Creator is not found!',
+    UPDATE_CREATOR_IS_NOT_SUCCESS: 'Update creator is not success!',
+    CREATOR_IS_EXISTED: 'Creator is existed!',
+    CREATE_CREATOR_IS_NOT_SUCCESS: 'Create creator is not success!',
 
     //reward error
     CREATE_REWARD_IS_NOT_SUCCESS: 'Create reward is not success!',
