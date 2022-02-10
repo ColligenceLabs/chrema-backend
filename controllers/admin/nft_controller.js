@@ -864,6 +864,10 @@ function getFindParams(filters) {
         findParams.category = filters.category;
     }
 
+    if (filters.onchain) {
+        findParams.onchain = filters.onchain;
+    }
+
     const findByName = Object.assign({}, findParams);
     const findByDesc = Object.assign({}, findParams);
     const findByMetadataName = Object.assign({}, findParams);
