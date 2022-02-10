@@ -539,7 +539,7 @@ module.exports = {
             if (!nfts) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
-
+            console.log('NFTs =====> ', nfts)
             const productRes = convertProductResponse(nfts);
             return handlerSuccess(req, res, {
                 items: productRes,
@@ -903,10 +903,19 @@ function getFindParams(filters) {
         findParams.onchain = filters.onchain;
     }
 
+    if (filters.creator_id) {
+        findParams.creator_id = filters.creator_id;
+    }
+
+    if (filters.collection_id) {
+        findParams.collection_id = filters.collection_id;
+    }
+
     const findByName = Object.assign({}, findParams);
     const findByDesc = Object.assign({}, findParams);
     const findByMetadataName = Object.assign({}, findParams);
-    const findByCompanyId = Object.assign({}, findParams);
+    // const findByCompanyId = Object.assign({}, findParams);
+    const findByCreatorId = Object.assign({}, findParams);
     const findByCollectionId = Object.assign({}, findParams);
 
     if (filters.keyword) {
@@ -929,8 +938,14 @@ function getFindParams(filters) {
         );
 
         if (ObjectID.isValid(filters.keyword) === true) {
-            findByCompanyId.company_id = addMongooseParam(
-                findByCompanyId.company_id,
+            // findByCompanyId.company_id = addMongooseParam(
+            //     findByCompanyId.company_id,
+            //     '$eq',
+            //     filters.keyword,
+            // );
+
+            findByCreatorId.creator_id = addMongooseParam(
+                findByCreatorId.creator_id,
                 '$eq',
                 filters.keyword,
             );
@@ -943,13 +958,22 @@ function getFindParams(filters) {
         }
     }
 
-    const searchParams = {
-        $or: [findByName, findByDesc, findByMetadataName],
-    };
+    let searchParams;
 
-    if (ObjectID.isValid(filters.keyword) === true) {
-        searchParams['$or'].push(findByCompanyId, findByCollectionId);
+    if (filters.keyword) {
+        searchParams = {
+            $or: [findByName, findByDesc, findByMetadataName],
+        };
+
+        if (ObjectID.isValid(filters.keyword) === true) {
+            // searchParams['$or'].push(findByCompanyId, findByCollectionId);
+            searchParams['$or'].push(findByCreatorId, findByCollectionId);
+        }
+    } else {
+        searchParams = findParams;
     }
+
+    console.log('2===>', searchParams)
 
     return searchParams;
 }
