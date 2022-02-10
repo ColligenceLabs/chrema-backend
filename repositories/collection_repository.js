@@ -45,7 +45,7 @@ module.exports = {
     },
 
     findByCreatorId: async function (id) {
-        const collections = await CollectionModel.find({collection_id: id});
+        const collections = await CollectionModel.find({creator_id: id});
 
         if (!collections) {
             return null;

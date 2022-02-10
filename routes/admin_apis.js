@@ -54,7 +54,7 @@ router.post('/collection/create', upload.single('image'), isAuth.validateToken, 
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 
-router.get('/collection/creator', isAuth.validateToken, collectionController.getMyCollections);
+router.get('/collection/creator/:id', isAuth.validateToken, collectionController.getMyCollections);
 
 router.get(
     '/collection/detail/:id',

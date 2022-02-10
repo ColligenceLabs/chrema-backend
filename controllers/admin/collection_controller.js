@@ -181,10 +181,9 @@ module.exports = {
 
     async getMyCollections(req, res, next) {
         try {
-            // TODO : Whj error here ?
-            // if (ObjectID.isValid(req.params.id) === false) {
-            //     return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
-            // }
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
 
             validateRouter(req, res);
             let collections = await collectionRepository.findByCreatorId(req.params.id);
