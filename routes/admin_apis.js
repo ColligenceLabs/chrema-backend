@@ -94,7 +94,7 @@ router.delete('/serial/delete/:id', isAuth.validateToken, serialController.delet
 router.delete('/serial/delete-many', isAuth.validateToken, serialController.deleteManySerial);
 
 //Nft apis
-router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNftNew);
+router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNft);
 
 router.get('/nft/indexs', isAuth.validateToken, nftController.indexNfts);
 
