@@ -54,6 +54,36 @@ module.exports = {
         }
     },
 
+    _mint17: async (contract, to, tokenId, tokenUri) => {
+        try {
+            let result = await caver.kas.kip17.mint(
+                contract,
+                to,
+                parseInt(tokenId),
+                tokenUri,
+            );
+            return {status: 200, result: result};
+        } catch (error) {
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
+    _mint37: async (contract, to, tokenId, amount) => {
+        try {
+            let result = await caver.kas.kip37.mint(
+                contract,
+                to,
+                parseInt(tokenId),
+                amount,
+            );
+            return {status: 200, result: result};
+        } catch (error) {
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
     _burn: async (from, tokenId) => {
         try {
             let result = await caver.kas.kip17.burn(contractAddress, from, parseInt(tokenId));

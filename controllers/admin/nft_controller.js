@@ -506,7 +506,13 @@ module.exports = {
                 let to = creator.admin_address;
                 let tokenUri = newNft.ipfs_link;
                 // mint nft
-                let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
+                let mintResult
+                if (req.body.contract_type === 'KIP17') {
+                    mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
+                } else if (req.body.contract_type === 'KIP37') {
+                    mintResult = await nftBlockchain._mint37(collection.contract_address, to, newTokenId, req.body.quality);
+                }
+                // update db
                 if (mintResult.status !== 200) {
                     return handlerError(req, res, {error: mintResult.error});
                 }
