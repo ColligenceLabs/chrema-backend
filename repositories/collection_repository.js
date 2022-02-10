@@ -1,4 +1,4 @@
-const {CollectionModel, CompanyModel} = require('../models');
+const {CollectionModel, CompanyModel, NftModel} = require('../models');
 const nftRepository = require('./nft_repository');
 const {addMongooseParam} = require('../utils/helper');
 
@@ -42,6 +42,15 @@ module.exports = {
         } catch (error) {
             return null;
         }
+    },
+
+    findByCreatorId: async function (id) {
+        const collections = await CollectionModel.find({collection_id: id});
+
+        if (!collections) {
+            return null;
+        }
+        return collections;
     },
 
     count: async function (where) {
