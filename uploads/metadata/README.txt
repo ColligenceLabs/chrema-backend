@@ -1,0 +1,1 @@
+Stores NFT's Meta Data
