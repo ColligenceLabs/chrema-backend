@@ -42,6 +42,11 @@ const CollectionSchema = new Schema(
             required: true,
             trim: true,
         },
+        contract_type: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         status: {
             type: String,
             enum: getValueInEnum(COLLECTION_STATUS),

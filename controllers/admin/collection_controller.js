@@ -107,6 +107,7 @@ module.exports = {
                 // company_id: req.body.company_id,
                 creator_id: req.body.creator_id,
                 contract_address: req.body.contract_address,
+                contract_type: req.body.contract_type,
                 // path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
