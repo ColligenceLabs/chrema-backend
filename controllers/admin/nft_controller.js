@@ -368,7 +368,7 @@ module.exports = {
             console.log('ollection_id = ', req.body.collection_id)
 
             let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
-            let newTokenId = nfts.length + 1;
+            const newTokenId = nfts.length + 1;
             console.log('newTokenId = ', newTokenId)
 
             //nft default
@@ -384,7 +384,7 @@ module.exports = {
                         content_Type: imgName[imgName.length -1],
                         cid: result.Hash,
                         // tokenId: decimalTokenIds[i],
-                        tokenId: newTokenId,
+                        tokenId: newTokenId.toString(),
                         total_minted: "",
                         external_url: req.body.external_url,
                         attributes: [],
@@ -393,14 +393,15 @@ module.exports = {
                         thumbnail: ALT_URL + my_thumbnail.path,
                         creator_name: creator.full_name,
                         creator_icon: creator.image,
-                        category: [],
-                        onchain: "false"
+                        // category: [],
+                        // category: req.body.category.toString(),
                     },
                     // company_id: req.body.company_id,
                     collection_id: req.body.collection_id,
                     creator_id: creator._id,
                     type: req.body.type * 1,
                     contract_type: req.body.contract_type,
+                    onchain: "false",
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
                     ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
@@ -412,15 +413,17 @@ module.exports = {
                     ...(req.body?.description && {description: req.body.description}),
                     // ...(req.body?.rarity && {rarity: req.body.rarity}),
                     // contract_id: contractId,
+                    // category: req.body.category.toString(),
                 };
 
                 let metadata_ipfs = newNft.metadata;
-                if (req.body.category) {
-                    metadata_ipfs.category = JSON.parse(req.body.category);
-                    newNft.metadata.category = JSON.parse(req.body.category);
-                }
+                // if (req.body.category) {
+                //     metadata_ipfs.category = JSON.parse(req.body.category);
+                //     newNft.metadata.category = JSON.parse(req.body.category);
+                // }
                 if (req.body.quantity) {
-                    metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+                    // metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+                    metadata_ipfs.total_minted = req.body.quantity;
                 }
 
                 //thumbnail check
