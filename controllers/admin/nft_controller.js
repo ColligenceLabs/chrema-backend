@@ -409,7 +409,7 @@ module.exports = {
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
                     // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
-                    ...(req.body?.category && {category: req.body.category}),
+                    // ...(req.body?.category && {category: req.body.category}),
                     ...(req.body?.description && {description: req.body.description}),
                     // ...(req.body?.rarity && {rarity: req.body.rarity}),
                     // contract_id: contractId,
