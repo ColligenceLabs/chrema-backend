@@ -423,6 +423,10 @@ async function getFindParams(filters) {
         findParams.status = filters.status;
     }
 
+    if (filters.creator_id) {
+        findParams.creator_id = filters.creator_id;
+    }
+
     const findByCompanyName = Object.assign({}, findParams);
 
     if (filters.keyword) {
