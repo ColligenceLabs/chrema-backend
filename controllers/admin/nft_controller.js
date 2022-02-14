@@ -49,7 +49,7 @@ module.exports = {
     // TODOS: category 추가하기 (배열로)
 
 
-    createNftOld: async (req, res, next) => {
+    createNftBatch: async (req, res, next) => {
         try {
             var errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -59,8 +59,9 @@ module.exports = {
             let admin_address = req.body.admin_address;
 
             //upload file
-            await uploadRepository(req, res);
-            let my_file = req.files.file[0];
+            // await uploadRepository(req, res);
+            // let my_file = req.files.file[0];
+            let my_file = req.files[0];
 
             errors = validateCreateNft(req, res);
             if (errors) {
@@ -68,27 +69,31 @@ module.exports = {
             }
 
             let result = await nftRepository.addFileToIPFS(my_file);
-            let imgName = my_file.filename.split('.');
-            let imgInput = my_file.filename;
+            let imgName = my_file.originalname.split('.');
+            // let imgName = my_file.filename.split('.');
+            // let imgInput = my_file.filename;
+            //
+            // let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
+            // let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
 
-            let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
-            let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
-
-            //rename
-            await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
+            // //rename
+            // await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
             
             // //resize
             // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
             
             //thumbnail check
-            let thumbName = null;
-            if (typeof req.files.thumbnail != 'undefined') {
-                let my_thumbnail = req.files.thumbnail[0];
-                thumbName = my_thumbnail.filename.split('.');
-                let thumbnailInput = my_thumbnail.filename;
-                let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
-                await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
+            let my_thumbnail
+            // let thumbName = null;
+            // if (typeof req.files.thumbnail != 'undefined') {
+            if (typeof req.files[1] != 'undefined') {
+                // let my_thumbnail = req.files.thumbnail[0];
+                my_thumbnail = req.files[1];
+                // thumbName = my_thumbnail.filename.split('.');
+                // let thumbnailInput = my_thumbnail.filename;
+                // let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+                // await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
             }
 
             //get all nft from blockchain service
@@ -110,10 +115,20 @@ module.exports = {
                 }
             }
 
+            let collection = await collectionRepository.findById(req.body.collection_id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+            console.log('---> ', collection.creator_id)
+
             //check company
-            let company = await companyRepository.findById(req.body.company_id);
-            if (!company) {
-                return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
+            // let company = await companyRepository.findById(req.body.company_id);
+            // if (!company) {
+            //     return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
+            // }
+            let creator = await adminRepository.findById(collection.creator_id);
+            if (!creator) {
+                return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
             }
 
             //check contract
@@ -135,13 +150,14 @@ module.exports = {
             }
             //nft default
             for (let i = 0; i < quantity; i++) {
+                console.log('===========> '. i);
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
                         name: req.body.name,
                         description: req.body.description,
                         image: IPFS_URL + result.Hash,
-                        alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                        // alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
                         content_Type: imgName[imgName.length -1],
                         cid: result.Hash,
                         tokenId: decimalTokenIds[i],
@@ -150,11 +166,14 @@ module.exports = {
                         attributes: [],
                         minted_by: "Talken",
                         thumbnail: "",
-                        creator_name: company.name,
-                        creator_icon: company.image,
+                        // creator_name: company.name,
+                        // creator_icon: company.image,
+                        creator_name: creator.name,
+                        creator_icon: creator.image,
                         category: [],
                     },
-                    company_id: req.body.company_id,
+                    // company_id: req.body.company_id,
+                    creator_id: req.body.creator_id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
@@ -199,7 +218,7 @@ module.exports = {
                 ) {
                     newNft.quantity_selling = 0;
                 }
-    
+
                 // write json file
                 await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
 
@@ -245,7 +264,8 @@ module.exports = {
                 let newTokenId = tokenIds[i];
                 let tokenUri = ipfs_links[i];
                 // mint nft
-                let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
+                // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
+                let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
                     // return handlerError(req, res, {error: mintResult.error});
                     continue;
