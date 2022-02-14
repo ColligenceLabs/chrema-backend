@@ -19,6 +19,10 @@ const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
 
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = {
     classname: 'NftController',
 
@@ -48,6 +52,35 @@ module.exports = {
                 tokenUri,
             );
             return {status: 200, result: result};
+        } catch (error) {
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
+    _deploy17: async (name, symbol, alias) => {
+        try {
+            let result = await caver.kas.kip17.deploy(
+                name,
+                symbol,
+                alias
+            );
+
+            let newContract = '';
+            do {
+                const contracts = await caver.kas.kip17.getContractList();
+                contracts.items.map((contract) => {
+                    if (contract.alias === alias) {
+                        if (contract.address !== 'updateme') {
+                            newContract = contract.address;
+                        } else {
+
+                        }
+                    }
+                })
+                await sleep(3000);
+            } while(newContract === '')
+            return {status: 200, address: newContract};
         } catch (error) {
             logger.error(new Error(error));
             return {status: 500, error: error};

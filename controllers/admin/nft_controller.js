@@ -150,7 +150,6 @@ module.exports = {
             }
             //nft default
             for (let i = 0; i < quantity; i++) {
-                console.log('===========> '. i);
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
@@ -273,6 +272,31 @@ module.exports = {
             }
 
             return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    deploy17: async (req, res, next) => {
+        console.log(req.body)
+        var errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+
+        try {
+            console.log(req.body)
+            const name = req.body.name;
+            const symbol = req.body.symbol;
+            const alias = req.body.alias;
+
+            console.log('========>', name, symbol)
+            let contract = await nftBlockchain._deploy17(name, symbol, alias);
+            console.log('========>', contract)
+
+            return handlerSuccess(req, res, contract);
         } catch (error) {
             logger.error(new Error(error));
             next(error);

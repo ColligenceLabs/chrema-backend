@@ -97,6 +97,8 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNft);
 router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
 
+router.post('/nft/deploy', isAuth.validateToken, nftController.deploy17);
+
 router.get('/nft/indexs', isAuth.validateToken, nftController.indexNfts);
 
 router.get('/nft/detail/:id', isAuth.validateToken, nftController.getDetailNft);
