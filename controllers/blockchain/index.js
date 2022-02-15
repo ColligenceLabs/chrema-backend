@@ -10,6 +10,7 @@ var listenerRepository = require('../../repositories/listener_repository');
 var contractRepository = require('../../repositories/contract_repository');
 var consts = require('../../utils/consts');
 var {calcQuantitySellingNumber} = require('../../utils/helper');
+const collectionRepository = require('../../repositories/collection_repository');
 var lastBlock = 0;
 
 // load last checked block from file
@@ -42,14 +43,19 @@ async function getLastEvents() {
 
     // console.log(lastBlock, toBlock);
 
+    const contracts = await collectionRepository.getContracts();
+    // console.log(contracts)
+
     web3.eth.getPastLogs(
-        {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
+        // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
+        {fromBlock: lastBlock, toBlock: toBlock, address: contracts},
         async (err, result) => {
             if (!err) {
                 if (result.length > 0) {
                     lastBlock = result[result.length - 1].blockNumber + 1;
                     console.log('update last block');
 
+                    console.log('-----> ', result)
                     // routing
                     for (let i = 0; i < result.length; i++) {
                         if (result[i].topics) {

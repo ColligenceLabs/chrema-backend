@@ -13,13 +13,14 @@ module.exports = {
         }
         return collection;
     },
+
     findAll: async function (findParams, pagination) {
         try {
             let collections = await CollectionModel.find(findParams)
                 .skip((pagination.page - 1) * pagination.perPage)
                 .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
-                .populate({path: 'company_id', select: 'name'});
+                .populate({path: 'creator_id', select: 'name'});
             return collections;
         } catch (error) {
             return error;
@@ -61,6 +62,7 @@ module.exports = {
             return error;
         }
     },
+
     create: async function (newCollection) {
         let collection = await CollectionModel.create(newCollection);
         if (!collection) {
@@ -81,6 +83,7 @@ module.exports = {
             updatedAt: collection.updatedAt,
         };
     },
+
     updateById: async function (id, where) {
         try {
             let collection = await CollectionModel.updateOne({_id: id}, {$set: where});
@@ -89,10 +92,27 @@ module.exports = {
             return error;
         }
     },
+
     update: async function (findParams, where) {
         try {
             let collection = await CollectionModel.updateMany(findParams, {$set: where});
             return collection;
+        } catch (error) {
+            return error;
+        }
+    },
+
+    getContracts: async function () {
+        try {
+            let collections = await CollectionModel.find();
+            const contracts = [];
+
+            collections.map((item) => {
+                if (item.contract_address !== 'undefined') {
+                    contracts.push(item.contract_address);
+                }
+            });
+            return contracts;
         } catch (error) {
             return error;
         }
