@@ -88,7 +88,7 @@ module.exports = {
             //upload file
             // await collectionUploadRepository(req, res);
 
-            console.log('============>', req.file)
+            // 커버 이미지 하나로 변경
             // let my_file = req.files.file[0];
             let my_file = req.file;
 
@@ -104,15 +104,17 @@ module.exports = {
 
             let newCollection = {
                 name: req.body.name,
-                // cover_image: IPFS_URL + cover_image.Hash,
-                cover_image: ALT_URL + my_file.path,
+                cover_image: IPFS_URL + cover_image.Hash,
+                // cover_image: ALT_URL + my_file.path,
                 // company_id: req.body.company_id,
                 creator_id: req.body.creator_id,
                 contract_address: req.body.contract_address,
                 contract_type: req.body.contract_type,
-                // path: '/talkenNft/' +consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
+                // path: '/talkenNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
+                path: '/talkenNft/uploads/collections/' + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
+                ...(req.body?.category && {category: req.body.category}),
                 category: req.body.category
             };
             // let nft_id = JSON.parse(req.body.nft_id);
