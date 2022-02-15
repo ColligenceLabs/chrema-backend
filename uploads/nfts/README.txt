@@ -1,0 +1,1 @@
+Store NFT's Images temporary and move to the folder named the contract address.

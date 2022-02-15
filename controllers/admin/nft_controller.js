@@ -25,7 +25,7 @@ const {
     convertTimezone,
     imageResize,
     imageRename,
-    writeJson,
+    writeJson, imageMove,
 } = require('../../utils/helper');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {
@@ -48,7 +48,6 @@ module.exports = {
     // TODOS: 대량의 민트 (2000개 이상)를 안정적으로 하는 로직 만들기
     // TODOS: category 추가하기 (배열로)
 
-
     createNftBatch: async (req, res, next) => {
         try {
             var errors = validationResult(req);
@@ -60,8 +59,8 @@ module.exports = {
 
             //upload file
             // await uploadRepository(req, res);
-            // let my_file = req.files.file[0];
-            let my_file = req.files[0];
+            let my_file = req.files.file[0];
+            // let my_file = req.files[0];
 
             errors = validateCreateNft(req, res);
             if (errors) {
@@ -71,29 +70,28 @@ module.exports = {
             let result = await nftRepository.addFileToIPFS(my_file);
             let imgName = my_file.originalname.split('.');
             // let imgName = my_file.filename.split('.');
-            // let imgInput = my_file.filename;
-            //
-            // let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
-            // let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
+            let imgInput = my_file.filename;
 
-            // //rename
-            // await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
+            let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
+            let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
+
+            //rename
+            await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
             
-            // //resize
-            // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
-            // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
+            //resize
+            if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
+            await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
             
             //thumbnail check
-            let my_thumbnail
-            // let thumbName = null;
-            // if (typeof req.files.thumbnail != 'undefined') {
-            if (typeof req.files[1] != 'undefined') {
-                // let my_thumbnail = req.files.thumbnail[0];
-                my_thumbnail = req.files[1];
-                // thumbName = my_thumbnail.filename.split('.');
-                // let thumbnailInput = my_thumbnail.filename;
-                // let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
-                // await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
+            let thumbName = null;
+            if (typeof req.files.thumbnail != 'undefined') {
+            // if (typeof req.files[1] != 'undefined') {
+                let my_thumbnail = req.files.thumbnail[0];
+                // my_thumbnail = req.files[1];
+                thumbName = my_thumbnail.filename.split('.');
+                let thumbnailInput = my_thumbnail.filename;
+                let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+                await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
             }
 
             //get all nft from blockchain service
@@ -313,43 +311,54 @@ module.exports = {
             }
             let admin_address = req.body.admin_address;
 
+            //check collection
+            let collection = await collectionRepository.findById(req.body.collection_id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            console.log('nft ====> ', req.files)
             //upload file
             // await uploadRepository(req, res);
             // 1st : NFT origin image
-            let my_file = req.files[0];
+            // let my_file = req.files[0];
+            let my_file = req.files.file[0];
 
             errors = validateCreateNft(req, res);
             if (errors) {
                 return handlerError(req, res, errors[0]);
             }
 
-            console.log('image = ', my_file.path)
+            // console.log('image = ', my_file.path)
             let result = await nftRepository.addFileToIPFS(my_file);
             let imgName = my_file.originalname.split('.');
             // let imgName = my_file.filename.split('.');
-            // let imgInput = my_file.filename;
-            //
-            // let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
-            // let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
+            let imgInput = my_file.filename;
+
+            let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
+            let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
 
             //rename
-            // await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
+            const targetDir = `./uploads/${collection.contract_address}/`;
+            console.log('=======>', targetDir)
+            await imageMove(consts.UPLOAD_PATH + imgInput,  targetDir + renameOutput);
 
-            // //resize
-            // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
-            // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
+            //resize
+            if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
+            await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
 
             //thumbnail check
             let my_thumbnail
-            // let thumbName = null;
+            let thumbName = null;
             // 2nd : NFT thumbnail image
-            // if (typeof req.files.thumbnail != 'undefined') {
-            if (typeof req.files[1] != 'undefined') {
-                my_thumbnail = req.files[1];
-                // thumbName = my_thumbnail.filename.split('.');
-                // let thumbnailInput = my_thumbnail.filename;
-                // let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
-                // await imageRename(consts.UPLOAD_PATH + thumbnailInput, consts.UPLOAD_PATH + 'thumbnail/' + thumbnailOutput);
+            if (typeof req.files.thumbnail != 'undefined') {
+            // if (typeof req.files[1] != 'undefined') {
+            //     my_thumbnail = req.files[1];
+                my_thumbnail = req.files.thumbnail[0];
+                thumbName = my_thumbnail.filename.split('.');
+                let thumbnailInput = my_thumbnail.filename;
+                let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+                await imageMove(consts.UPLOAD_PATH + thumbnailInput, targetDir + 'thumbnail/' + thumbnailOutput);
                 console.log('thumbnail = ', my_thumbnail.path)
             }
 
@@ -378,12 +387,6 @@ module.exports = {
             // if (!company) {
             //     return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
             // }
-
-            //check collection
-            let collection = await collectionRepository.findById(req.body.collection_id);
-            if (!collection) {
-                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
-            }
 
             // get creator
             console.log('creator_id = ', collection.creator_id)

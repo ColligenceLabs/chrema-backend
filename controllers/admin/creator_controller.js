@@ -1,4 +1,5 @@
 const creatorRepository = require('../../repositories/creator_repository');
+const adminRepository = require('../../repositories/admin_repository');
 const creatorUploadRepository = require('../../repositories/creator_upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
 const contractRepository = require('../../repositories/contract_repository');
@@ -23,7 +24,8 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
             const email = req.body.email;
-            var creator = await creatorRepository.findByEmail(req.body.email);
+            // var creator = await creatorRepository.findByEmail(req.body.email);
+            var creator = await adminRepository.findByEmail(req.body.email);
             if (creator.length) {
                 console.log(ErrorMessage.CREATOR_IS_EXISTED);
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_EXISTED);
@@ -56,7 +58,8 @@ module.exports = {
                 // contract_id: contractId,
             };
 
-            let result = await creatorRepository.create(newCreator);
+            // let result = await creatorRepository.create(newCreator);
+            let result = await adminRepository.create(newCreator);
 
             if (!result) {
                 return handlerError(req, res, ErrorMessage.CREATE_CREATOR_IS_NOT_SUCCESS);

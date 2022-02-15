@@ -1,0 +1,1 @@
+Store Collection Cover Images.

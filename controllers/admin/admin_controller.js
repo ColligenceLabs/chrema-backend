@@ -7,6 +7,7 @@ const logger = require('../../utils/logger');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const bcrypt = require('bcryptjs');
 const {ADMIN_STATUS, ALT_URL} = require('../../utils/consts');
+const creatorUploadRepository = require('../../repositories/creator_upload_repository');
 let SALT_WORK_FACTOR = 10;
 
 var ObjectID = require('mongodb').ObjectID;
@@ -23,6 +24,7 @@ module.exports = {
         }
         try {
             const email = req.body.email;
+            console.log('====>', email)
             let admin = await adminRepository.findByEmail(email);
             if (admin) {
                 return handlerError(req, res, ErrorMessage.ACCOUNT_IS_ALREADY_EXISTED);
@@ -30,6 +32,7 @@ module.exports = {
 
             //upload file
             // await creatorUploadRepository(req, res);
+
             let my_file = req.file;
             let imgName = my_file.filename.split('.');
             // let renameOutput = req.body.name + '.' + imgName[imgName.length -1];

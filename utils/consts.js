@@ -98,7 +98,7 @@ module.exports = {
     IPFS_URL: 'https://ipfs.io/ipfs/',
     ALT_URL: process.env.ALT_URL,
     // UPLOAD_PATH: './uploads/' + process.env.NFT_CONTRACT_ADDR + '/',
-    UPLOAD_PATH: './uploads/',
+    UPLOAD_PATH: './uploads/nfts/',
     STATISTICS: {
         LINE: {
             NFT_REVENUE: 'nft_revenue',

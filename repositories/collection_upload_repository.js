@@ -4,7 +4,8 @@ const consts = require('../utils/consts')
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.cwd() + '/uploads/' + consts.NFT_CONTRACT_ADDR + '/cover');
+        // cb(null, process.cwd() + '/uploads/collections');
+        cb(null, 'uploads/collections');
     },
     filename: (req, file, cb) => {
         var uniqueSuffix = Date.now() + '-';
@@ -12,13 +13,17 @@ var storage = multer.diskStorage({
     },
 });
 
+// // let uploadFile = multer({
+// //     storage: storage,
+// // }).single('file');
 // let uploadFile = multer({
 //     storage: storage,
-// }).single('file');
+// }).fields([{name: 'file'}, {name: 'thumbnail'}]);
 let uploadFile = multer({
     storage: storage,
-}).fields([{name: 'file'}, {name: 'thumbnail'}]);
+}).single('image');
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 
-module.exports = uploadFileMiddleware;
+// module.exports = uploadFileMiddleware;
+module.exports = uploadFile;

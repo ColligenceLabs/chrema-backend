@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 var consts = require('./consts');
 var sharp = require('sharp');
 var fs = require('fs');
+var fsx = require('fs-extra')
 
 const TIMEZONE = process.env.TIMEZONE;
 exports._errorFormatter = (errors) => {
@@ -142,6 +143,17 @@ exports.imageRename = async (imgInput, renameOutput) => {
             console.log("error:", err);
         } else {
             console.log("rename success");
+        }
+    })
+}
+
+exports.imageMove = async (imgInput, renameOutput) => {
+    fsx.move(imgInput, renameOutput, (err) => {
+
+        if (err) {
+            console.log("error:", err);
+        } else {
+            console.log("move success");
         }
     })
 }

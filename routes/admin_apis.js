@@ -24,7 +24,11 @@ var validateReward = require('../requests/validate_reward');
 var isAuth = require('../utils/validate_token');
 
 var multer  = require('multer');
-var upload  = multer({ dest: './uploads/' });
+var upload = multer({ dest: './uploads/' });
+
+const uploadAdmin = require('../repositories/creator_upload_repository');
+const uploadCollection = require('../repositories/collection_upload_repository');
+const uploadNFT = require('../repositories/upload_repository');
 
 //Admin apis
 const ipCheck = (req, res, next) => {
@@ -34,7 +38,9 @@ const ipCheck = (req, res, next) => {
 };
 // router.use(ipCheck);
 
-router.post('/admin/register', upload.single('image'), validateAdmin.register(), adminController.adminRegister);
+// router.post('/admin/register', upload.single('image'), validateAdmin.register(), adminController.adminRegister);
+// router.post('/admin/register', validateAdmin.register(), adminController.adminRegister);
+router.post('/admin/register', uploadAdmin, validateAdmin.register(), adminController.adminRegister);
 
 router.post('/admin/login', validateAdmin.login(), adminController.adminlogin);
 
@@ -49,8 +55,9 @@ router.get('/collection/getnfts', isAuth.validateToken, collectionController.get
 
 router.get('/collection/category', isAuth.validateToken, collectionController.indexCollectionCategories);
 
-router.post('/collection/create', upload.single('image'), isAuth.validateToken, collectionController.createCollection);
+// router.post('/collection/create', upload.single('image'), isAuth.validateToken, collectionController.createCollection);
 // router.post('/collection/create', isAuth.validateToken, collectionController.createCollection);
+router.post('/collection/create', uploadCollection, isAuth.validateToken, collectionController.createCollection);
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 
@@ -94,8 +101,10 @@ router.delete('/serial/delete/:id', isAuth.validateToken, serialController.delet
 router.delete('/serial/delete-many', isAuth.validateToken, serialController.deleteManySerial);
 
 //Nft apis
-router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNft);
-router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
+// router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNft);
+// router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
+router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
+router.post('/nft/batchcreate', uploadNFT, isAuth.validateToken, nftController.createNftBatch);
 
 router.post('/nft/deploy', isAuth.validateToken, nftController.deploy17);
 
@@ -171,8 +180,9 @@ router.get('/creator/indexs', isAuth.validateToken, creatorController.indexCreat
 
 router.get('/creator/detail/:id', isAuth.validateToken, creatorController.getCreatorDetail);
 
-router.post('/creator/create', upload.single('image'), isAuth.validateToken, creatorController.createCreator);
+// router.post('/creator/create', upload.single('image'), isAuth.validateToken, creatorController.createCreator);
 // router.post('/creator/create', isAuth.validateToken, creatorController.createCreator);
+router.post('/creator/create', uploadAdmin, isAuth.validateToken, creatorController.createCreator);
 
 router.put('/creator/update/:id', isAuth.validateToken, creatorController.updateCreator);
 

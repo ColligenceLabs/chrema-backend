@@ -9,6 +9,7 @@ const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
 var collectionUploadRepository = require('../../repositories/collection_upload_repository');
 const consts = require('../../utils/consts');
+const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -87,6 +88,7 @@ module.exports = {
             //upload file
             // await collectionUploadRepository(req, res);
 
+            console.log('============>', req.file)
             // let my_file = req.files.file[0];
             let my_file = req.file;
 
@@ -144,6 +146,9 @@ module.exports = {
             //     });
             //     // }
             // }
+            await fs.mkdir(`./uploads/${req.body.contract_address}/thumbnail`, { recursive: true }, (err) => {
+                if (err) throw err;
+            });
             return handlerSuccess(req, res, collection);
             // } else {
             //     return handlerError(req, res, ErrorMessage.NFT_ALREADY_IN_COLLECTION);

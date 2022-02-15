@@ -1,4 +1,4 @@
-var {body, param} = require('express-validator');
+var {body, param, check} = require('express-validator');
 const {AdminModel} = require('../models');
 const ErrorMessage = require('../utils/errorMessage').ErrorMessage;
 const {checkObjectId} = require('../utils/helper');
@@ -9,7 +9,7 @@ module.exports = {
 
     register: () => {
         return [
-            body('full_name').not().isEmpty().withMessage('Missing full_name parameter').trim(),
+            check('full_name').not().isEmpty().withMessage('Missing full_name parameter').trim(),
             body('email', 'Missing email parameter')
                 .isLength({min: 1})
                 .trim()
