@@ -34,8 +34,8 @@ const CollectionSchema = new Schema(
         },
         creator_id: {
             type: Schema.Types.ObjectId,
-            ref: 'Creator',
-            required: true,
+            ref: 'Admin',
+            required: false,
         },
         contract_address: {
             type: String,
