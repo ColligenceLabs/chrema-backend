@@ -131,8 +131,8 @@ module.exports = {
 
             //check contract
             // TODO: 2021.12.28 추후 수정할 수 도 있음. 지금은 DB에 직접 contract를 추가하도록 한다.
-            let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
-            let contractId = new ObjectID(contract._id);
+            // let contract = await contractRepository.findByContractAddress(process.env.NFT_CONTRACT_ADDR);
+            // let contractId = new ObjectID(contract._id);
 
             let quantity = req.body.quantity;
             let tokenIds = [];
@@ -148,6 +148,7 @@ module.exports = {
             }
             //nft default
             for (let i = 0; i < quantity; i++) {
+                console.log('--------', i)
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
@@ -176,25 +177,30 @@ module.exports = {
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
-                    ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+                    // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+                    ...(req.body?.category && {category: req.body.category}),
                     ...(req.body?.description && {description: req.body.description}),
                     ...(req.body?.rarity && {rarity: req.body.rarity}),
-                    contract_id: contractId,
+                    // contract_id: contractId,
                 };
     
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
-                    metadata_ipfs.category = JSON.parse(req.body.category);
-                    newNft.metadata.category = JSON.parse(req.body.category);
+                    // metadata_ipfs.category = JSON.parse(req.body.category);
+                    // newNft.metadata.category = JSON.parse(req.body.category);
+                    metadata_ipfs.category = req.body.category;
+                    newNft.metadata.category = req.body.category;
                 }
                 if (req.body.quantity) {
-                    metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+                    // metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
+                    metadata_ipfs.total_minted = req.body.quantity;
                 }
 
                 //thumbnail check
                 if (typeof req.files.thumbnail != 'undefined') {
                     metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
+                // console.log('----->', newNft)
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
                 // remove ipfs links array from metadata
@@ -214,9 +220,11 @@ module.exports = {
                     newNft.quantity_selling = 0;
                 }
 
+                console.log('------>', metadata_ipfs_link.Hash)
                 // write json file
                 await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
 
+                console.log('====> ', newNft)
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
     
