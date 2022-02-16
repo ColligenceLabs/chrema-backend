@@ -132,7 +132,7 @@ router.put(
 
 router.delete('/nft/delete/:id', isAuth.validateToken, nftController.deleteNft);
 
-router.delete('/nft/delete-many', isAuth.validateToken, nftController.deleteManyNft);
+router.put('/nft/delete-many', isAuth.validateToken, nftController.deleteManyNft);
 
 //Transaction apis
 router.post('/transaction/create', isAuth.validateToken, transactionController.createTx);
