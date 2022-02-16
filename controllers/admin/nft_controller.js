@@ -169,6 +169,7 @@ module.exports = {
                         category: [],
                     },
                     // company_id: req.body.company_id,
+                    collection_id: req.body.collection_id,
                     creator_id: req.body.creator_id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
@@ -682,6 +683,7 @@ module.exports = {
 
     async updateSchedule(req, res, next) {
         try {
+            console.log('--->', req.body)
             var data = getUpdateScheduleBodys(req.body);
 
             if (isEmptyObject(data)) {
