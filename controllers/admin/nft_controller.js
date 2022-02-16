@@ -48,6 +48,7 @@ module.exports = {
     // TODOS: 대량의 민트 (2000개 이상)를 안정적으로 하는 로직 만들기
     // TODOS: category 추가하기 (배열로)
 
+    // Minting NFTs via KAS API
     createNftBatch: async (req, res, next) => {
         try {
             var errors = validationResult(req);
@@ -308,7 +309,31 @@ module.exports = {
         }
     },
 
-    // TODO : 소스 정리... 기존 로직 Comments 삭제
+    deploy37: async (req, res, next) => {
+        console.log(req.body)
+        var errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+
+        try {
+            console.log(req.body)
+            const uri = req.body.uri;
+            const alias = req.body.alias;
+
+            console.log('========>', uri)
+            let contract = await nftBlockchain._deploy37(uri, alias);
+            console.log('========>', contract)
+
+            return handlerSuccess(req, res, contract);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    // Minting NFTs via frontend Metamask
     createNft: async (req, res, next) => {
         try {
             var errors = validationResult(req);

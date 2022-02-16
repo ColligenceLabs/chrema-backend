@@ -87,6 +87,34 @@ module.exports = {
         }
     },
 
+    _deploy37: async (nuri, alias) => {
+        try {
+            let result = await caver.kas.kip37.deploy(
+                uri,
+                alias
+            );
+
+            let newContract = '';
+            do {
+                const contracts = await caver.kas.kip37.getContractList();
+                contracts.items.map((contract) => {
+                    if (contract.alias === alias) {
+                        if (contract.address !== 'updateme') {
+                            newContract = contract.address;
+                        } else {
+
+                        }
+                    }
+                })
+                await sleep(3000);
+            } while(newContract === '')
+            return {status: 200, address: newContract};
+        } catch (error) {
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
     _mint17: async (contract, to, tokenId, tokenUri) => {
         try {
             let result = await caver.kas.kip17.mint(
