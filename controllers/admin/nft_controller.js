@@ -170,7 +170,7 @@ module.exports = {
                     },
                     // company_id: req.body.company_id,
                     collection_id: req.body.collection_id,
-                    creator_id: req.body.creator_id,
+                    creator_id: creator._id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
