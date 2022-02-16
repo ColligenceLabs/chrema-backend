@@ -50,6 +50,8 @@ router.get('/admin/detail/:id', isAuth.validateToken, adminController.getDetailA
 
 router.put('/admin/update/:id', isAuth.validateToken, adminController.updateAdmin);
 
+router.put('/admin/password/:id', isAuth.validateToken, adminController.updatePassword);
+
 //Collection apis
 router.get('/collection/getnfts', isAuth.validateToken, collectionController.getAvailableNfts);
 
