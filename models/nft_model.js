@@ -93,6 +93,10 @@ const NftSchema = new Schema(
             type: Number,
             default: SELLING_STATUS.SELL,
         },
+        transfered: {
+            type: Number,
+            default: 0,
+        },
         status: {
             type: String,
             enum: getValueInEnum(NFT_STATUS),
