@@ -1,4 +1,4 @@
-const {CollectionModel, CompanyModel, NftModel, ContractModel} = require('../models');
+const {CollectionModel, AdminModel, CompanyModel, NftModel, ContractModel} = require('../models');
 const nftRepository = require('./nft_repository');
 const {addMongooseParam} = require('../utils/helper');
 
@@ -36,6 +36,24 @@ module.exports = {
             const ids = [];
 
             companies.map((item) => {
+                ids.push(item._id);
+            });
+
+            return ids;
+        } catch (error) {
+            return null;
+        }
+    },
+
+    findByCreatorName: async function (name) {
+        const findParams = {};
+        findParams.name = addMongooseParam(findParams.name, '$regex', name);
+
+        try {
+            const creators = await AdminModel.find(findParams).lean();
+            const ids = [];
+
+            creators.map((item) => {
                 ids.push(item._id);
             });
 

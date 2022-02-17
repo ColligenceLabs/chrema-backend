@@ -425,7 +425,7 @@ async function getFindParams(filters) {
     }
 
     if (!filters.status) {
-        findParams.status = NFT_STATUS.ACTIVE;
+        findParams.status = COLLECTION_STATUS.ACTIVE;
     } else {
         findParams.status = filters.status;
     }
@@ -434,18 +434,25 @@ async function getFindParams(filters) {
         findParams.creator_id = filters.creator_id;
     }
 
-    const findByCompanyName = Object.assign({}, findParams);
+    // const findByCompanyName = Object.assign({}, findParams);
+    const findByCreatorName = Object.assign({}, findParams);
 
     if (filters.keyword) {
-        const companyIds = await collectionRepository.findByCompanyName(filters.keyword);
+        // const companyIds = await collectionRepository.findByCompanyName(filters.keyword);
+        //
+        // if (companyIds && companyIds.length > 0) {
+        //     findByCompanyName.company_id = companyIds;
+        // }
+        const creatorIds = await collectionRepository.findByCreatorName(filters.keyword);
 
-        if (companyIds && companyIds.length > 0) {
-            findByCompanyName.company_id = companyIds;
+        if (creatorIds && creatorIds.length > 0) {
+            findByCreatorName.creator_id = creatorIds;
         }
     }
 
     const findByName = Object.assign({}, findParams);
-    const findByCompanyId = Object.assign({}, findParams);
+    // const findByCompanyId = Object.assign({}, findParams);
+    const findByCreatorId = Object.assign({}, findParams);
 
     if (filters.keyword) {
         findByName.name = addMongooseParam(
@@ -455,8 +462,13 @@ async function getFindParams(filters) {
         );
 
         if (ObjectID.isValid(filters.keyword) === true) {
-            findByCompanyId.company_id = addMongooseParam(
-                findByCompanyId.company_id,
+            // findByCompanyId.company_id = addMongooseParam(
+            //     findByCompanyId.company_id,
+            //     '$eq',
+            //     filters.keyword,
+            // );
+            findByCreatorId.creator_id = addMongooseParam(
+                findByCreatorId.creator_id,
                 '$eq',
                 filters.keyword,
             );
@@ -468,11 +480,14 @@ async function getFindParams(filters) {
     };
 
     if (ObjectID.isValid(filters.keyword) === true) {
-        searchParams['$or'].push(findByCompanyId);
+        // searchParams['$or'].push(findByCompanyId);
+        searchParams['$or'].push(findByCreatorId);
     }
 
-    if (typeof findByCompanyName.company_id !== 'undefined') {
-        searchParams['$or'].push(findByCompanyName);
+    // if (typeof findByCompanyName.company_id !== 'undefined') {
+    if (typeof findByCreatorName.creator_id !== 'undefined') {
+        // searchParams['$or'].push(findByCompanyName);
+        searchParams['$or'].push(findByCreatorName);
     }
 
     console.log(searchParams['$or']);
