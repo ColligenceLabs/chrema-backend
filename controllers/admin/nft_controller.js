@@ -101,24 +101,27 @@ module.exports = {
                 await imageMove(consts.UPLOAD_PATH + thumbnailInput, targetDir + 'thumbnail/' + thumbnailOutput);
             }
 
-            //get all nft from blockchain service
-            let itemList = await nftRepository.getItemList();
-            //sort with value
-            itemList.items.sort(function (a, b) {
-                return (
-                    parseInt(b.tokenId.replace('0x', ''), 16) -
-                    parseInt(a.tokenId.replace('0x', ''), 16)
-                );
-            });
+            // TODO : nftRepository.getItemList() - made by James - 를 알 수가 없음.
+            // //get all nft from blockchain service
+            // let itemList = await nftRepository.getItemList();
+            // //sort with value
+            // itemList.items.sort(function (a, b) {
+            //     return (
+            //         parseInt(b.tokenId.replace('0x', ''), 16) -
+            //         parseInt(a.tokenId.replace('0x', ''), 16)
+            //     );
+            // });
             // get last tokenId in db
-            let lastTokenId = await listenerRepository.findLastTokenId();
-            let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
-            let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
-            if (lastTokenId && lastTokenId.length !== 0) {
-                if (tokenId < lastTokenId[0].token_id) {
-                    tokenId = parseInt(lastTokenId[0].token_id);
-                }
-            }
+            // let lastTokenId = await listenerRepository.findLastTokenId();
+            let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
+            // let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
+            // let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
+            // if (lastTokenId && lastTokenId.length !== 0) {
+            //     if (tokenId < lastTokenId[0].token_id) {
+            //         tokenId = parseInt(lastTokenId[0].token_id);
+            //     }
+            // }
+            let tokenId = parseInt(lastTokenId[0].token_id);
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
