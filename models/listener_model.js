@@ -15,9 +15,17 @@ const ListenerSchema = new Schema(
             type: String,
             required: true,
         },
+        contract_address: {
+            type: String,
+            required: false,
+        },
         contract_id: {
             type: Schema.Types.ObjectId,
             ref: 'Contract',
+        },
+        collection_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Collection',
         },
         createdAt: {
             type: Date,

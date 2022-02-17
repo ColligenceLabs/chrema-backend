@@ -1,4 +1,4 @@
-const {CollectionModel, CompanyModel, NftModel} = require('../models');
+const {CollectionModel, CompanyModel, NftModel, ContractModel} = require('../models');
 const nftRepository = require('./nft_repository');
 const {addMongooseParam} = require('../utils/helper');
 
@@ -116,5 +116,18 @@ module.exports = {
         } catch (error) {
             return error;
         }
+    },
+
+    findByContractAddress: async function (contractAddress) {
+        // let collection = await CollectionModel.findOne({contract_address: contractAddress});
+        // Double Check : contract_address from KAS API is lower case
+        let collection = await CollectionModel.findOne({
+            $or: [
+                { contract_address: contractAddress },
+                { contract_address: contractAddress.toLowerCase() }
+            ]
+        });
+        if (!collection) { return null; }
+        return collection;
     },
 };

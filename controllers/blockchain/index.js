@@ -11,6 +11,8 @@ var contractRepository = require('../../repositories/contract_repository');
 var consts = require('../../utils/consts');
 var {calcQuantitySellingNumber} = require('../../utils/helper');
 const collectionRepository = require('../../repositories/collection_repository');
+const {handlerError} = require('../../utils/handler_response');
+const {ErrorMessage} = require('../../utils/errorMessage');
 var lastBlock = 0;
 
 // load last checked block from file
@@ -55,10 +57,17 @@ async function getLastEvents() {
                     lastBlock = result[result.length - 1].blockNumber + 1;
                     console.log('update last block');
 
-                    console.log('-----> ', result)
                     // routing
                     for (let i = 0; i < result.length; i++) {
                         if (result[i].topics) {
+                            let contract = result[i].address;
+                            let collection = await collectionRepository.findByContractAddress(contract);
+                            if (!collection) {
+                                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+                            }
+                            let collectionId = new ObjectID(collection._id);
+
+                            // keccak hash : Transfer(address,address,uint256)
                             if (
                                 result[i].topics[0] ==
                                 '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
@@ -78,13 +87,15 @@ async function getLastEvents() {
 
                                     // save tokenID
                                     // TODO: 2021.12.28 추후 수정할 수 도있음. 지금은 DB에 직접 contract를 추가하도록 한다.
-                                    let contract = await contractRepository.findByContractAddress(contractAddress);
-                                    let contractId = new ObjectID(contract._id);
+                                    // let contract = await contractRepository.findByContractAddress(contractAddress);
+                                    // let contractId = new ObjectID(contract._id);
                                     let listener_save = {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.MINT,
-                                        contract_id: contractId,
+                                        // contract_id: contractId,
+                                        contract_address: contract,
+                                        collection_id: collectionId
                                     };
 
                                     await listenerRepository.create(listener_save);
@@ -141,6 +152,8 @@ async function getLastEvents() {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.BURN,
+                                        contract_address: contract,
+                                        collection_id: collectionId
                                     };
                                     await listenerRepository.create(listener_save);
 
