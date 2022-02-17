@@ -46,6 +46,7 @@ async function getLastEvents() {
     // console.log(lastBlock, toBlock);
 
     const contracts = await collectionRepository.getContracts();
+    contracts.push(process.env.NFT_CONTRACT_ADDR)
     // console.log(contracts)
 
     web3.eth.getPastLogs(
