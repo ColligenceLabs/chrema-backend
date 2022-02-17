@@ -184,6 +184,7 @@ module.exports = {
                     ...(req.body?.description && {description: req.body.description}),
                     ...(req.body?.rarity && {rarity: req.body.rarity}),
                     // contract_id: contractId,
+                    transfered: 0
                 };
     
                 let metadata_ipfs = newNft.metadata;
@@ -449,6 +450,7 @@ module.exports = {
                 ...(req.body?.description && {description: req.body.description}),
                 // ...(req.body?.rarity && {rarity: req.body.rarity}),
                 // contract_id: contractId,
+                transfered: 0
             };
 
             console.log('=======>', req.body.category)
