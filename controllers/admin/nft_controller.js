@@ -318,7 +318,12 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
 
-            let collection = await collectionRepository.findById(req.body.collection_id);
+            let nft = await collectionRepository.findById(req.body.nft_id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            let collection = await collectionRepository.findById(nft.collection_id);
             if (!collection) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
@@ -338,10 +343,12 @@ module.exports = {
                     transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
                 }
                 // update db
-                if (mintResult.status !== 200) {
-                    return handlerError(req, res, {error: mintResult.error});
+                if (transferResult.status !== 200) {
+                    return handlerError(req, res, {error: transferResult.error});
                 }
-                await nftRepository.update(nft.id, {onchain: "true"})
+
+                const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
+                await nftRepository.update(nft.id, {transfered: newAmount})
             }
 
             return handlerSuccess(req, res, nft);
