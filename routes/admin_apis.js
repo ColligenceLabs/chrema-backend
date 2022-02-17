@@ -125,6 +125,8 @@ router.put('/nft/update-schedule', isAuth.validateToken, nftController.updateSch
 
 router.put('/nft/update-onchain/:id', isAuth.validateToken, nftController.updateNftOnchain);
 
+router.put('/nft/update-transfered/:id', isAuth.validateToken, nftController.increaseTransfered);
+
 router.put(
     '/nft/update-schedule',
     validateNft.updateNftSchedule(),

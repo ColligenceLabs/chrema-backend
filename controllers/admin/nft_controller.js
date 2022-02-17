@@ -953,6 +953,32 @@ module.exports = {
             next(error);
         }
     },
+
+    async increaseTransfered(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const nft = await nftRepository.findById(req.params.id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            const newValue = parseInt(nft.transfered, 10) + parseInt(req.body.amount, 10);
+            const updateNft = await nftRepository.update(req.params.id, {
+                transfered: newValue,
+            });
+            if (!updateNft) {
+                return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateNft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
 };
 
 function getFindParams(filters) {
