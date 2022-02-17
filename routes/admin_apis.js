@@ -108,6 +108,8 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
 router.post('/nft/batchcreate', uploadNFT, isAuth.validateToken, nftController.createNftBatch);
 
+router.post('/nft/transfer', isAuth.validateToken, nftController.kasTransfercNft);
+
 router.post('/nft/kas/deploy17', isAuth.validateToken, nftController.deploy17);
 router.post('/nft/kas/deploy37', isAuth.validateToken, nftController.deploy37);
 

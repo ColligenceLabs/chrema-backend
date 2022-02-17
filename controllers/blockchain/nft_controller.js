@@ -173,6 +173,47 @@ module.exports = {
         }
     },
 
+    _transfer17: async (contract, from, to, tokenId) => {
+        const token = caver.kas.kip17.getToken(contract, tokenId);
+
+        try {
+            let result = await caver.kas.kip17.transfer(
+                contract,
+                // from,
+                token.owner,
+                token.owner,
+                to,
+                parseInt(tokenId),
+            );
+            return {status: 200, result: result};
+        } catch (error) {
+            console.log(error);
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
+    _transfer37: async (contract, from, to, tokenId, amount) => {
+        const token = caver.kas.kip17.getToken(contract, tokenId);
+
+        try {
+            let result = await caver.kas.kip37.transfer(
+                contract,
+                // from,
+                token.owner,
+                token.owner,
+                to,
+                parseInt(tokenId),
+                amount
+            );
+            return {status: 200, result: result};
+        } catch (error) {
+            console.log(error);
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
     // ========================= FOR TESTING ============================
     tokenList: async (req, res, next) => {
         let size = req.query.size;

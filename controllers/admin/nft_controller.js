@@ -310,6 +310,47 @@ module.exports = {
         }
     },
 
+    kasTransfercNft: async (req, res, next) => {
+        try {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+
+            let collection = await collectionRepository.findById(req.body.collection_id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            let contract_address = collection.contract_address;
+
+            if (req.body.auto === 'true') {
+                let from = req.body.from_address;
+                let to = req.body.to_address;
+                let tokenId = req.body.tokenId;
+                let amount = req.body.amount;
+                // transfer nft
+                let transferResult
+                if (collection.contract_type === 'KIP17') {
+                    transferResult = await nftBlockchain._transfer17(contract_address, from, to, tokenId);
+                } else if (collection.contract_type === 'KIP37') {
+                    transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
+                }
+                // update db
+                if (mintResult.status !== 200) {
+                    return handlerError(req, res, {error: mintResult.error});
+                }
+                await nftRepository.update(nft.id, {onchain: "true"})
+            }
+
+            return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     deploy37: async (req, res, next) => {
         console.log(req.body)
         var errors = validationResult(req);
