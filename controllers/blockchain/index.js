@@ -64,7 +64,7 @@ async function getLastEvents() {
                             let contract = result[i].address;
                             let collection = await collectionRepository.findByContractAddress(contract);
                             if (!collection) {
-                                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+                                continue;
                             }
                             let collectionId = new ObjectID(collection._id);
 
