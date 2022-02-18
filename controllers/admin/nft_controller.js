@@ -121,7 +121,11 @@ module.exports = {
             //         tokenId = parseInt(lastTokenId[0].token_id);
             //     }
             // }
-            let tokenId = parseInt(lastTokenId[0].token_id);
+            let tokenId = 1;
+            if (lastTokenId.length > 0) {
+                tokenId = parseInt(lastTokenId[0].token_id);
+            }
+            console.log('--------->', tokenId);
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
@@ -280,6 +284,8 @@ module.exports = {
                     continue;
                 }
             }
+
+            await nftRepository.update(nft._id, {onchain: 'true'});
 
             return handlerSuccess(req, res, nft);
         } catch (error) {
