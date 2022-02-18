@@ -105,7 +105,7 @@ module.exports = {
             return error;
         }
     },
-    create: async function (newNft, inputSerial, tokenIds) {
+    create: async function (newNft, inputSerial, tokenIds, ipfs_links) {
         try {
             let nft = await NftModel.create(newNft);
             let newSerial = {
@@ -116,6 +116,7 @@ module.exports = {
                 newSerial.index = i + 1;
                 newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
                 newSerial.token_id = tokenIds[i];
+                newSerial.ipfs_link = ipfs_links[i];
                 await SerialModel.create(newSerial);
             }
 
