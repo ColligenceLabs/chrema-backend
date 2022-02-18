@@ -167,7 +167,10 @@ module.exports = {
             const findParams = await getFindParams(req.query);
 
             let page = +req.query.page || 1;
-            let perPage = +req.query.perPage || 20;
+            let perPage;
+            if (req.query.perPage) {
+                perPage = +req.query.perPage || 20;
+            }
 
             const count = await collectionRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
