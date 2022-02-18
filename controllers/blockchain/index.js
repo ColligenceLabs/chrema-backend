@@ -201,7 +201,7 @@ async function getLastEvents() {
                                     let tx = await txRepository.findOneTx({
                                         tx_id: result[i].transactionHash,
                                     });
-                                    console.log("tx::::",tx);
+                                    // console.log("tx::::", tx);
                                     let serial = await serialRepository.findOneSerial({
                                         token_id: tokenId,
                                         transfered: consts.TRANSFERED.NOT_TRANSFER,
@@ -213,6 +213,7 @@ async function getLastEvents() {
                                             ],
                                         },
                                     });
+                                    // console.log("serial::::", serial);
 
                                     if (serial && tx) {
                                         await serialRepository.update(

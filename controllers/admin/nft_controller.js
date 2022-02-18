@@ -390,7 +390,9 @@ module.exports = {
                 // update db
                 const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
                 await nftRepository.update(nft._id, {transfered: newAmount});
-                await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
+                await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
+                // 크롤러가 처리하는 듯...
+                // await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
 
                 return handlerSuccess(req, res, {transaction: transferResult.result});
             }
