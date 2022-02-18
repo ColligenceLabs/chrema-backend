@@ -158,14 +158,14 @@ exports.imageMove = async (imgInput, renameOutput) => {
     })
 }
 
-exports.writeJson = async(linkHash,data) => {
+exports.writeJson = async(linkHash,data, num) => {
     fs.writeFile(linkHash , data, (err) => {
 
         if (err) {
             // res.status(500).send(err.stack);
             console.log("error : ", err);
         } else {
-            console.log("write json file success");
+            console.log(`write json file success ... #${num}`);
         }
      });
 };

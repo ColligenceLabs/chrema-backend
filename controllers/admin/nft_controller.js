@@ -229,7 +229,7 @@ module.exports = {
                 }
 
                 // write json file
-                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
+                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), i+1);
 
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
@@ -263,7 +263,7 @@ module.exports = {
                 newSerials.push(newSerial);
             }
 
-            let nft = await nftRepository.create(newNfts[0], newSerials[0], tokenIds);
+            let nft = await nftRepository.create(newNfts[0], newSerials[0], tokenIds, ipfs_links);
 
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
