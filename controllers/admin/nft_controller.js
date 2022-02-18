@@ -965,7 +965,9 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            const newValue = parseInt(nft.transfered, 10) + parseInt(req.body.amount, 10);
+            const newValue = parseInt(nft.transfered, 10) + parseInt(req.body.transfered, 10);
+            console.log('----->', parseInt(nft.transfered, 10), parseInt(req.body.transfered, 10));
+            console.log('----->', newValue);
             const updateNft = await nftRepository.update(req.params.id, {
                 transfered: newValue,
             });
