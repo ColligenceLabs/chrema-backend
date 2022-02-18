@@ -92,7 +92,8 @@ module.exports = {
         try {
 
             let serials = await SerialModel.find({nft_id: nftId, transfered: 0})
-                .sort({token_id: 1})
+                .sort({createdAt: 1, index: 1})
+                // .sort({token_id: 1})     // 오류 : 0x1 -> 0x10 (not 0ㅌ2)
                 // .populate({path: 'nft_id', select: 'metadata'})
                 // .populate({path: 'owner_id', select: 'uid'});
             return serials;
