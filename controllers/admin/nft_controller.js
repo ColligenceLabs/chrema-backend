@@ -35,6 +35,7 @@ const {
     IPFS_URL,
     ALT_URL,
     SELLING_STATUS,
+    TRANSFERED,
 } = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 
@@ -56,6 +57,7 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
+            console.log('------>', req.body)
             let admin_address = req.body.admin_address;
 
             let collection = await collectionRepository.findById(req.body.collection_id);
@@ -121,7 +123,7 @@ module.exports = {
             //         tokenId = parseInt(lastTokenId[0].token_id);
             //     }
             // }
-            let tokenId = 1;
+            let tokenId = 0;
             if (lastTokenId.length > 0) {
                 tokenId = parseInt(lastTokenId[0].token_id);
             }
@@ -327,9 +329,15 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
 
-            let nft = await collectionRepository.findById(req.body.nft_id);
+            let nft = await nftRepository.findById(req.body.nft_id);
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            let serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
+            console.log('----->', serials);
+            if (!serials || serials.length === 0) {
+                return handlerError(req, res, ErrorMessage.NO_NFT_IS_AVAILABLE);
             }
 
             let collection = await collectionRepository.findById(nft.collection_id);
@@ -339,26 +347,29 @@ module.exports = {
 
             let contract_address = collection.contract_address;
 
-            if (req.body.auto === 'true') {
-                let from = req.body.from_address;
-                let to = req.body.to_address;
-                let tokenId = req.body.tokenId;
-                let amount = req.body.amount;
-                // transfer nft
-                let transferResult
-                if (collection.contract_type === 'KIP17') {
-                    transferResult = await nftBlockchain._transfer17(contract_address, from, to, tokenId);
-                } else if (collection.contract_type === 'KIP37') {
-                    transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
-                }
-                // update db
-                if (transferResult.status !== 200) {
-                    return handlerError(req, res, {error: transferResult.error});
-                }
-
-                const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
-                await nftRepository.update(nft.id, {transfered: newAmount})
+            // if (req.body.auto === 'true') {
+            // let from = req.body.from_address;
+            let from = req.body.admin_address;
+            let to = req.body.to_address;
+            // let tokenId = req.body.tokenId;
+            let tokenId = serials[0].token_id;
+            let amount = req.body.amount;
+            // transfer nft
+            let transferResult
+            if (collection.contract_type === 'KIP17') {
+                transferResult = await nftBlockchain._transfer17(contract_address, from, to, tokenId);
+            } else if (collection.contract_type === 'KIP37') {
+                transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
             }
+            // update db
+            if (transferResult.status !== 200) {
+                return handlerError(req, res, {error: transferResult.error});
+            }
+            const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
+            await nftRepository.update(nft._id, {transfered: newAmount});
+console.log('===========>', serials[0]._id)
+            await serialRepository.updateById(serials[0]._id, {transfered: TRANSFERED.TRANSFERED});
+            // }
 
             return handlerSuccess(req, res, nft);
         } catch (error) {

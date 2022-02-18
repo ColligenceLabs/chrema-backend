@@ -45,6 +45,7 @@ exports.ErrorMessage = {
     //NFT error
     CREATE_NFT_IS_NOT_SUCCESS: 'Create nft is not success!',
     NFT_IS_NOT_FOUND: 'Nft is not found!',
+    NO_NFT_IS_AVAILABLE: 'No Nft is available!',
     NFT_ID_IS_INVALID: 'Nft id is invalid!',
     UPDATE_NFT_IS_NOT_SUCCESS: 'Update nft is not success!',
     DELETE_NFT_IS_NOT_SUCCESS: 'Delete nft is not success!',

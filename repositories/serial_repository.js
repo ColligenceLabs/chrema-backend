@@ -88,6 +88,18 @@ module.exports = {
             return error;
         }
     },
+    findByNftIdNotTRransfered: async function (nftId) {
+        try {
+
+            let serials = await SerialModel.find({nft_id: nftId, transfered: 0})
+                .sort({token_id: 1})
+                // .populate({path: 'nft_id', select: 'metadata'})
+                // .populate({path: 'owner_id', select: 'uid'});
+            return serials;
+        } catch (error) {
+            return error;
+        }
+    },
 
     count: async function (where) {
         try {
