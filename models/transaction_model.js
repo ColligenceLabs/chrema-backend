@@ -19,9 +19,13 @@ const TransactionSchema = new Schema(
             ref: 'Admin',
             default: null,
         },
+        // buyer: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'User',
+        //     default: null,
+        // },
         buyer: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
+            type: String,
             default: null,
         },
         reward_id: {

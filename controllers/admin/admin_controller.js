@@ -24,7 +24,6 @@ module.exports = {
         }
         try {
             const email = req.body.email;
-            console.log('====>', email)
             let admin = await adminRepository.findByEmail(email);
             if (admin) {
                 return handlerError(req, res, ErrorMessage.ACCOUNT_IS_ALREADY_EXISTED);
@@ -175,7 +174,6 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.YOUR_ACCOUNT_IS_NOT_PERMISSION_TO_UPDATE);
             }
 
-            console.log('===>', req.decoded.id, req.params.id)
             const data = await getUpdateBodys(req.body);
 
             if (data.errors.length > 0) {
@@ -225,9 +223,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
             }
 
-            console.log('===>', req.body);
             const data = await getUpdateBodys(req.body);
-            console.log('===>', data);
 
             if (data.errors.length > 0) {
                 return handlerError(req, res, data.errors.join(', '));

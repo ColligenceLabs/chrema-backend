@@ -38,6 +38,8 @@ const {
     TRANSFERED,
 } = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
+const historyRepository = require('../../repositories/history_repository');
+const txRepository = require('../../repositories/transaction_repository');
 
 module.exports = {
     classname: 'NftController',
@@ -57,7 +59,6 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
-            console.log('------>', req.body)
             let admin_address = req.body.admin_address;
 
             let collection = await collectionRepository.findById(req.body.collection_id);
@@ -68,8 +69,6 @@ module.exports = {
             //upload file
             // await uploadRepository(req, res);
             let my_file = req.files.file[0];
-
-            console.log('===> ', req.files)
 
             errors = validateCreateNft(req, res);
             if (errors) {
@@ -127,7 +126,6 @@ module.exports = {
             if (lastTokenId.length > 0) {
                 tokenId = parseInt(lastTokenId[0].token_id);
             }
-            console.log('--------->', tokenId);
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
@@ -158,7 +156,6 @@ module.exports = {
             }
             //nft default
             for (let i = 0; i < quantity; i++) {
-                console.log('--------', i)
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
@@ -212,7 +209,6 @@ module.exports = {
                 if (typeof req.files.thumbnail != 'undefined') {
                     metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
-                // console.log('----->', newNft)
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
                 // remove ipfs links array from metadata
@@ -232,11 +228,9 @@ module.exports = {
                     newNft.quantity_selling = 0;
                 }
 
-                console.log('------>', metadata_ipfs_link.Hash)
                 // write json file
                 await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
 
-                console.log('====> ', newNft)
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
     
@@ -297,7 +291,6 @@ module.exports = {
     },
 
     deploy17: async (req, res, next) => {
-        console.log(req.body)
         var errors = validationResult(req);
         if (!errors.isEmpty()) {
             let errorMsg = _errorFormatter(errors.array());
@@ -305,14 +298,11 @@ module.exports = {
         }
 
         try {
-            console.log(req.body)
             const name = req.body.name;
             const symbol = req.body.symbol;
             const alias = req.body.alias;
 
-            console.log('========>', name, symbol)
             let contract = await nftBlockchain._deploy17(name, symbol, alias);
-            console.log('========>', contract)
 
             return handlerSuccess(req, res, contract);
         } catch (error) {
@@ -334,25 +324,47 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            let serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
-            console.log('----->', serials);
-            if (!serials || serials.length === 0) {
-                return handlerError(req, res, ErrorMessage.NO_NFT_IS_AVAILABLE);
-            }
-
             let collection = await collectionRepository.findById(nft.collection_id);
             if (!collection) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
-
             let contract_address = collection.contract_address;
 
-            // if (req.body.auto === 'true') {
+            let serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
+            if (!serials || serials.length === 0) {
+                return handlerError(req, res, ErrorMessage.NO_NFT_IS_AVAILABLE);
+            }
+
+            // 어떤 걸 쓰는 게 맞을까?
+            const serial = serials[0];
+            // const serial = await serialRepository.findOneSerial({
+            //     // _id: req.body.serial_id,
+            //     _id: serials[0]._id,
+            //     status: consts.SERIAL_STATUS.ACTIVE,
+            //     // owner_id: user._id,
+            //     owner_id: null,
+            //     // nft_id: req.body.nft_id,
+            //     nft_id: nft._id,
+            //     transfered: consts.TRANSFERED.NOT_TRANSFER,
+            // });
+
+            if (!serial) {
+                return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+            }
+
+            const tx = await txRepository.createTx({
+                serial_id: serial._id,
+                seller: collection.creator_id,
+                // buyer: user.id,
+                buyer: req.body.to_address,
+                status: consts.TRANSACTION_STATUS.PROCESSING,
+            });
+
             // let from = req.body.from_address;
             let from = req.body.admin_address;
             let to = req.body.to_address;
             // let tokenId = req.body.tokenId;
-            let tokenId = serials[0].token_id;
+            let tokenId = parseInt(serial.token_id, 16);
             let amount = req.body.amount;
             // transfer nft
             let transferResult
@@ -361,17 +373,42 @@ module.exports = {
             } else if (collection.contract_type === 'KIP37') {
                 transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
             }
-            // update db
-            if (transferResult.status !== 200) {
-                return handlerError(req, res, {error: transferResult.error});
-            }
-            const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
-            await nftRepository.update(nft._id, {transfered: newAmount});
-console.log('===========>', serials[0]._id)
-            await serialRepository.updateById(serials[0]._id, {transfered: TRANSFERED.TRANSFERED});
-            // }
 
-            return handlerSuccess(req, res, nft);
+            // Update owner of serial
+            if (transferResult.status === 200) {
+                tx.tx_id = transferResult.result.transactionHash;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+
+                // create new history
+                let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = consts.HISTORY_MEMO.WALLET_TRANSFER;
+                hs.status = consts.TRANSACTION_STATUS.SUCCESS;
+                await historyRepository.createTx(hs);
+
+                // update db
+                const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
+                await nftRepository.update(nft._id, {transfered: newAmount});
+                await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
+
+                return handlerSuccess(req, res, {transaction: transferResult.result});
+            }
+
+            // Update status of transaction to ERROR
+            if (transferResult.status !== 200) {
+                tx.status = consts.TRANSACTION_STATUS.ERROR;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+
+                // create new history
+                let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = consts.HISTORY_MEMO.TRANSFER_ERROR;
+                await historyRepository.createTx(hs);
+
+                return handlerError(req, res, {transaction: transferResult.error});
+            }
         } catch (error) {
             logger.error(new Error(error));
             next(error);
@@ -379,7 +416,6 @@ console.log('===========>', serials[0]._id)
     },
 
     deploy37: async (req, res, next) => {
-        console.log(req.body)
         var errors = validationResult(req);
         if (!errors.isEmpty()) {
             let errorMsg = _errorFormatter(errors.array());
@@ -387,13 +423,10 @@ console.log('===========>', serials[0]._id)
         }
 
         try {
-            console.log(req.body)
             const uri = req.body.uri;
             const alias = req.body.alias;
 
-            console.log('========>', uri)
             let contract = await nftBlockchain._deploy37(uri, alias);
-            console.log('========>', contract)
 
             return handlerSuccess(req, res, contract);
         } catch (error) {
@@ -471,7 +504,6 @@ console.log('===========>', serials[0]._id)
             // }
 
             // get creator
-            console.log('creator_id = ', collection.creator_id)
             let creator = await adminRepository.findById(collection.creator_id, null);
             if (!creator) {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
@@ -479,7 +511,6 @@ console.log('===========>', serials[0]._id)
 
             let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
             const newTokenId = nfts.length + 1;
-            console.log('newTokenId = ', newTokenId)
 
             //nft default
             let newNft = {
@@ -521,7 +552,6 @@ console.log('===========>', serials[0]._id)
                 transfered: 0
             };
 
-            console.log('=======>', req.body.category)
             let metadata_ipfs = newNft.metadata;
             if (req.body.category) {
                 metadata_ipfs.category = req.body.category;
@@ -778,7 +808,6 @@ console.log('===========>', serials[0]._id)
 
     async updateSchedule(req, res, next) {
         try {
-            console.log('--->', req.body)
             var data = getUpdateScheduleBodys(req.body);
 
             if (isEmptyObject(data)) {
@@ -983,8 +1012,6 @@ console.log('===========>', serials[0]._id)
             }
 
             const newValue = parseInt(nft.transfered, 10) + parseInt(req.body.transfered, 10);
-            console.log('----->', parseInt(nft.transfered, 10), parseInt(req.body.transfered, 10));
-            console.log('----->', newValue);
             const updateNft = await nftRepository.update(req.params.id, {
                 transfered: newValue,
             });

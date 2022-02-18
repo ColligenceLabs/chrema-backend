@@ -177,10 +177,7 @@ module.exports = {
         const token = await caver.kas.kip17.getToken(contract, tokenId);
         const accounts = await caver.kas.wallet.getAccountList();
         const kasAddr = accounts.items[0].address;
-        console.log('-- kasAddr -->', kasAddr);
-        console.log('-- tokenId -->', parseInt(tokenId));
 
-        console.log('##########', token.owner, to)
         try {
             let result = await caver.kas.kip17.transfer(
                 contract,
@@ -190,11 +187,9 @@ module.exports = {
                 to,
                 parseInt(tokenId),
             );
-            console.log('111 =======>', result)
             // TODO : TX Receipt를 받는 방법은? Wallet API TransactionReceipt는 에러 발생...
             return {status: 200, result: result};
         } catch (error) {
-            console.log('222 ====>', error);
             logger.error(new Error(error));
             return {status: 500, error: error};
         }

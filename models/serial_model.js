@@ -10,9 +10,14 @@ const SerialSchema = new Schema(
             ref: 'Nft',
             required: true,
         },
+        // owner_id: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'User',
+        //     // required: true,
+        //     default: null,
+        // },
         owner_id: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
+            type: String,
             // required: true,
             default: null,
         },

@@ -493,7 +493,7 @@ async function getFindParams(filters) {
         searchParams['$or'].push(findByCreatorName);
     }
 
-    console.log(searchParams['$or']);
+    // console.log(searchParams['$or']);
     return searchParams;
 }
 
