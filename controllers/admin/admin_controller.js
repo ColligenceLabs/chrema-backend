@@ -115,7 +115,10 @@ module.exports = {
         try {
             const findParams = getFindParams(req.query);
             let page = +req.query.page || 1;
-            let perPage = +req.query.perPage || 5;
+            let perPage;
+            if (req.query.perPage) {
+                perPage = +req.query.perPage || 5;
+            }
 
             const count = await adminRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
@@ -174,6 +177,57 @@ module.exports = {
 
             console.log('===>', req.decoded.id, req.params.id)
             const data = await getUpdateBodys(req.body);
+
+            if (data.errors.length > 0) {
+                return handlerError(req, res, data.errors.join(', '));
+            }
+
+            if (data.updateBodys.password) {
+                let comparePassword;
+
+                await admin.comparePassword(data.updateBodys.old_password).then((data) => {
+                    comparePassword = data;
+                });
+                if (!comparePassword) {
+                    return handlerError(req, res, ErrorMessage.OLD_PASSWORD_IS_INCORRECT);
+                }
+
+                const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+                const newPass = await bcrypt.hash(data.updateBodys.password, salt);
+                data.updateBodys.password = newPass;
+            }
+
+            const update = await adminRepository.update(req.params.id, data.updateBodys);
+            if (!update) {
+                return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
+            }
+
+            return handlerSuccess(req, res, update);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    async updateMyInfo(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const validate = validateRouter(req, res);
+            if (validate) {
+                return handlerError(req, res, validate);
+            }
+
+            const admin = await adminRepository.findById(req.params.id, null);
+            if (!admin) {
+                return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
+            }
+
+            console.log('===>', req.body);
+            const data = await getUpdateBodys(req.body);
+            console.log('===>', data);
 
             if (data.errors.length > 0) {
                 return handlerError(req, res, data.errors.join(', '));
