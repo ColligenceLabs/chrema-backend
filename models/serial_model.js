@@ -30,6 +30,9 @@ const SerialSchema = new Schema(
             // required: true,
             default: '000000000',
         },
+        ipfs_link: {
+            type: String,
+        },
         index: {
             type: Number,
             default: 1,
