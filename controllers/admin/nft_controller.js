@@ -357,6 +357,7 @@ module.exports = {
                 seller: collection.creator_id,
                 // buyer: user.id,
                 buyer: req.body.to_address,
+                price: nft.price,
                 status: consts.TRANSACTION_STATUS.PROCESSING,
             });
 
@@ -1081,6 +1082,7 @@ module.exports = {
                 serial_id: serial._id,
                 seller: collection.creator_id,
                 // buyer: user.id,
+                price: nft.price,
                 buyer: req.body.to_address,
                 status: consts.TRANSACTION_STATUS.PROCESSING,
             });
