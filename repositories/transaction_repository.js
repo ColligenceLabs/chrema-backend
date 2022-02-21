@@ -5,7 +5,7 @@ module.exports = {
     findByTxId: async function (id) {
         let tx = await TransactionModel.findOne({_id: id})
             .populate('serial_id')
-            .populate({path: 'buyer', select: 'uid'});
+            // .populate({path: 'buyer', select: 'uid'});
 
         if (!tx) {
             return null;
@@ -39,13 +39,13 @@ module.exports = {
                     .sort({createdAt: -1, _id: 1})
                     .populate('serial_id')
                     .populate({path: 'seller', select: 'admin_address'})
-                    .populate({path: 'buyer', select: 'uid'});
+                    // .populate({path: 'buyer', select: 'uid'});
             } else {
                 var txs = await TransactionModel.find(findParams)
                     .sort({createdAt: -1, _id: 1})
                     .populate('serial_id')
                     .populate({path: 'seller', select: 'admin_address'})
-                    .populate({path: 'buyer', select: 'uid'});
+                    // .populate({path: 'buyer', select: 'uid'});
             }
 
             return txs;

@@ -18,9 +18,14 @@ const StatisticsSchema = new Schema(
             // type: String,
             default: null,
         },
-        company_id: {
+        // company_id: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'Company',
+        //     default: null,
+        // },
+        creator_id: {
             type: Schema.Types.ObjectId,
-            ref: 'Company',
+            ref: 'Admin',
             default: null,
         },
         collection_id: {
