@@ -447,6 +447,8 @@ module.exports = {
             }
             let admin_address = req.body.admin_address;
 
+            let ipfs_links = [];
+
             //check collection
             let collection = await collectionRepository.findById(req.body.collection_id);
             if (!collection) {
@@ -510,9 +512,11 @@ module.exports = {
             if (!creator) {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
             }
+            console.log('------->', creator)
 
             let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
             const newTokenId = nfts.length + 1;
+            console.log('------->', nfts, newTokenId)
 
             //nft default
             let newNft = {
@@ -576,7 +580,7 @@ module.exports = {
             // }
             // ipfs_links.push(ipfs_link_item);
             // newNft.ipfs_links = ipfs_links;
-            // ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
+            ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
             newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
 
             if (
@@ -587,7 +591,7 @@ module.exports = {
             }
 
             // write json file
-            await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs));
+            await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), 1);
 
             // TODO : What and why ?
             if (newNft.start_date && newNft.end_date) {
@@ -619,13 +623,14 @@ module.exports = {
                 newNft.price = 0;
             }
 
-            let nft = await nftRepository.create(newNft, newSerial, newTokenId);
+            let nft = await nftRepository.create(newNft, newSerial, newTokenId, ipfs_links);
 
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
             }
 
             if (req.body.auto === 'true') {
+                console.log('###################')
                 let to = creator.admin_address;
                 let tokenUri = newNft.ipfs_link;
                 // mint nft
@@ -642,6 +647,7 @@ module.exports = {
                 await nftRepository.update(nft.id, {onchain: "true"})
             }
 
+            console.log('========>', nft)
             return handlerSuccess(req, res, nft);
         } catch (error) {
             logger.error(new Error(error));
