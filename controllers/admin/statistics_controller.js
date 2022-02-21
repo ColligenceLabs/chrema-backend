@@ -182,13 +182,17 @@ async function getSummaryPieData() {
     });
 
     // number of company
-    let companies = await companyRepository.count();
+    // let companies = await companyRepository.count();
+    let creators = await adminRepository.count({
+        level: 'creator'
+    });
 
     result.summary = {
         nfts: nfts,
         airdrops: airdrops,
         transactions: transactions,
-        companies: companies,
+        // companies: companies,
+        creators: creators
     };
 
     // Pie chart
