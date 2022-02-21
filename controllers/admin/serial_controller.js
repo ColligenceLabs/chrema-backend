@@ -285,7 +285,7 @@ async function getFindParams(filters) {
 
     if (filters.keyword) {
         const nftIds = await nftRepository.findIdsNftByName(filters.keyword);
-        const users = await userRepository.findIdsUserByAddress(filters.keyword);
+        // const users = await userRepository.findIdsUserByAddress(filters.keyword);
 
         if (nftIds && nftIds.length > 0) {
             if (filters.nft_id) {
@@ -309,9 +309,9 @@ async function getFindParams(filters) {
             }
         }
 
-        if (users && users.length > 0) {
-            findByOwnerAddress.owner_id = users;
-        }
+        // if (users && users.length > 0) {
+        //     findByOwnerAddress.owner_id = users;
+        // }
     }
 
     const findByTokenId = Object.assign({}, findParams);

@@ -7,10 +7,10 @@ var {SERIAL_STATUS} = require('../utils/consts');
 module.exports = {
     findByIdSerial: async function (id) {
         let serial = await SerialModel.findOne({_id: id})
-            .populate({
-                path: 'owner_id',
-                select: 'uid',
-            })
+            // .populate({
+            //     path: 'owner_id',
+            //     select: 'uid',
+            // })
             .populate({
                 path: 'nft_id',
                 select: 'metadata',
@@ -36,7 +36,7 @@ module.exports = {
                 .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'nft_id', select: 'metadata'})
-                .populate({path: 'owner_id', select: 'uid'});
+                // .populate({path: 'owner_id', select: 'uid'});
             return serials;
         } catch (error) {
             return error;
@@ -49,10 +49,10 @@ module.exports = {
                 .populate({
                     path: 'nft_id',
                 })
-                .populate({
-                    path: 'owner_id',
-                    select: 'uid',
-                });
+                // .populate({
+                //     path: 'owner_id',
+                //     select: 'uid',
+                // });
             return serials;
         } catch (error) {
             return error;
@@ -71,7 +71,7 @@ module.exports = {
             let serials = await SerialModel.find({owner_id: ownerId})
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'nft_id', select: ['metadata', 'collection_id']})
-                .populate({path: 'owner_id', select: 'uid'});
+                // .populate({path: 'owner_id', select: 'uid'});
             return serials;
         } catch (error) {
             return error;
@@ -82,7 +82,7 @@ module.exports = {
             let serials = await SerialModel.find({nft_id: nftId})
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'nft_id', select: 'metadata'})
-                .populate({path: 'owner_id', select: 'uid'});
+                // .populate({path: 'owner_id', select: 'uid'});
             return serials;
         } catch (error) {
             return error;
