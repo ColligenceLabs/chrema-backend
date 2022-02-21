@@ -31,7 +31,8 @@ module.exports = {
                 .select(STATISTICS_CHART_FIELD)
                 .sort({date: 1})
                 .populate({path: 'nft_id', select: 'metadata.name'})
-                .populate({path: 'company_id', select: 'name'})
+                // .populate({path: 'company_id', select: 'name'})
+                .populate({path: 'creator_id', select: 'full_name'})
                 .populate({path: 'collection_id', select: 'name'});
             // Do something here
             return statistics;

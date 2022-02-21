@@ -49,7 +49,8 @@ module.exports = {
             creator_quantity: [],
             nftIds: [],
             collectionIds: [],
-            companyIds: [],
+            // companyIds: [],
+            creatorIds: [],
         };
 
         for (let i = 0; i < txList.length; i++) {
@@ -73,7 +74,8 @@ module.exports = {
             //calculate when type = chart
             chart = await calculate(nft, chart, 'nft', '_id');
             chart = await calculate(nft, chart, 'collection', 'collection_id');
-            chart = await calculate(nft, chart, 'company', 'company_id');
+            // chart = await calculate(nft, chart, 'company', 'company_id');
+            chart = await calculate(nft, chart, 'creator', 'creator_id');
         }
 
         line.total_revenue = line.collection_revenue + line.nft_revenue;
@@ -100,7 +102,8 @@ module.exports = {
 
         await insert(chart, 'nft', start_time);
         await insert(chart, 'collection', start_time);
-        await insert(chart, 'company', start_time);
+        // await insert(chart, 'company', start_time);
+        await insert(chart, 'creator', start_time);
     },
 };
 // chart = await calculate(nft, chart, 'nft', '_id');

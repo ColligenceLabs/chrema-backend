@@ -55,8 +55,57 @@ module.exports = {
 
             var sumaryObjects = {};
 
-            if (statistics[0].nft_id) {
-                for (let i = 0; i < statistics.length; i++) {
+            // console.log('=== statistics[0].nft_id ==========', statistics[0].nft_id )
+            // if (statistics[0].nft_id !== null) {
+            //     for (let i = 0; i < statistics.length; i++) {
+            //         console.log('%%%%%%%%%%%%%%%', statistics[i])
+            //         console.log('%%%%%%%%%%%%%%%', statistics[i].nft_id._id)
+            //         if (!listObjects.includes(statistics[i].nft_id)) {
+            //             listObjects.push(statistics[i].nft_id);
+            //         }
+            //         if (!sumaryObjects[statistics[i].nft_id._id]) {
+            //             sumaryObjects[statistics[i].nft_id._id] = 0;
+            //         }
+            //
+            //         sumaryObjects[statistics[i].nft_id._id] += statistics[i].value;
+            //     }
+            // // } else if (statistics[0].company_id) {
+            // //     for (let i = 0; i < statistics.length; i++) {
+            // //         if (!listObjects.includes(statistics[i].company_id)) {
+            // //             listObjects.push(statistics[i].company_id);
+            // //         }
+            // //         if (!sumaryObjects[statistics[i].company_id._id]) {
+            // //             sumaryObjects[statistics[i].company_id._id] = 0;
+            // //         }
+            // //
+            // //         sumaryObjects[statistics[i].company_id._id] += statistics[i].value;
+            // //     }
+            // } else if (statistics[0].creator_id) {
+            //     for (let i = 0; i < statistics.length; i++) {
+            //         if (!listObjects.includes(statistics[i].creator_id)) {
+            //             listObjects.push(statistics[i].creator_id);
+            //         }
+            //         if (!sumaryObjects[statistics[i].creator_id._id]) {
+            //             sumaryObjects[statistics[i].creator_id._id] = 0;
+            //         }
+            //
+            //         sumaryObjects[statistics[i].creator_id._id] += statistics[i].value;
+            //     }
+            // } else {
+            //     for (let i = 0; i < statistics.length; i++) {
+            //         if (!listObjects.includes(statistics[i].collection_id)) {
+            //             listObjects.push(statistics[i].collection_id);
+            //         }
+            //         if (!sumaryObjects[statistics[i].collection_id._id]) {
+            //             sumaryObjects[statistics[i].collection_id._id] = 0;
+            //         }
+            //
+            //         sumaryObjects[statistics[i].collection_id._id] += statistics[i].value;
+            //     }
+            // }
+
+            for (let i = 0; i < statistics.length; i++) {
+                if (statistics[i].nft_id) {
                     if (!listObjects.includes(statistics[i].nft_id)) {
                         listObjects.push(statistics[i].nft_id);
                     }
@@ -65,20 +114,16 @@ module.exports = {
                     }
 
                     sumaryObjects[statistics[i].nft_id._id] += statistics[i].value;
-                }
-            } else if (statistics[0].company_id) {
-                for (let i = 0; i < statistics.length; i++) {
-                    if (!listObjects.includes(statistics[i].company_id)) {
-                        listObjects.push(statistics[i].company_id);
+                 } else if (statistics[i].creator_id) {
+                    if (!listObjects.includes(statistics[i].creator_id)) {
+                        listObjects.push(statistics[i].creator_id);
                     }
-                    if (!sumaryObjects[statistics[i].company_id._id]) {
-                        sumaryObjects[statistics[i].company_id._id] = 0;
+                    if (!sumaryObjects[statistics[i].creator_id._id]) {
+                        sumaryObjects[statistics[i].creator_id._id] = 0;
                     }
 
-                    sumaryObjects[statistics[i].company_id._id] += statistics[i].value;
-                }
-            } else {
-                for (let i = 0; i < statistics.length; i++) {
+                    sumaryObjects[statistics[i].creator_id._id] += statistics[i].value;
+                }else {
                     if (!listObjects.includes(statistics[i].collection_id)) {
                         listObjects.push(statistics[i].collection_id);
                     }

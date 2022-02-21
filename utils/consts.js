@@ -86,8 +86,10 @@ module.exports = {
     ADMIN_FIELD: '_id full_name email admin_address level status image description createdAt updatedAt',
     USER_FIELD: '_id uid address status createdAt updatedAt tp_amount',
     STATISTICS_LINE_FIELD: '_id type name value date createdAt updatedAt',
+    // STATISTICS_CHART_FIELD:
+    //     '_id type name nft_id company_id collection_id value date createdAt updatedAt',
     STATISTICS_CHART_FIELD:
-        '_id type name nft_id company_id collection_id value date createdAt updatedAt',
+        '_id type name nft_id creator_id collection_id value date createdAt updatedAt',
     ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
     NFT_CONTRACT_ADDR: process.env.NFT_CONTRACT_ADDR,
     BCN_KLAYTN_URL: process.env.BCN_KLAYTN_URL,
