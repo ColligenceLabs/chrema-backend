@@ -311,7 +311,7 @@ module.exports = {
         }
     },
 
-    kasTransfercNft: async (req, res, next) => {
+    kasTransferNft: async (req, res, next) => {
         try {
             var errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -447,6 +447,7 @@ module.exports = {
             }
             let admin_address = req.body.admin_address;
 
+            let tokenIds = [];
             let ipfs_links = [];
 
             //check collection
@@ -516,6 +517,7 @@ module.exports = {
 
             let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
             const newTokenId = nfts.length + 1;
+            tokenIds.push('0x' + newTokenId.toString(16));
             console.log('------->', nfts, newTokenId)
 
             //nft default
@@ -623,7 +625,7 @@ module.exports = {
                 newNft.price = 0;
             }
 
-            let nft = await nftRepository.create(newNft, newSerial, newTokenId, ipfs_links);
+            let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
 
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
@@ -1028,6 +1030,102 @@ module.exports = {
             }
 
             return handlerSuccess(req, res, updateNft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    setNftTransferData: async (req, res, next) => {
+        try {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+
+            let nft = await nftRepository.findById(req.body.nft_id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            let collection = await collectionRepository.findById(nft.collection_id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            let serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
+            if (!serials || serials.length === 0) {
+                return handlerError(req, res, ErrorMessage.NO_NFT_IS_AVAILABLE);
+            }
+
+            // 어떤 걸 쓰는 게 맞을까?
+            const serial = serials[0];
+            // const serial = await serialRepository.findOneSerial({
+            //     // _id: req.body.serial_id,
+            //     _id: serials[0]._id,
+            //     status: consts.SERIAL_STATUS.ACTIVE,
+            //     // owner_id: user._id,
+            //     owner_id: null,
+            //     // nft_id: req.body.nft_id,
+            //     nft_id: nft._id,
+            //     transfered: consts.TRANSFERED.NOT_TRANSFER,
+            // });
+
+            if (!serial) {
+                return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+            }
+            console.log('---->', serial)
+
+            const tx = await txRepository.createTx({
+                serial_id: serial._id,
+                seller: collection.creator_id,
+                // buyer: user.id,
+                buyer: req.body.to_address,
+                status: consts.TRANSACTION_STATUS.PROCESSING,
+            });
+
+            let amount = req.body.amount;
+
+            // Update owner of serial
+            if (req.body.transactionHash) {
+                tx.tx_id = req.body.transactionHash;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+
+                // create new history
+                let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = consts.HISTORY_MEMO.WALLET_TRANSFER;
+                hs.status = consts.TRANSACTION_STATUS.SUCCESS;
+                await historyRepository.createTx(hs);
+
+                // update db
+                console.log('-------->', parseInt(nft.transfered, 10), parseInt(amount, 10));
+                const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
+                console.log('-------->', newAmount);
+                await nftRepository.update(nft._id, {transfered: newAmount});
+                await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
+                // 크롤러가 처리하는 듯...
+                // await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
+
+                console.log('########################')
+                return handlerSuccess(req, res, {result: 1});
+            }
+            // Update status of transaction to ERROR
+            else {
+                tx.status = consts.TRANSACTION_STATUS.ERROR;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+
+                // create new history
+                let hs = JSON.parse(JSON.stringify(tx));
+                hs.memo = consts.HISTORY_MEMO.TRANSFER_ERROR;
+                await historyRepository.createTx(hs);
+
+                return handlerError(req, res, {result: 0});
+            }
         } catch (error) {
             logger.error(new Error(error));
             next(error);

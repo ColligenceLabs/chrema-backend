@@ -37,10 +37,11 @@ function toAddress(hexVal) {
 
 // get events
 async function getLastEvents() {
-    var toBlock = (await web3.eth.getBlockNumber()) * 1;
+    const delay = process.env.CRAWLER_DELAY;
+    var toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
     // console.log(toBlock);
     if (toBlock - lastBlock > 4000) {
-        toBlock = lastBlock * 1 + 4000;
+        toBlock = lastBlock * 1 + 4000 - delay;
     }
 
     // console.log(lastBlock, toBlock);
@@ -201,7 +202,7 @@ async function getLastEvents() {
                                     let tx = await txRepository.findOneTx({
                                         tx_id: result[i].transactionHash,
                                     });
-                                    // console.log("tx::::", tx);
+                                    console.log("tx::::", tx);
                                     let serial = await serialRepository.findOneSerial({
                                         token_id: tokenId,
                                         transfered: consts.TRANSFERED.NOT_TRANSFER,
