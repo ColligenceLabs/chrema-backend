@@ -18,7 +18,7 @@ module.exports = {
         // let end_time = new Date(Date.UTC(now_time.getFullYear(), now_time.getMonth(), now_time.getDate(), 0, 0, 0));
         // let statistics_date = new Date(Date.UTC(now_time.getFullYear(), now_time.getMonth(), now_time.getDate() - 1, 0, 0, 0));
 
-        console.log('- date --->', start_time, end_time)
+        // console.log('- date --->', start_time, end_time)
         let adminIds = await adminRepository.getAdminIds();
 
         let findParams = {
@@ -28,7 +28,7 @@ module.exports = {
         };
         //get all transaction
         let txList = await txRepository.findAllTx(findParams);
-        console.log('- txList --->', txList)
+        // console.log('- txList --->', txList)
 
         let line = {
             nft_revenue: 0,
@@ -59,9 +59,9 @@ module.exports = {
             }
             // console.log(txList[i].serial_id.nft_id)
             let nft = await nftRepository.findOneNft({_id: txList[i].serial_id.nft_id});
-            console.log('- nft --->', nft)
+            // console.log('- nft --->', nft)
             let tx = await txRepository.findByTxId(txList[i]);
-            console.log('- tx --->', tx)
+            // console.log('- tx --->', tx)
 
             if (nft.collection_id) {
                 // line.collection_revenue += nft.price;
