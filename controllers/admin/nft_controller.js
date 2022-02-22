@@ -155,6 +155,8 @@ module.exports = {
                 decimalTokenIds.push(newTokenId.toString());
             }
             //nft default
+            const category = req.body.category.split(',');
+
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
@@ -186,7 +188,8 @@ module.exports = {
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
                     // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
-                    ...(req.body?.category && {category: req.body.category}),
+                    // ...(req.body?.category && {category: req.body.category}),
+                    ...(req.body?.category && {category}),
                     ...(req.body?.description && {description: req.body.description}),
                     ...(req.body?.rarity && {rarity: req.body.rarity}),
                     // contract_id: contractId,
@@ -197,8 +200,10 @@ module.exports = {
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
                     // newNft.metadata.category = JSON.parse(req.body.category);
-                    metadata_ipfs.category = req.body.category;
-                    newNft.metadata.category = req.body.category;
+                    // metadata_ipfs.category = req.body.category;
+                    // newNft.metadata.category = req.body.category;
+                    metadata_ipfs.category = category;
+                    newNft.metadata.category = category;
                 }
                 if (req.body.quantity) {
                     // metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
@@ -514,12 +519,12 @@ module.exports = {
             if (!creator) {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
             }
-            console.log('------->', creator)
 
             let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
             const newTokenId = nfts.length + 1;
             tokenIds.push('0x' + newTokenId.toString(16));
-            console.log('------->', nfts, newTokenId)
+
+            const category = req.body.category.split(',');
 
             //nft default
             let newNft = {
@@ -554,7 +559,8 @@ module.exports = {
                 ...(req.body?.start_date && {start_date: req.body.start_date}),
                 ...(req.body?.end_date && {end_date: req.body.end_date}),
                 ...(req.body?.status && {status: req.body.status}),
-                ...(req.body?.category && {category: req.body.category}),
+                // ...(req.body?.category && {category: req.body.category}),
+                ...(req.body?.category && {category}),
                 ...(req.body?.description && {description: req.body.description}),
                 // ...(req.body?.rarity && {rarity: req.body.rarity}),
                 // contract_id: contractId,
@@ -563,8 +569,10 @@ module.exports = {
 
             let metadata_ipfs = newNft.metadata;
             if (req.body.category) {
-                metadata_ipfs.category = req.body.category;
-                newNft.metadata.category = req.body.category;
+                // metadata_ipfs.category = req.body.category;
+                // newNft.metadata.category = req.body.category;
+                metadata_ipfs.category = category;
+                newNft.metadata.category = category;
             }
             if (req.body.quantity) {
                 metadata_ipfs.total_minted = req.body.quantity;
@@ -633,7 +641,6 @@ module.exports = {
             }
 
             if (req.body.auto === 'true') {
-                console.log('###################')
                 let to = creator.admin_address;
                 let tokenUri = newNft.ipfs_link;
                 // mint nft
@@ -650,7 +657,6 @@ module.exports = {
                 await nftRepository.update(nft.id, {onchain: "true"})
             }
 
-            console.log('========>', nft)
             return handlerSuccess(req, res, nft);
         } catch (error) {
             logger.error(new Error(error));
@@ -1076,7 +1082,6 @@ module.exports = {
             if (!serial) {
                 return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
             }
-            console.log('---->', serial)
 
             const tx = await txRepository.createTx({
                 serial_id: serial._id,
@@ -1103,15 +1108,12 @@ module.exports = {
                 await historyRepository.createTx(hs);
 
                 // update db
-                console.log('-------->', parseInt(nft.transfered, 10), parseInt(amount, 10));
                 const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
-                console.log('-------->', newAmount);
                 await nftRepository.update(nft._id, {transfered: newAmount});
                 await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
                 // 크롤러가 처리하는 듯...
                 // await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
 
-                console.log('########################')
                 return handlerSuccess(req, res, {result: 1});
             }
             // Update status of transaction to ERROR
