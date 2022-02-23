@@ -67,6 +67,8 @@ router.post('/collection/create', uploadCollection, isAuth.validateToken, collec
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 
+router.get('/collection/creator/:id', isAuth.validateToken, collectionController.getMyCollections);
+
 router.get(
     '/collection/detail/:id',
     isAuth.validateToken,
