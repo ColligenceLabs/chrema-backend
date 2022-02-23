@@ -207,6 +207,46 @@ module.exports = {
         }
     },
 
+    async updateAdminAll(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const validate = validateRouter(req, res);
+            if (validate) {
+                return handlerError(req, res, validate);
+            }
+
+            const admin = await adminRepository.findById(req.params.id, null);
+            if (!admin) {
+                return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
+            }
+
+            // TODO: admin의 email 주소가 바뀔 경우 주의할 것...
+            const superUser = await adminRepository.findById(req.decoded.id, null);
+            if (!superUser || superUser.level !== 'administrator') {
+                return handlerError(req, res, ErrorMessage.YOUR_ACCOUNT_IS_NOT_PERMISSION_TO_UPDATE);
+            }
+
+            const data = await getUpdateBodys(req.body);
+
+            if (data.errors.length > 0) {
+                return handlerError(req, res, data.errors.join(', '));
+            }
+
+            const update = await adminRepository.updateAll(req.body.ids, data.updateBodys);
+            if (!update) {
+                return handlerError(req, res, ErrorMessage.ACCOUNT_IS_NOT_FOUND);
+            }
+
+            return handlerSuccess(req, res, update);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async updateMyInfo(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {

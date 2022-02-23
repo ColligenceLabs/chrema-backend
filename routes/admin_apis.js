@@ -50,6 +50,8 @@ router.get('/admin/detail/:id', isAuth.validateToken, adminController.getDetailA
 
 router.put('/admin/update/:id', isAuth.validateToken, adminController.updateAdmin);
 
+router.put('/admin/update-status/:id', isAuth.validateToken, adminController.updateAdminAll);
+
 router.put('/admin/update-mine/:id', isAuth.validateToken, adminController.updateMyInfo);
 
 router.put('/admin/password/:id', isAuth.validateToken, adminController.updatePassword);

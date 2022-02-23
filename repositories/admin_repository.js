@@ -70,6 +70,14 @@ module.exports = {
             return error;
         }
     },
+    updateAll: async function (ids, where) {
+        try {
+            let admin = await AdminModel.updateMany({_id: {$in: ids}}, {$set: where});
+            return admin;
+        } catch (error) {
+            return error;
+        }
+    },
 
     getAdminIds: async function () {
         let admins = await AdminModel.find().sort({createdAt: -1, _id: 1});
