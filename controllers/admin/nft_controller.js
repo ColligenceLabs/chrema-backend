@@ -86,11 +86,11 @@ module.exports = {
             // await imageRename(consts.UPLOAD_PATH + imgInput, consts.UPLOAD_PATH + renameOutput);
             const targetDir = `./uploads/${collection.contract_address}/`;
             await imageMove(consts.UPLOAD_PATH + imgInput,  targetDir + renameOutput);
-            
+
             // //resize
             // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
             // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
-            
+
             //thumbnail check
             let thumbName = null;
             if (typeof req.files.thumbnail != 'undefined') {
@@ -155,7 +155,9 @@ module.exports = {
                 decimalTokenIds.push(newTokenId.toString());
             }
             //nft default
-            const category = req.body.category.split(',');
+            let category;
+            if (req.body.category)
+                category = req.body.category.split(',');
 
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
@@ -195,7 +197,7 @@ module.exports = {
                     // contract_id: contractId,
                     transfered: 0
                 };
-    
+
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -214,7 +216,7 @@ module.exports = {
                 if (typeof req.files.thumbnail != 'undefined') {
                     metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
-    
+
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
                 // remove ipfs links array from metadata
                 // let ipfs_link_item = {
@@ -238,14 +240,14 @@ module.exports = {
 
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
-    
+
                     let startDate = new Date(convertTimezone(newNft.start_date).setSeconds(0, 0));
                     if (startDate > current_time) {
                         newNft.start_date = startDate;
                     } else {
                         return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
                     }
-    
+
                     // check end_date
                     let endDate = new Date(convertTimezone(newNft.end_date).setSeconds(0, 0));
                     if (endDate > current_time && endDate > startDate) {
@@ -254,13 +256,13 @@ module.exports = {
                         return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
                     }
                 }
-    
+
                 //serial default
                 const newSerial = {
                     type: req.body.type,
                     ...(req.body?.status && {status: req.body.status}),
                 };
-    
+
                 if (newNft.type === 1) {
                     newNft.price = 0;
                 }
@@ -524,7 +526,9 @@ module.exports = {
             const newTokenId = nfts.length + 1;
             tokenIds.push('0x' + newTokenId.toString(16));
 
-            const category = req.body.category.split(',');
+            let category;
+            if (req.body.category)
+                category = req.body.category.split(',');
 
             //nft default
             let newNft = {
