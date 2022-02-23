@@ -48,7 +48,7 @@ module.exports = {
                 email: req.body.email,
                 password: req.body.password,
                 level: req.body.level,
-                image: ALT_URL + my_file.path,
+                image: ALT_URL + `creators/${my_file.filename}`,
                 description: req.body.description
             };
 
