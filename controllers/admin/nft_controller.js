@@ -634,7 +634,8 @@ module.exports = {
                 newNft.price = 0;
             }
 
-            let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
+            // let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
+            let nft = await nftRepository.createByWallet(newNft, newSerial, tokenIds, ipfs_links, collection.contract_type);
 
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
@@ -1084,6 +1085,8 @@ module.exports = {
             }
 
             const tx = await txRepository.createTx({
+                // TODO : (중요) KIP37인 경우는 어떻하지?
+                // KIP37의 경우 보낸 amount 중 첫번째 serial id만 기록됨.
                 serial_id: serial._id,
                 seller: collection.creator_id,
                 // buyer: user.id,
@@ -1110,7 +1113,12 @@ module.exports = {
                 // update db
                 const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
                 await nftRepository.update(nft._id, {transfered: newAmount});
-                await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
+                // await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
+                let ids = [];
+                for (let i = 0; i < amount; i++) {
+                    ids.push(serials[i]._id)
+                }
+                await serialRepository.updateByIds(ids, {owner_id: tx.buyer});
                 // 크롤러가 처리하는 듯...
                 // await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
 

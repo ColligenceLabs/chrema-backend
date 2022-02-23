@@ -125,6 +125,26 @@ module.exports = {
             return error;
         }
     },
+    createByWallet: async function (newNft, inputSerial, tokenIds, ipfs_links, type) {
+        try {
+            let nft = await NftModel.create(newNft);
+            let newSerial = {
+                nft_id: nft._id,
+                ...inputSerial,
+            };
+            for (let i = 0; i < nft.quantity; i++) {
+                newSerial.index = i + 1;
+                newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
+                newSerial.token_id = type === 'KIP17' ? tokenIds[i] : tokenIds[0];
+                newSerial.ipfs_link = type === 'KIP17' ? ipfs_links[i] : ipfs_links[0];
+                await SerialModel.create(newSerial);
+            }
+
+            return nft;
+        } catch (error) {
+            return error;
+        }
+    },
     update: async function (id, where) {
         try {
             let nft = await NftModel.updateOne({_id: id}, {$set: where});

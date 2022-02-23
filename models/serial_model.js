@@ -16,6 +16,10 @@ const SerialSchema = new Schema(
         //     // required: true,
         //     default: null,
         // },
+        tx_id: {
+            type: String,
+            required: false,
+        },
         owner_id: {
             type: String,
             // required: true,

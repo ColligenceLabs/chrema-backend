@@ -131,6 +131,15 @@ module.exports = {
             return error;
         }
     },
+    updateByIds: async function (ids, where) {
+        try {
+            let serial = await SerialModel.updateMany({_id: {$in: ids}}, {$set: where});
+            session.endSession();
+            return serial;
+        } catch (error) {
+            return error;
+        }
+    },
     update: async function (findParams, where) {
         try {
             let serial = await SerialModel.updateMany(findParams, {$set: where});
