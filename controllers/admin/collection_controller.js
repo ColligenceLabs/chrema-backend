@@ -350,6 +350,40 @@ module.exports = {
         }
     },
 
+    async deleteCollections(req, res, next) {
+        try {
+            // if (ObjectID.isValid(req.params.id) === false) {
+            //     return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            // }
+
+            const ids = req.body.ids;
+            for (let i = 0; i < ids.length; i++) {
+                let collection = await collectionRepository.findById(ids[i]);
+
+                if (collection.status === COLLECTION_STATUS.ACTIVE) {
+                    await collectionRepository.updateById(ids[i], {
+                        status: COLLECTION_STATUS.SUSPEND,
+                    });
+
+                    const nfts = await nftRepository.findAllNftsByCollectionId(ids[i]);
+
+                    for (let i = 0; i < nfts.length; i++) {
+                        const updateNft = await nftRepository.update(nfts[i]._id, {
+                            collection_id: null,
+                        });
+                    }
+                } else {
+                    return handlerError(req, res, ErrorMessage.DELETE_COLLECTION_IS_NOT_SUCCESS);
+                }
+            };
+
+            return handlerSuccess(req, res, 'Delete collections success');
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async addNftToCollection(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {

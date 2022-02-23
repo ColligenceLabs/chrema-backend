@@ -67,8 +67,6 @@ router.post('/collection/create', uploadCollection, isAuth.validateToken, collec
 
 router.get('/collection/indexs', isAuth.validateToken, collectionController.indexCollections);
 
-router.get('/collection/creator/:id', isAuth.validateToken, collectionController.getMyCollections);
-
 router.get(
     '/collection/detail/:id',
     isAuth.validateToken,
@@ -92,6 +90,8 @@ router.delete(
     isAuth.validateToken,
     collectionController.deleteCollection,
 );
+
+router.put('/collection/deletes', isAuth.validateToken, collectionController.deleteCollections);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);

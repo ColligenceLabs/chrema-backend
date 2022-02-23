@@ -14,6 +14,17 @@ module.exports = {
         return collection;
     },
 
+    findByIds: async function (ids) {
+        let collection = await CollectionModel.find({_id: {$in: ids}}).populate({
+            path: 'creator_id',
+            select: 'name',
+        });
+        if (!collection) {
+            return null;
+        }
+        return collection;
+    },
+
     findAll: async function (findParams, pagination) {
         try {
             let collections = await CollectionModel.find(findParams)
