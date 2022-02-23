@@ -212,7 +212,7 @@ module.exports = {
 
                 //thumbnail check
                 if (typeof req.files.thumbnail != 'undefined') {
-                    metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
+                    metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
     
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
@@ -580,7 +580,7 @@ module.exports = {
 
             //thumbnail check
             if (typeof req.files.thumbnail != 'undefined') {
-                metadata_ipfs.thumbnail = ALT_URL + 'thumbnail/' + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
+                metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
             }
 
             let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
