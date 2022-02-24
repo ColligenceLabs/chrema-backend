@@ -126,6 +126,7 @@ module.exports = {
             if (lastTokenId.length > 0) {
                 tokenId = parseInt(lastTokenId[0].token_id);
             }
+            console.log('=======>', lastTokenId, tokenId)
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
@@ -284,6 +285,7 @@ module.exports = {
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
                     // return handlerError(req, res, {error: mintResult.error});
+                    console.log('====>', )
                     continue;
                 }
             }

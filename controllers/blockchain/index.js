@@ -96,7 +96,7 @@ async function getLastEvents() {
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.MINT,
                                         // contract_id: contractId,
-                                        contract_address: contract,
+                                        contract_address: contract.toLowerCase(),
                                         collection_id: collectionId
                                     };
 
@@ -154,7 +154,7 @@ async function getLastEvents() {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.BURN,
-                                        contract_address: contract,
+                                        contract_address: contract.toLowerCase(),
                                         collection_id: collectionId
                                     };
                                     await listenerRepository.create(listener_save);
@@ -261,7 +261,7 @@ async function getLastEvents() {
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.MINT,
                                         // contract_id: contractId,
-                                        contract_address: contract,
+                                        contract_address: contract.toLowerCase(),
                                         collection_id: collectionId
                                     };
 
@@ -334,7 +334,7 @@ async function getLastEvents() {
                                         token_id: parseInt(tokenId.replace('0x', ''), 16),
                                         tx_id: result[i].transactionHash,
                                         type: consts.LISTENER_TYPE.BURN,
-                                        contract_address: contract,
+                                        contract_address: contract.toLowerCase(),
                                         collection_id: collectionId
                                     };
                                     await listenerRepository.create(listener_save);
