@@ -524,7 +524,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
             }
 
-            let nfts = await nftRepository.findAllNftsByCollectionId(req.body.collection_id);
+            let nfts = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
             const newTokenId = nfts.length + 1;
             tokenIds.push('0x' + newTokenId.toString(16));
 

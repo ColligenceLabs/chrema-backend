@@ -82,6 +82,13 @@ module.exports = {
         }
         return nfts;
     },
+    findAllOnchainNftsByCollectionId: async function (id) {
+        let nfts = await NftModel.find({collection_id: id, onchain: 'true'});
+        if (!nfts) {
+            return null;
+        }
+        return nfts;
+    },
     findAllWithArrayIds: async function (ids) {
         try {
             let users = await NftModel.find({_id: {$in: ids}});
