@@ -269,7 +269,7 @@ module.exports = {
             );
 
         var options = {
-            method: 'GET',
+            method: 'POST',
             url: 'https://ipfs.infura.io:5001/api/v0/add',
             headers: {
                 Authorization: auth,
