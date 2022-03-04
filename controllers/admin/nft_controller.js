@@ -524,14 +524,10 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
             }
 
-            let nfts = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
-            // const newTokenId = nfts.length + 1;
-            let newTokenId;
-            if (nfts.length > 0) {
-                let serials = await serialRepository.findByNftId(nfts[0]._id);
-                newTokenId = parseInt(serials[serials.length - 1].token_id, 16) + 1;
-            } else {
-                newTokenId = 1;
+            let lastNft = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
+            let newTokenId = 1;
+            if (lastNft.length > 0) {
+                newTokenId = parseInt(lastNft[0].metadata.tokenId) + 1;
             }
             tokenIds.push('0x' + newTokenId.toString(16));
             console.log('>> New Token ID = ', newTokenId);
