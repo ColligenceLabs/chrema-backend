@@ -525,8 +525,16 @@ module.exports = {
             }
 
             let nfts = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
-            const newTokenId = nfts.length + 1;
+            // const newTokenId = nfts.length + 1;
+            let newTokenId;
+            if (nfts.length > 0) {
+                let serials = await serialRepository.findByNftId(nfts[0]._id);
+                newTokenId = parseInt(serials[serials.length - 1].token_id, 16) + 1;
+            } else {
+                newTokenId = 1;
+            }
             tokenIds.push('0x' + newTokenId.toString(16));
+            console.log('>> New Token ID = ', newTokenId);
 
             let category;
             if (req.body.category)
