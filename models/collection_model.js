@@ -5,6 +5,11 @@ const {getValueInEnum, getCollectionCateValueInEnum} = require('../utils/helper'
 
 const CollectionSchema = new Schema(
     {
+        network: {
+            type: String,
+            trim: true,
+            default: 'klaytn'
+        },
         name: {
             type: String,
             required: true,

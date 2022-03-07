@@ -27,6 +27,11 @@ const AdminSchema = new Schema(
             type: String,
             default: '0x7b8340205dddee16f2f9e582c185ff5f05f4cb6e',
         },
+        solana_address: {
+            type: String,
+            require: false,
+            default: '',
+        },
         contract_admin_address: {
             type: String,
             default: '',

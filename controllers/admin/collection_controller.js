@@ -103,6 +103,7 @@ module.exports = {
             let cover_image = await nftRepository.addFileToIPFS(my_file);
 
             let newCollection = {
+                network: req.body.network,
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
                 // cover_image: ALT_URL + my_file.path,
