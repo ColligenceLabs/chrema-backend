@@ -52,6 +52,11 @@ const CollectionSchema = new Schema(
             required: true,
             trim: true,
         },
+        maximum_supply: {
+            type: Number,
+            required: false,
+            default: 0
+        },
         status: {
             type: String,
             enum: getValueInEnum(COLLECTION_STATUS),
