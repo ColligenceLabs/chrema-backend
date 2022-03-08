@@ -49,7 +49,8 @@ module.exports = {
                 password: req.body.password,
                 level: req.body.level,
                 image: ALT_URL + `creators/${my_file.filename}`,
-                description: req.body.description
+                description: req.body.description,
+                solana_address: req.body.solana_address
             };
 
             let createAdmin = await adminRepository.create(newAccountAdmin);
