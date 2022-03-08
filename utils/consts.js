@@ -83,7 +83,7 @@ module.exports = {
         CHART: 'chart',
     },
     USER_TABLE: [{name: 'No'}, {name: 'Address'}, {name: 'Status'}, {name: 'Action'}],
-    ADMIN_FIELD: '_id full_name email admin_address level status image description createdAt updatedAt',
+    ADMIN_FIELD: '_id full_name email admin_address solana_address level status image description createdAt updatedAt',
     USER_FIELD: '_id uid address status createdAt updatedAt tp_amount',
     STATISTICS_LINE_FIELD: '_id type name value date createdAt updatedAt',
     // STATISTICS_CHART_FIELD:
