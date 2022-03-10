@@ -83,7 +83,7 @@ module.exports = {
         return nfts;
     },
     findAllOnchainNftsByCollectionId: async function (id) {
-        let nfts = await NftModel.find({collection_id: id, onchain: 'true'});
+        let nfts = await NftModel.find({collection_id: id, onchain: 'true'}).sort({createdAt: -1});
         if (!nfts) {
             return null;
         }

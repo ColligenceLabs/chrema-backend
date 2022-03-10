@@ -738,7 +738,7 @@ module.exports = {
             // });
             // get last tokenId in db
             // let lastTokenId = await listenerRepository.findLastTokenId();
-            let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
+            // let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
             // let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
             // let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
             // if (lastTokenId && lastTokenId.length !== 0) {
@@ -746,11 +746,13 @@ module.exports = {
             //         tokenId = parseInt(lastTokenId[0].token_id);
             //     }
             // }
+
+            let lastNft = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
             let tokenId = 0;
-            if (lastTokenId.length > 0) {
-                tokenId = parseInt(lastTokenId[0].token_id);
+            if (lastNft.length > 0) {
+                tokenId = parseInt(lastNft[0].metadata.tokenId) + parseInt(lastNft[0].quantity, 10) - 1;
             }
-            console.log('=======>', lastTokenId, tokenId)
+            console.log('== Last Token ID =====>', tokenId)
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
@@ -1016,6 +1018,11 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
+            const collectection = await collectionRepository.findById(net.collection_id);
+            if (!collectection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
             // TODO : Why ?
             // if (req.body.status === NFT_STATUS.SUSPEND) {
             //     return handlerError(req, res, ErrorMessage.STATUS_UPDATE_INVALID);
@@ -1031,6 +1038,15 @@ module.exports = {
             });
             if (!updateNft) {
                 return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+            }
+
+            if (collectection.network === 'solana' && req.body.onchain === 'active') {
+                const updateNft = await nftRepository.update(req.params.id, {
+                    status: 'active',
+                });
+                if (!updateNft) {
+                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                }
             }
 
             return handlerSuccess(req, res, updateNft);
