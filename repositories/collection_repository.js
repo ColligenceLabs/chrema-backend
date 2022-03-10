@@ -137,7 +137,7 @@ module.exports = {
             const contracts = [];
 
             collections.map((item) => {
-                if (item.contract_address !== 'undefined') {
+                if (item.contract_address !== 'undefined' && item.contract_type !== 'SPLToken') {
                     contracts.push(item.contract_address);
                 }
             });
