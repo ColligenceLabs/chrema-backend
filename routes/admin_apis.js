@@ -104,6 +104,8 @@ router.get('/serial/detail/:id', isAuth.validateToken, serialController.getDetai
 
 router.put('/serial/update/:id', isAuth.validateToken, serialController.updateSerial);
 
+router.put('/serial/update-serials', isAuth.validateToken, serialController.updateSerials);
+
 router.delete('/serial/delete/:id', isAuth.validateToken, serialController.deleteSerial);
 
 router.delete('/serial/delete-many', isAuth.validateToken, serialController.deleteManySerial);
@@ -113,6 +115,7 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 // router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
 router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
 router.post('/nft/batchcreate', uploadNFT, isAuth.validateTokenForKAS, nftController.createNftBatch);
+router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.createSolanaNft);
 
 router.post('/nft/transfer', isAuth.validateTokenForKAS, nftController.kasTransferNft);
 

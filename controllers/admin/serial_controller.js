@@ -194,6 +194,36 @@ module.exports = {
         }
     },
 
+    async updateSerials(req, res, next) {
+        try {
+            const data = getUpdateBodys(req.body);
+            if (isEmptyObject(data)) {
+                return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            }
+
+            const ids = [];
+            const start = parseInt(req.body.tokenId, 10);
+            const end = start + parseInt(req.body.quantity, 10);
+            for (let i = start; i < end; i++) {
+                const serial = await serialRepository.findAllSerialWithCondition({nft_id: req.body.nftId});
+                if (!serial) {
+                    return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+                }
+                ids.push(serial._id);
+            }
+
+            const updateSerials = await serialRepository.updateByIds(ids, {status: 'active'});
+            if (!updateSerials) {
+                return handlerError(req, res, ErrorMessage.UPDATE_SERIAL_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateSerials);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async deleteSerial(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {

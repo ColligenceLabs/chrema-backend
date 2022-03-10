@@ -675,6 +675,239 @@ module.exports = {
         }
     },
 
+    // Minting NFTs via frontend Metamask
+    createSolanaNft: async (req, res, next) => {
+        try {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+            let admin_address = req.body.admin_address;
+
+            let tokenIds = [];
+            let ipfs_links = [];
+
+            //check collection
+            let collection = await collectionRepository.findById(req.body.collection_id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            // let my_file = req.files.file[0];
+
+            errors = validateCreateNft(req, res);
+            if (errors) {
+                return handlerError(req, res, errors[0]);
+            }
+
+            // let result = await nftRepository.addFileToIPFS(my_file);
+            // let imgName = my_file.originalname.split('.');
+            // let imgInput = my_file.filename;
+            //
+            // let renameOutput = result.Hash + '.' + imgName[imgName.length -1];
+            // // let imgOutput = result.Hash + '_resize.' + imgName[imgName.length -1];
+            //
+            // //rename
+            // const targetDir = `./uploads/${collection.contract_address}/`;
+            // await imageMove(consts.UPLOAD_PATH + imgInput,  targetDir + renameOutput);
+            //
+            // //resize
+            // // if (imgName[imgName.length -1].toLowerCase() === 'jpg'| imgName[imgName.length -1].toLowerCase() === 'png' | imgName[imgName.length -1].toLowerCase() === 'jpeg')
+            // // await imageResize('./uploads/' + renameOutput, './uploads/' + imgOutput);
+            //
+            // //thumbnail check
+            // let thumbName = null;
+            // if (typeof req.files.thumbnail != 'undefined') {
+            //     let my_thumbnail = req.files.thumbnail[0];
+            //     thumbName = my_thumbnail.filename.split('.');
+            //     let thumbnailInput = my_thumbnail.filename;
+            //     let thumbnailOutput = result.Hash + '_thumbnail.' + thumbName[thumbName.length -1];
+            //     await imageMove(consts.UPLOAD_PATH + thumbnailInput, targetDir + 'thumbnail/' + thumbnailOutput);
+            // }
+
+            // tokenId를 순차적으로 증가 시키기 위해서 정보를 가지고 옴.
+            //get all nft from blockchain service
+            // let itemList = await nftRepository.getItemList();
+            // //sort with value
+            // itemList.items.sort(function (a, b) {
+            //     return (
+            //         parseInt(b.tokenId.replace('0x', ''), 16) -
+            //         parseInt(a.tokenId.replace('0x', ''), 16)
+            //     );
+            // });
+            // // get last tokenId in db
+            // let lastTokenId = await listenerRepository.findLastTokenId();
+            // let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
+            // let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
+            // if (lastTokenId && lastTokenId.length !== 0) {
+            //     if (tokenId < lastTokenId[0].token_id) {
+            //         tokenId = parseInt(lastTokenId[0].token_id);
+            //     }
+            // }
+
+            // get creator
+            let creator = await adminRepository.findById(collection.creator_id, null);
+            if (!creator) {
+                return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
+            }
+
+            let lastNft = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
+            let newTokenId = 1;
+            if (lastNft.length > 0) {
+                newTokenId = parseInt(lastNft[0].metadata.tokenId) + 1;
+            }
+            tokenIds.push('0x' + newTokenId.toString(16));
+            console.log('>> New Token ID = ', newTokenId);
+
+            let category;
+            if (req.body.category)
+                category = req.body.category.split(',');
+
+            //nft default
+            let newNft = {
+                metadata: {
+                    name: req.body.name,
+                    description: req.body.description,
+                    // TODO : Collection 이미지 위치로 설정해야 함.
+                    // image: IPFS_URL + result.Hash,
+                    // alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                    // content_Type: imgName[imgName.length -1],
+                    // cid: result.Hash,
+                    image: collection.cover_image,
+                    alt_url: ALT_URL + collection.path.replace('/talkenNft', ''),
+                    content_Type: collection.path.split('.')[1],
+
+                    tokenId: newTokenId.toString(),
+                    total_minted: "",
+                    external_url: req.body.external_url,
+                    attributes: [],
+                    minted_by: creator.full_name,
+                    // thumbnail: ALT_URL + my_thumbnail.path,
+                    thumbnail: ALT_URL + collection.path.replace('/talkenNft', ''),
+                    creator_name: creator.full_name,
+                    creator_icon: creator.image,
+                    category: [],
+                    // category: req.body.category.toString(),
+                },
+                // company_id: req.body.company_id,
+                collection_id: req.body.collection_id,
+                creator_id: creator._id,
+                type: req.body.type * 1,
+                contract_type: req.body.contract_type,
+                onchain: "false",
+                ...(req.body?.price && {price: req.body.price}),
+                ...(req.body?.quantity && {quantity: req.body.quantity}),
+                ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
+                ...(req.body?.start_date && {start_date: req.body.start_date}),
+                ...(req.body?.end_date && {end_date: req.body.end_date}),
+                ...(req.body?.status && {status: req.body.status}),
+                // ...(req.body?.category && {category: req.body.category}),
+                ...(req.body?.category && {category}),
+                ...(req.body?.description && {description: req.body.description}),
+                // ...(req.body?.rarity && {rarity: req.body.rarity}),
+                // contract_id: contractId,
+                transfered: 0
+            };
+
+            let metadata_ipfs = newNft.metadata;
+            if (req.body.category) {
+                // metadata_ipfs.category = req.body.category;
+                // newNft.metadata.category = req.body.category;
+                metadata_ipfs.category = category;
+                newNft.metadata.category = category;
+            }
+            if (req.body.quantity) {
+                metadata_ipfs.total_minted = req.body.quantity;
+            }
+
+            // //thumbnail check
+            // if (typeof req.files.thumbnail != 'undefined') {
+            //     metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
+            // }
+
+            // let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
+            // // remove ipfs links array from metadata
+            // // let ipfs_link_item = {
+            // //     tokenId: decimalTokenIds[i],
+            // //     path: IPFS_URL + metadata_ipfs_link.Hash
+            // // }
+            // // ipfs_links.push(ipfs_link_item);
+            // // newNft.ipfs_links = ipfs_links;
+            // ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
+            // newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+
+            if (
+                req.body?.status === NFT_STATUS.SUSPEND ||
+                req.body?.status === NFT_STATUS.INACTIVE
+            ) {
+                newNft.quantity_selling = 0;
+            }
+
+            // write json file
+            // await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), 1);
+
+            // TODO : What and why ?
+            if (newNft.start_date && newNft.end_date) {
+                let current_time = new Date();
+
+                let startDate = new Date(convertTimezone(newNft.start_date).setSeconds(0, 0));
+                if (startDate > current_time) {
+                    newNft.start_date = startDate;
+                } else {
+                    return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
+                }
+
+                // check end_date
+                let endDate = new Date(convertTimezone(newNft.end_date).setSeconds(0, 0));
+                if (endDate > current_time && endDate > startDate) {
+                    newNft.end_date = endDate;
+                } else {
+                    return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
+                }
+            }
+
+            //serial default
+            const newSerial = {
+                type: req.body.type,
+                ...(req.body?.status && {status: req.body.status}),
+            };
+
+            if (newNft.type === 1) {
+                newNft.price = 0;
+            }
+
+            // let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
+            let nft = await nftRepository.createByWallet(newNft, newSerial, tokenIds, ipfs_links, collection.contract_type);
+
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
+            }
+
+            if (req.body.auto === 'true') {
+                let to = creator.admin_address;
+                let tokenUri = newNft.ipfs_link;
+                // mint nft
+                let mintResult
+                if (collection.contract_type === 'KIP17') {
+                    mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
+                } else if (collection.contract_type === 'KIP37') {
+                    mintResult = await nftBlockchain._mint37(collection.contract_address, to, newTokenId, req.body.quality);
+                }
+                // update db
+                if (mintResult.status !== 200) {
+                    return handlerError(req, res, {error: mintResult.error});
+                }
+                await nftRepository.update(nft.id, {onchain: "true"})
+            }
+
+            return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async indexNfts(req, res, next) {
         try {
             var findParams = getFindParams(req.query);
