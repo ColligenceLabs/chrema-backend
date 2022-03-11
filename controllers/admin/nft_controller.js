@@ -1018,8 +1018,8 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            const collectection = await collectionRepository.findById(nft.collection_id);
-            if (!collectection) {
+            const collection = await collectionRepository.findById(nft.collection_id);
+            if (!collection) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
 
@@ -1040,7 +1040,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
             }
 
-            if (collectection.network === 'solana' && req.body.onchain === 'active') {
+            if (collection.network === 'solana' && req.body.onchain === 'active') {
                 const updateNft = await nftRepository.update(req.params.id, {
                     status: 'active',
                 });
