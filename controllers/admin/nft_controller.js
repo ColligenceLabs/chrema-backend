@@ -1018,7 +1018,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            const collectection = await collectionRepository.findById(net.collection_id);
+            const collectection = await collectionRepository.findById(nft.collection_id);
             if (!collectection) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
