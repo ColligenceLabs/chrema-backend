@@ -34,6 +34,9 @@ const SerialSchema = new Schema(
             // required: true,
             default: '000000000',
         },
+        contract_address: {
+            type: String
+        },
         ipfs_link: {
             type: String,
         },

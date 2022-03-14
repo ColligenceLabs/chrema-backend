@@ -196,20 +196,22 @@ module.exports = {
 
     async updateSerials(req, res, next) {
         try {
-            const data = getUpdateBodys(req.body);
-            if (isEmptyObject(data)) {
-                return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
-            }
+            // const data = getUpdateBodys(req.body);
+            // console.log('--->', data)
+            // if (isEmptyObject(data)) {
+            //     return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            // }
 
             const ids = [];
             const start = parseInt(req.body.tokenId, 10);
             const end = start + parseInt(req.body.quantity, 10);
             for (let i = start; i < end; i++) {
-                const serial = await serialRepository.findAllSerialWithCondition({nft_id: req.body.nftId});
+                const hexId = '0x' + i.toString(16);
+                const serial = await serialRepository.findAllSerialWithCondition({nft_id: req.body.nftId, token_id: hexId});
                 if (!serial) {
                     return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
                 }
-                ids.push(serial._id);
+                ids.push(serial[0]._id);
             }
 
             const updateSerials = await serialRepository.updateByIds(ids, {status: 'active'});
@@ -217,8 +219,16 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.UPDATE_SERIAL_IS_NOT_SUCCESS);
             }
 
+            for (let i = 0; i < ids.length; i++) {
+                const updateSerial = await serialRepository.updateById(ids[i], {contract_address: req.body.pubkeys[i]});
+                if (!updateSerial) {
+                    return handlerError(req, res, ErrorMessage.UPDATE_SERIAL_IS_NOT_SUCCESS);
+                }
+            }
+
             return handlerSuccess(req, res, updateSerials);
         } catch (error) {
+            console.log(error);
             logger.error(new Error(error));
             next(error);
         }
