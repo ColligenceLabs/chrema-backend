@@ -52,6 +52,11 @@ const CollectionSchema = new Schema(
             required: true,
             trim: true,
         },
+        description: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         maximum_supply: {
             type: Number,
             required: false,
