@@ -116,7 +116,8 @@ module.exports = {
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
                 ...(req.body?.category && {category: req.body.category}),
-                category: req.body.category
+                category: req.body.category,
+                maximum_supply: req.body.maximum_supply ?? 0
             };
             // let nft_id = JSON.parse(req.body.nft_id);
             //
