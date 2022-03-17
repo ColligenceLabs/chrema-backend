@@ -31,7 +31,7 @@ module.exports = {
                 .skip((pagination.page - 1) * pagination.perPage)
                 .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
-                .populate({path: 'creator_id', select: 'name'});
+                .populate({path: 'creator_id', select: ['full_name', 'image']});
             return collections;
         } catch (error) {
             return error;
