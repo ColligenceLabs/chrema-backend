@@ -13,6 +13,7 @@ var rewardController = require('../controllers/admin/reward_controller');
 var statisticsController = require('../controllers/admin/statistics_controller');
 var historyController = require('../controllers/admin/history_controller');
 var creatorController = require('../controllers/admin/creator_controller');
+var marketController = require('../controllers/admin/market_controller');
 
 // Require request validators
 var validateAdmin = require('../requests/validate_admin');
@@ -94,6 +95,9 @@ router.delete(
 );
 
 router.put('/collection/deletes', isAuth.validateToken, collectionController.deleteCollections);
+
+// Market APIs
+router.get('/market/indexs', isAuth.validateToken, marketController.indexCollections);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
