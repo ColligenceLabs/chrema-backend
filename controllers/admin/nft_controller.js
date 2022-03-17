@@ -1422,6 +1422,18 @@ module.exports = {
             next(error);
         }
     },
+    userNFTs: async (req, res, next) => {
+        const address = req.query.address;
+        let size = req.query.size;
+        let cursor = req.query.cursor;
+
+        const transferResult = await nftBlockchain._userNFTs(address, size, cursor);
+        if (transferResult.status == 200) {
+            return handlerSuccess(req, res, transferResult.data);
+        } else {
+            return handlerError(req, res, {error: transferResult.response.data});
+        }
+    },
 };
 
 function getFindParams(filters) {
