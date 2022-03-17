@@ -138,6 +138,8 @@ router.put('/nft/update-transfered/:id', isAuth.validateToken, nftController.inc
 
 router.post('/nft/set-transfered', isAuth.validateToken, nftController.setNftTransferData);
 
+router.get('/nft/user-nfts', isAuth.validateToken, nftController.userNFTs);
+
 router.put(
     '/nft/update-schedule',
     validateNft.updateNftSchedule(),

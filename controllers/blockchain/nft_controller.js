@@ -1,3 +1,4 @@
+const axios = require('axios');
 const logger = require('../../utils/logger');
 const CaverExtKAS = require('caver-js-ext-kas');
 require('dotenv').config();
@@ -213,6 +214,29 @@ module.exports = {
             console.log(error);
             logger.error(new Error(error));
             return {status: 500, error: error};
+        }
+    },
+
+    _userNFTs: async (address, size, cursor) => {
+        const url = `https://th-api.klaytnapi.com/v2/account/${address}/token?kind=nft&size=${size}`;
+        const config = {
+            method: 'get',
+            url: url,
+            auth: {
+                username: accessKeyId,
+                password: secretAccessKey
+            },
+            headers: {
+                'x-chain-id': chainId,
+                'Content-Type': 'application/json'
+            }
+        }
+        try {
+            const result = await axios(config);
+            return result;
+        } catch (error) {
+            console.log(error);
+            return error;
         }
     },
 
