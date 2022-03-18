@@ -285,7 +285,7 @@ module.exports = {
                 // mint nft
                 // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
-                if (mintResult.status !== 200) {
+                if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
                     // return handlerError(req, res, {error: mintResult.error});
                     console.log('====>', mintResult.error);
                     sleep.sleep(3);
@@ -402,6 +402,7 @@ module.exports = {
             let newNfts = [];
             let newSerials = [];
             let ipfs_links = [];
+            let metadata_ipfs_link;
 
             for (let i = 0; i < quantity; i++) {
                 let newTokenId = tokenId + 1 + i;
@@ -414,6 +415,7 @@ module.exports = {
                 category = req.body.category.split(',');
 
             for (let i = 0; i < quantity; i++) {
+                console.log('----->', i)
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
@@ -451,7 +453,7 @@ module.exports = {
                     // contract_id: contractId,
                     transfered: 0
                 };
-
+                console.log('3333333')
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -465,16 +467,18 @@ module.exports = {
                     // metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
                     metadata_ipfs.total_minted = req.body.quantity;
                 }
-
+                console.log('444444444')
                 //thumbnail check
                 if (typeof req.files.thumbnail != 'undefined') {
                     metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
-
-                let metadata_ipfs_link;
+                console.log('5555555')
+                // let metadata_ipfs_link;
                 if (i === 0) {
+                    console.log('6666666')
                     const ipfsMetadata = _.omit(metadata_ipfs, 'tokenId');
                     metadata_ipfs_link = await nftRepository.addJsonToIPFS(ipfsMetadata);
+                    console.log('--->', metadata_ipfs_link)
                 }
                 // remove ipfs links array from metadata
                 // let ipfs_link_item = {
@@ -485,7 +489,7 @@ module.exports = {
                 // newNft.ipfs_links = ipfs_links;
                 ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
-
+                console.log('5555555')
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
                     req.body?.status === NFT_STATUS.INACTIVE
@@ -493,9 +497,10 @@ module.exports = {
                     newNft.quantity_selling = 0;
                 }
 
+                console.log('1111111')
                 // write json file
                 await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), i+1);
-
+                console.log('2222222')
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
 
@@ -540,7 +545,7 @@ module.exports = {
                 // mint nft
                 // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
-                if (mintResult.status !== 200) {
+                if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
                     // return handlerError(req, res, {error: mintResult.error});
                     console.log('====>', mintResult.error);
                     sleep.sleep(3);
