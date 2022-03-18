@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const sleep = require('sleep');
 const {validationResult} = require('express-validator');
 const logger = require('../../utils/logger');
 var ObjectID = require('mongodb').ObjectID;
@@ -286,7 +287,9 @@ module.exports = {
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
                     // return handlerError(req, res, {error: mintResult.error});
-                    console.log('====>', )
+                    console.log('====>', mintResult.error);
+                    sleep.sleep(3);
+                    i = i - 1;
                     continue;
                 }
             }
@@ -539,7 +542,9 @@ module.exports = {
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 if (mintResult.status !== 200) {
                     // return handlerError(req, res, {error: mintResult.error});
-                    console.log('====>', )
+                    console.log('====>', mintResult.error);
+                    sleep.sleep(3);
+                    i = i - 1;
                     continue;
                 }
             }
