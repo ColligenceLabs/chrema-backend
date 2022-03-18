@@ -27,7 +27,8 @@ exports.calcQuantitySellingNumber = (serials) => {
 
     for (let j = 0; j < serials.length; j++) {
         if (
-            (serials[j].owner_id == null || serials[j].owner_id.address === consts.ADMIN_ADDRESS) &&
+            // TODO : ADMIN_ADDRESS 부분 점검 필요
+            (serials[j].owner_id === null || serials[j].owner_id.address === consts.ADMIN_ADDRESS) &&
             serials[j].status === 'active'
         ) {
             quantity += 1;
