@@ -175,7 +175,7 @@ module.exports = {
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [],
+                        attributes: [req.body.attributes],
                         minted_by: "Talken",
                         thumbnail: "",
                         creator_name: creator.name,
@@ -313,6 +313,7 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
             let admin_address = req.body.admin_address;
+            let to_address = req.body.to_address;
 
             let collection = await collectionRepository.findById(req.body.collection_id);
             if (!collection) {
@@ -428,7 +429,7 @@ module.exports = {
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [],
+                        attributes: [req.body.attributes],
                         minted_by: "Talken",
                         thumbnail: "",
                         creator_name: creator.name,
@@ -539,7 +540,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
             }
             for (let i = 0; i < tokenIds.length; i++) {
-                let to = admin_address;
+                let to = to_address ?? admin_address;
                 let newTokenId = tokenIds[i];
                 let tokenUri = ipfs_links[i];
                 // mint nft
@@ -691,6 +692,69 @@ module.exports = {
         }
     },
 
+    kasTransfer17: async (req, res, next) => {
+        try {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+
+            let contract_address = req.body.contract_address;
+            // let from = req.body.from_address;
+            let from = req.body.admin_address;
+            let to = req.body.to_address;
+            let tokenId = req.body.tokenId;
+            // transfer nft
+            let transferResult = await nftBlockchain._transfer17(contract_address, from, to, tokenId);
+
+            // Update owner of serial
+            if (transferResult.status === 200) {
+                return handlerSuccess(req, res, {transaction: transferResult.result});
+            }
+
+            // Update status of transaction to ERROR
+            if (transferResult.status !== 200) {
+                return handlerError(req, res, {transaction: transferResult.error});
+            }
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    kasTransfer37: async (req, res, next) => {
+        try {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+
+            let contract_address = req.body.contract_address;
+            // let from = req.body.from_address;
+            let from = req.body.admin_address;
+            let to = req.body.to_address;
+            let tokenId = req.body.tokenId;
+            let amount = req.body.amount;
+            // transfer nft
+            let transferResult = await nftBlockchain._transfer37(contract_address, from, to, tokenId, amount);
+
+            // Update owner of serial
+            if (transferResult.status === 200) {
+                return handlerSuccess(req, res, {transaction: transferResult.result});
+            }
+
+            // Update status of transaction to ERROR
+            if (transferResult.status !== 200) {
+                return handlerError(req, res, {transaction: transferResult.error});
+            }
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     deploy37: async (req, res, next) => {
         var errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -812,7 +876,7 @@ module.exports = {
                     tokenId: newTokenId.toString(),
                     total_minted: "",
                     external_url: req.body.external_url,
-                    attributes: [],
+                    attributes: [req.body.attributes],
                     minted_by: creator.full_name,
                     // thumbnail: ALT_URL + my_thumbnail.path,
                     thumbnail: "",
@@ -1067,7 +1131,7 @@ module.exports = {
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [],
+                        attributes: [req.body.attributes],
                         minted_by: creator.full_name,
                         thumbnail: ALT_URL + collection.path.replace('/talkenNft', ''),
                         creator_name: creator.full_name,
