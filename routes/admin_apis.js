@@ -123,6 +123,9 @@ router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.
 
 router.post('/nft/transfer', isAuth.validateTokenForKAS, nftController.kasTransferNft);
 
+router.post('/nft/kas/transfer17', isAuth.validateTokenForKAS, nftController.kasTransfer17);
+router.post('/nft/kas/transfer37', isAuth.validateTokenForKAS, nftController.kasTransfer37);
+
 router.post('/nft/kas/deploy17', isAuth.validateToken, nftController.deploy17);
 router.post('/nft/kas/deploy37', isAuth.validateToken, nftController.deploy37);
 
