@@ -162,6 +162,8 @@ module.exports = {
             if (req.body.category)
                 category = req.body.category.split(',');
 
+            const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : [];
+
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
@@ -169,13 +171,13 @@ module.exports = {
                         name: req.body.name,
                         description: req.body.description,
                         image: IPFS_URL + result.Hash,
-                        alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                        alt_url: ALT_URL + collection.contract_address + '/' + result.Hash + '.' + imgName[imgName.length -1],
                         content_Type: imgName[imgName.length -1],
                         cid: result.Hash,
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [req.body.attributes],
+                        attributes: attributes,
                         minted_by: "Talken",
                         thumbnail: "",
                         creator_name: creator.name,
@@ -201,6 +203,7 @@ module.exports = {
                     transfered: 0
                 };
 
+                console.log('==========>', newNft)
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -415,21 +418,26 @@ module.exports = {
             if (req.body.category)
                 category = req.body.category.split(',');
 
+            const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : [];
+
             for (let i = 0; i < quantity; i++) {
                 console.log('----->', i)
+                console.log('----->', attributes)
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
                         name: req.body.name,
                         description: req.body.description,
                         image: IPFS_URL + result.Hash,
-                        alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                        // alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                        alt_url: ALT_URL + collection.contract_address + '/' + result.Hash + '.' + imgName[imgName.length -1],
                         content_Type: imgName[imgName.length -1],
                         cid: result.Hash,
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [req.body.attributes],
+                        // attributes: [],
+                        attributes: attributes,
                         minted_by: "Talken",
                         thumbnail: "",
                         creator_name: creator.name,
@@ -454,7 +462,7 @@ module.exports = {
                     // contract_id: contractId,
                     transfered: 0
                 };
-                console.log('3333333')
+                console.log('3333333', newNft)
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -864,19 +872,22 @@ module.exports = {
             if (req.body.category)
                 category = req.body.category.split(',');
 
+            const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : [];
+
             //nft default
             let newNft = {
                 metadata: {
                     name: req.body.name,
                     description: req.body.description,
                     image: IPFS_URL + result.Hash,
-                    alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                    // alt_url: ALT_URL + result.Hash + '.' + imgName[imgName.length -1],
+                    alt_url: ALT_URL + collection.contract_address + '/' + result.Hash + '.' + imgName[imgName.length -1],
                     content_Type: imgName[imgName.length -1],
                     cid: result.Hash,
                     tokenId: newTokenId.toString(),
                     total_minted: "",
                     external_url: req.body.external_url,
-                    attributes: [req.body.attributes],
+                    attributes: attributes,
                     minted_by: creator.full_name,
                     // thumbnail: ALT_URL + my_thumbnail.path,
                     thumbnail: "",
@@ -1114,6 +1125,8 @@ module.exports = {
             if (req.body.category)
                 category = req.body.category.split(',');
 
+            const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : [];
+
             for (let i = 0; i < quantity; i++) {
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
@@ -1131,7 +1144,7 @@ module.exports = {
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
-                        attributes: [req.body.attributes],
+                        attributes: attributes,
                         minted_by: creator.full_name,
                         thumbnail: ALT_URL + collection.path.replace('/talkenNft', ''),
                         creator_name: creator.full_name,
