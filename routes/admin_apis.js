@@ -144,6 +144,8 @@ router.post('/nft/set-transfered', isAuth.validateToken, nftController.setNftTra
 
 router.get('/nft/user-nfts', isAuth.validateToken, nftController.userNFTs);
 
+router.get('/nft/batch-sell', isAuth.validateToken, nftController.sellNFTs);
+
 router.put(
     '/nft/update-schedule',
     validateNft.updateNftSchedule(),

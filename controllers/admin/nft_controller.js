@@ -1698,6 +1698,34 @@ module.exports = {
             return handlerError(req, res, {error: transferResult.response.data});
         }
     },
+    sellNFTs: async (req, res, next) => {
+        // contract_address, nft_id 를 사용해서 serials 모두 sell 처리
+        // nftId check
+        const nftId = req.query.nft_id;
+        const nft = await nftRepository.findById(nftId);
+        if (!nft) {
+            return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+        }
+
+        // collectionId check
+        const collection = await collectionRepository.findById(nft.collection_id);
+        if (!collection) {
+            return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+        }
+
+        const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
+        if (!serials) {
+            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+        }
+
+        // sell nfts
+        const transferResult = await nftBlockchain._sellNFTs(collection, serials, nft.price);
+        if (transferResult.status == 200) {
+            return handlerSuccess(req, res, transferResult.data);
+        } else {
+            return handlerError(req, res, {error: transferResult.response.data});
+        }
+    },
 };
 
 function getFindParams(filters) {

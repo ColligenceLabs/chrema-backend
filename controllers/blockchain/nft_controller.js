@@ -1,12 +1,16 @@
 const axios = require('axios');
 const logger = require('../../utils/logger');
 const CaverExtKAS = require('caver-js-ext-kas');
+const marketAbi = require('../../config/abi/market.json');
+const consts = require('../../utils/consts');
+const txRepository = require('../../repositories/transaction_repository');
 require('dotenv').config();
 
 const chainId = process.env.KLAYTN_CHAIN_ID | 0;
 const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
+const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 // 테스트필요
 // const option = {
 //     headers: [
@@ -22,6 +26,11 @@ var {handlerSuccess, handlerError} = require('../../utils/handler_response');
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// add 10%
+function calculateGasMargin(value) {
+    return value.mul(caver.utils.toBN(10000).add(caver.utils.toBN(1000))).div(caver.utils.toBN(10000));
 }
 
 module.exports = {
@@ -235,9 +244,61 @@ module.exports = {
             const result = await axios(config);
             return result;
         } catch (error) {
-            console.log(error);
+            logger.error(new Error(error));
             return error;
         }
+    },
+
+    _sellNFTs: async (collection, serials, price) => {
+        const gasPrice = await caver.klay.getGasPrice();
+        const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
+        try {
+            const accounts = await caver.kas.wallet.getAccountList();
+            const kasAddr = accounts.items[0].address;
+
+            const marketContract = new caver.contract(marketAbi, marketAddress);
+            console.log(serials);
+            for (let i=0; i < serials.length; i++) {
+                try {
+                    const approve = await caver.kas.kip17.approve(collection.contract_address, kasAddr, marketContract._address, serials[i].token_id);
+                    await new Promise((resolve) => {
+                        setTimeout(async () => {
+                            const tr = await caver.kas.wallet.getTransaction(approve.transactionHash);
+                            console.log('transaction', tr);
+                            resolve();
+                        }, 2000);
+                    });
+                } catch (e) {
+                    console.log('approve fail', e);
+                    logger.log('approve fail', e);
+                }
+
+                const gasLimit = await marketContract.methods.readyToSellToken(collection.contract_address, serials[i].token_id, parsedPrice)
+                    .estimateGas({
+                        from: kasAddr
+                    });
+                const tx = await marketContract.methods.readyToSellToken(collection.contract_address, serials[i].token_id, parsedPrice).send({
+                    from: kasAddr,
+                    gasPrice,
+                    gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
+                });
+
+                await txRepository.createTx({
+                    serial_id: serials[i]._id,
+                    seller: collection.creator_id,
+                    buyer: marketAddress,
+                    price: price,
+                    status: consts.TRANSACTION_STATUS.PROCESSING,
+                    tx_id: tx.transactionHash
+                });
+                console.log('success readyToSellToken', tx);
+            }
+        } catch (e) {
+            console.log(e);
+            return {status: 500, error: e}
+        }
+
+        return {status: 200, result: 1};
     },
 
     // ========================= FOR TESTING ============================
