@@ -72,7 +72,6 @@ router.get('/collection/creator/:id', isAuth.validateToken, collectionController
 
 router.get(
     '/collection/detail/:id',
-    isAuth.validateToken,
     collectionController.getDetailCollection,
 );
 
@@ -131,7 +130,7 @@ router.post('/nft/kas/deploy37', isAuth.validateToken, nftController.deploy37);
 
 router.get('/nft/indexs', nftController.indexNfts);
 
-router.get('/nft/detail/:id', isAuth.validateToken, nftController.getDetailNft);
+router.get('/nft/detail/:id', nftController.getDetailNft);
 
 router.put('/nft/update/:id', isAuth.validateToken, nftController.updateNft);
 
