@@ -42,6 +42,7 @@ const {
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const historyRepository = require('../../repositories/history_repository');
 const txRepository = require('../../repositories/transaction_repository');
+const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'NftController',
@@ -1718,13 +1719,38 @@ module.exports = {
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
         }
 
-        // sell nfts
-        const transferResult = await nftBlockchain._sellNFTs(collection, serials, nft.price);
-        if (transferResult.status == 200) {
-            return handlerSuccess(req, res, transferResult.data);
-        } else {
-            return handlerError(req, res, {error: transferResult.response.data});
+        // loop 를 여기서 돌리자.
+        await nftBlockchain._approveSellNFTs(collection, serials);
+        const readyToSellTokens = [];
+        const failToSellTokens = [];
+        for (let i=0; i < serials.length; i++) {
+            const tx = await txRepository.createTx({
+                serial_id: serials[i]._id,
+                seller: collection.creator_id,
+                buyer: marketAddress,
+                price: nft.price,
+                status: consts.TRANSACTION_STATUS.PROCESSING,
+            });
+            const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString());
+            console.log(transferResult);
+            await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress});
+            if (transferResult.status === 200) {
+                tx.tx_id = transferResult.result;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+                readyToSellTokens.push(serials[i].token_id);
+                console.log('111');
+            } else {
+                tx.status = consts.TRANSACTION_STATUS.ERROR;
+                tx.date = Date.now();
+                tx.updatedAt = Date.now();
+                await tx.save();
+                failToSellTokens.push(serials[i].token_id);
+                console.log('222');
+            }
         }
+        return handlerSuccess(req, res, {success: readyToSellTokens, fail: failToSellTokens});
     },
 };
 

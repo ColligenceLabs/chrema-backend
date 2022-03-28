@@ -2,8 +2,6 @@ const axios = require('axios');
 const logger = require('../../utils/logger');
 const CaverExtKAS = require('caver-js-ext-kas');
 const marketAbi = require('../../config/abi/market.json');
-const consts = require('../../utils/consts');
-const txRepository = require('../../repositories/transaction_repository');
 require('dotenv').config();
 
 const chainId = process.env.KLAYTN_CHAIN_ID | 0;
@@ -248,57 +246,47 @@ module.exports = {
             return error;
         }
     },
+    _approveSellNFTs: async (collection, serials) => {
+        const accounts = await caver.kas.wallet.getAccountList();
+        const kasAddr = accounts.items[0].address;
 
-    _sellNFTs: async (collection, serials, price) => {
+        for (let i=0; i < serials.length; i++) {
+            try {
+                await caver.kas.kip17.approve(collection.contract_address, kasAddr, marketAddress, serials[i].token_id);
+            } catch (e) {
+                console.log('approve fail', e);
+                logger.error(new Error(e));
+            }
+        }
+        await sleep(2000);
+        return {status: 200, result: 1};
+    },
+    _sellNFT: async (collectionAddress, tokenId, price) => {
         const gasPrice = await caver.klay.getGasPrice();
         const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
+        const accounts = await caver.kas.wallet.getAccountList();
+        const kasAddr = accounts.items[0].address;
+        let receipt;
         try {
-            const accounts = await caver.kas.wallet.getAccountList();
-            const kasAddr = accounts.items[0].address;
-
             const marketContract = new caver.contract(marketAbi, marketAddress);
-            console.log(serials);
-            for (let i=0; i < serials.length; i++) {
-                try {
-                    const approve = await caver.kas.kip17.approve(collection.contract_address, kasAddr, marketContract._address, serials[i].token_id);
-                    await new Promise((resolve) => {
-                        setTimeout(async () => {
-                            const tr = await caver.kas.wallet.getTransaction(approve.transactionHash);
-                            console.log('transaction', tr);
-                            resolve();
-                        }, 2000);
-                    });
-                } catch (e) {
-                    console.log('approve fail', e);
-                    logger.log('approve fail', e);
-                }
-
-                const gasLimit = await marketContract.methods.readyToSellToken(collection.contract_address, serials[i].token_id, parsedPrice)
-                    .estimateGas({
-                        from: kasAddr
-                    });
-                const tx = await marketContract.methods.readyToSellToken(collection.contract_address, serials[i].token_id, parsedPrice).send({
-                    from: kasAddr,
-                    gasPrice,
-                    gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
+            const gasLimit = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice)
+                .estimateGas({
+                    from: kasAddr
                 });
 
-                await txRepository.createTx({
-                    serial_id: serials[i]._id,
-                    seller: collection.creator_id,
-                    buyer: marketAddress,
-                    price: price,
-                    status: consts.TRANSACTION_STATUS.PROCESSING,
-                    tx_id: tx.transactionHash
-                });
-                console.log('success readyToSellToken', tx);
-            }
+            receipt = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice).send({
+                from: kasAddr,
+                gasPrice,
+                gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
+            });
+            console.log('success readyToSellToken', receipt);
         } catch (e) {
             console.log(e);
+            logger.error(new Error(e));
             return {status: 500, error: e}
         }
 
-        return {status: 200, result: 1};
+        return {status: 200, result: receipt.transactionHash};
     },
 
     // ========================= FOR TESTING ============================
