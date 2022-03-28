@@ -85,6 +85,10 @@ module.exports = {
                 return handlerError(req, res, errorMsg);
             }
 
+            if (req.body.contract_address === undefined || req.body.contract_address === '') {
+                return handlerError(req, res, 'No smart contract address');
+            }
+
             //upload file
             // await collectionUploadRepository(req, res);
 

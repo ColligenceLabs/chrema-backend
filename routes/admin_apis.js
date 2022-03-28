@@ -72,7 +72,6 @@ router.get('/collection/creator/:id', isAuth.validateToken, collectionController
 
 router.get(
     '/collection/detail/:id',
-    isAuth.validateToken,
     collectionController.getDetailCollection,
 );
 
@@ -97,7 +96,7 @@ router.delete(
 router.put('/collection/deletes', isAuth.validateToken, collectionController.deleteCollections);
 
 // Market APIs
-router.get('/market/indexs', isAuth.validateToken, marketController.indexCollections);
+router.get('/market/indexs', marketController.indexCollections);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
@@ -123,12 +122,15 @@ router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.
 
 router.post('/nft/transfer', isAuth.validateTokenForKAS, nftController.kasTransferNft);
 
+router.post('/nft/kas/transfer17', isAuth.validateTokenForKAS, nftController.kasTransfer17);
+router.post('/nft/kas/transfer37', isAuth.validateTokenForKAS, nftController.kasTransfer37);
+
 router.post('/nft/kas/deploy17', isAuth.validateToken, nftController.deploy17);
 router.post('/nft/kas/deploy37', isAuth.validateToken, nftController.deploy37);
 
-router.get('/nft/indexs', isAuth.validateToken, nftController.indexNfts);
+router.get('/nft/indexs', nftController.indexNfts);
 
-router.get('/nft/detail/:id', isAuth.validateToken, nftController.getDetailNft);
+router.get('/nft/detail/:id', nftController.getDetailNft);
 
 router.put('/nft/update/:id', isAuth.validateToken, nftController.updateNft);
 
