@@ -191,7 +191,7 @@ module.exports = {
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
-                    ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
+                    ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
@@ -268,6 +268,7 @@ module.exports = {
                 const newSerial = {
                     type: req.body.type,
                     ...(req.body?.status && {status: req.body.status}),
+                    contract_address: collection.contract_address
                 };
 
                 if (newNft.type === 1) {
@@ -451,7 +452,7 @@ module.exports = {
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
-                    ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
+                    ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
@@ -534,6 +535,7 @@ module.exports = {
                 const newSerial = {
                     type: req.body.type,
                     ...(req.body?.status && {status: req.body.status}),
+                    contract_address: collection.contract_address
                 };
 
                 if (newNft.type === 1) {
@@ -905,7 +907,7 @@ module.exports = {
                 onchain: "false",
                 ...(req.body?.price && {price: req.body.price}),
                 ...(req.body?.quantity && {quantity: req.body.quantity}),
-                ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
+                ...(req.body?.quantity && {quantity_selling: 0}),
                 ...(req.body?.start_date && {start_date: req.body.start_date}),
                 ...(req.body?.end_date && {end_date: req.body.end_date}),
                 ...(req.body?.status && {status: req.body.status}),
@@ -978,6 +980,7 @@ module.exports = {
             const newSerial = {
                 type: req.body.type,
                 ...(req.body?.status && {status: req.body.status}),
+                contract_address: collection.contract_address
             };
 
             if (newNft.type === 1) {
@@ -1159,7 +1162,7 @@ module.exports = {
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
-                    ...(req.body?.quantity && {quantity_selling: req.body.quantity}),
+                    ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
                     ...(req.body?.end_date && {end_date: req.body.end_date}),
                     ...(req.body?.status && {status: req.body.status}),
@@ -1235,6 +1238,7 @@ module.exports = {
                 const newSerial = {
                     type: req.body.type,
                     ...(req.body?.status && {status: req.body.status}),
+                    contract_address: collection.contract_address
                 };
 
                 if (newNft.type === 1) {
