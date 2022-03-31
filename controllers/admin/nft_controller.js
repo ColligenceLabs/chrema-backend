@@ -204,7 +204,6 @@ module.exports = {
                     transfered: 0
                 };
 
-                console.log('==========>', newNft)
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -386,7 +385,7 @@ module.exports = {
             if (lastTokenId.length > 0) {
                 tokenId = parseInt(lastTokenId[0].token_id);
             }
-            console.log('=======>', lastTokenId, tokenId)
+            // console.log('=======>', lastTokenId, tokenId)
 
             //check company
             // let company = await companyRepository.findById(req.body.company_id);
@@ -424,8 +423,8 @@ module.exports = {
             const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : [];
 
             for (let i = 0; i < quantity; i++) {
-                console.log('----->', i)
-                console.log('----->', attributes)
+                // console.log('----->', i)
+                // console.log('----->', attributes)
                 // 수량에 맞춰 newNft를 만들고 newNfts배열에 저장
                 let newNft = {
                     metadata: {
@@ -478,15 +477,12 @@ module.exports = {
                     // metadata_ipfs.total_minted = JSON.parse(req.body.quantity);
                     metadata_ipfs.total_minted = req.body.quantity;
                 }
-                console.log('444444444')
                 //thumbnail check
                 if (typeof req.files.thumbnail != 'undefined') {
                     metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
                 }
-                console.log('5555555')
                 // let metadata_ipfs_link;
                 if (i === 0) {
-                    console.log('6666666')
                     const ipfsMetadata = _.omit(metadata_ipfs, 'tokenId');
                     metadata_ipfs_link = await nftRepository.addJsonToIPFS(ipfsMetadata);
                     console.log('--->', metadata_ipfs_link)
@@ -501,7 +497,6 @@ module.exports = {
                 ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
                 newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
-                console.log('5555555')
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
                     req.body?.status === NFT_STATUS.INACTIVE
@@ -509,10 +504,8 @@ module.exports = {
                     newNft.quantity_selling = 0;
                 }
 
-                console.log('1111111')
                 // write json file
                 await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), i+1);
-                console.log('2222222')
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
 
@@ -573,7 +566,6 @@ module.exports = {
 
             await nftRepository.update(nft._id, {onchain: 'true'});
 
-            console.log('3333333', {...nft._doc, txHashs})
             return handlerSuccess(req, res, {...nft._doc, txHashs});
         } catch (error) {
             logger.error(new Error(error));
@@ -875,7 +867,6 @@ module.exports = {
                 newTokenId = parseInt(lastNft[0].metadata.tokenId) + 1;
             }
             tokenIds.push('0x' + newTokenId.toString(16));
-            console.log('>> New Token ID = ', newTokenId);
 
             let category;
             if (req.body.category)
@@ -1839,7 +1830,6 @@ module.exports = {
                 status: consts.TRANSACTION_STATUS.PROCESSING,
             });
             const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString());
-            console.log(transferResult);
             await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress});
             if (transferResult.status === 200) {
                 tx.tx_id = transferResult.result;
@@ -1847,14 +1837,12 @@ module.exports = {
                 tx.updatedAt = Date.now();
                 await tx.save();
                 readyToSellTokens.push(serials[i].token_id);
-                console.log('111');
             } else {
                 tx.status = consts.TRANSACTION_STATUS.ERROR;
                 tx.date = Date.now();
                 tx.updatedAt = Date.now();
                 await tx.save();
                 failToSellTokens.push(serials[i].token_id);
-                console.log('222');
             }
         }
         return handlerSuccess(req, res, {success: readyToSellTokens, fail: failToSellTokens});
