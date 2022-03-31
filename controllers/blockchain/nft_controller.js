@@ -279,7 +279,7 @@ module.exports = {
                 gasPrice,
                 gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
             });
-            console.log('success readyToSellToken', receipt);
+            // console.log('success readyToSellToken', receipt);
         } catch (e) {
             console.log(e);
             logger.error(new Error(e));

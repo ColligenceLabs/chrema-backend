@@ -1514,11 +1514,21 @@ module.exports = {
                         return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
                     }
                 }
-
-                const updateNft = await nftRepository.updateSchedule(sellingStatusSellArr, input);
-                if (!updateNft) {
-                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                let successNfts = [];
+                let failNfts = [];
+                // market contract 에 readyToSell 호출
+                for (let i = 0; i < sellingStatusSellArr.length; i++) {
+                    const sellResult = await sellNFTs(sellingStatusSellArr[i]);
+                    if (sellResult.status === 200) {
+                        const updateNft = await nftRepository.updateSchedule([sellingStatusSellArr[i]], input);
+                        if (updateNft)
+                            successNfts.push(sellingStatusSellArr[i]);
+                        else
+                            failNfts.push(sellingStatusSellArr[i]);
+                    } else
+                        failNfts.push(sellingStatusSellArr[i]);
                 }
+                return handlerSuccess(req, res, {success: successNfts, fail: failNfts});
             }
 
             if (sellingStatusStopArr.length > 0) {
@@ -1532,6 +1542,8 @@ module.exports = {
                 } else {
                     return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
                 }
+
+                // TODO 판매취소 호출??
 
                 const updateNft = await nftRepository.updateSchedule(sellingStatusStopArr, data);
                 if (!updateNft) {
@@ -1783,7 +1795,6 @@ module.exports = {
                     });
                     // find nft
                     if (serial) {
-                        serial.populate()
                         const nft = serial.nft_id; //await nftRepository.findById(serial.nft_id);
                         if (nft)
                             nfts.push(nft);
@@ -1801,53 +1812,61 @@ module.exports = {
         // contract_address, nft_id 를 사용해서 serials 모두 sell 처리
         // nftId check
         const nftId = req.query.nft_id;
-        const nft = await nftRepository.findById(nftId);
-        if (!nft) {
-            return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
-        }
-
-        // collectionId check
-        const collection = await collectionRepository.findById(nft.collection_id);
-        if (!collection) {
-            return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
-        }
-
-        const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
-        if (!serials) {
-            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
-        }
-
-        // loop 를 여기서 돌리자.
-        await nftBlockchain._approveSellNFTs(collection, serials);
-        const readyToSellTokens = [];
-        const failToSellTokens = [];
-        for (let i=0; i < serials.length; i++) {
-            const tx = await txRepository.createTx({
-                serial_id: serials[i]._id,
-                seller: collection.creator_id,
-                buyer: marketAddress,
-                price: nft.price,
-                status: consts.TRANSACTION_STATUS.PROCESSING,
-            });
-            const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString());
-            await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress});
-            if (transferResult.status === 200) {
-                tx.tx_id = transferResult.result;
-                tx.date = Date.now();
-                tx.updatedAt = Date.now();
-                await tx.save();
-                readyToSellTokens.push(serials[i].token_id);
-            } else {
-                tx.status = consts.TRANSACTION_STATUS.ERROR;
-                tx.date = Date.now();
-                tx.updatedAt = Date.now();
-                await tx.save();
-                failToSellTokens.push(serials[i].token_id);
-            }
-        }
-        return handlerSuccess(req, res, {success: readyToSellTokens, fail: failToSellTokens});
+        const result = await sellNFTs(nftId);
+        if (result.status !== 200)
+           return handlerError(req, res, result.error);
+        return handlerSuccess(req, res, result);
     },
 };
+
+async function sellNFTs(nftId) {
+    const nft = await nftRepository.findById(nftId);
+    if (!nft) {
+        return {status: 500, error: ErrorMessage.NFT_IS_NOT_FOUND};
+    }
+
+    // collectionId check
+    const collection = await collectionRepository.findById(nft.collection_id);
+    if (!collection) {
+        return {status: 500, error: ErrorMessage.COLLECTION_IS_NOT_FOUND};
+    }
+
+    const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
+    if (!serials) {
+        return {status: 500, error: ErrorMessage.SERIAL_IS_NOT_FOUND};
+    }
+
+    // loop 를 여기서 돌리자.
+    await nftBlockchain._approveSellNFTs(collection, serials);
+    const readyToSellTokens = [];
+    const failToSellTokens = [];
+    for (let i=0; i < serials.length; i++) {
+        const tx = await txRepository.createTx({
+            serial_id: serials[i]._id,
+            seller: collection.creator_id,
+            buyer: marketAddress,
+            price: nft.price,
+            status: consts.TRANSACTION_STATUS.PROCESSING,
+        });
+        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString());
+        if (transferResult.status === 200) {
+            tx.tx_id = transferResult.result;
+            tx.date = Date.now();
+            tx.updatedAt = Date.now();
+            tx.status = consts.TRANSACTION_STATUS.SUCCESS
+            await tx.save();
+            readyToSellTokens.push(serials[i].token_id);
+        } else {
+            tx.status = consts.TRANSACTION_STATUS.ERROR;
+            tx.date = Date.now();
+            tx.updatedAt = Date.now();
+            await tx.save();
+            failToSellTokens.push(serials[i].token_id);
+        }
+        await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress});
+    }
+    return {status: 200, result: {success: readyToSellTokens, fail: failToSellTokens}};
+}
 
 function getFindParams(filters) {
     let findParams = {};
