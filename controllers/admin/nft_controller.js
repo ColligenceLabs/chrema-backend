@@ -234,6 +234,7 @@ module.exports = {
                 // newNft.ipfs_links = ipfs_links;
                 ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
 
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
@@ -464,7 +465,6 @@ module.exports = {
                     // contract_id: contractId,
                     transfered: 0
                 };
-                console.log('3333333', newNft)
                 let metadata_ipfs = newNft.metadata;
                 if (req.body.category) {
                     // metadata_ipfs.category = JSON.parse(req.body.category);
@@ -500,6 +500,7 @@ module.exports = {
                 // newNft.ipfs_links = ipfs_links;
                 ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
                 newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
                 console.log('5555555')
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
@@ -550,6 +551,7 @@ module.exports = {
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
             }
+            let txHashs = [];
             for (let i = 0; i < tokenIds.length; i++) {
                 let to = to_address ?? admin_address;
                 let newTokenId = tokenIds[i];
@@ -557,18 +559,22 @@ module.exports = {
                 // mint nft
                 // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
+                console.log('---- mint resule ------->', mintResult)
                 if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
                     // return handlerError(req, res, {error: mintResult.error});
                     console.log('====>', mintResult.error);
                     sleep.sleep(3);
                     i = i - 1;
                     continue;
+                } else if (mintResult.status === 200) {
+                    txHashs.push(mintResult.result.transactionHash);
                 }
             }
 
             await nftRepository.update(nft._id, {onchain: 'true'});
 
-            return handlerSuccess(req, res, nft);
+            console.log('3333333', {...nft._doc, txHashs})
+            return handlerSuccess(req, res, {...nft._doc, txHashs});
         } catch (error) {
             logger.error(new Error(error));
             next(error);
