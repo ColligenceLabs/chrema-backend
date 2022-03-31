@@ -1770,12 +1770,32 @@ module.exports = {
     },
     userNFTs: async (req, res, next) => {
         const address = req.query.address;
-        let size = req.query.size;
+        let size = 5; //req.query.size;
         let cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor);
+
         if (transferResult.status == 200) {
-            return handlerSuccess(req, res, transferResult.data);
+            let nfts = [];
+            try {
+                for (let i = 0; i < transferResult.data.items.length; i++) {
+                    // find serial
+                    const serial = await serialRepository.findOneSerialDetail({
+                        contract_address: transferResult.data.items[i].contractAddress,
+                        token_id: transferResult.data.items[i].extras.tokenId,
+                    });
+                    // find nft
+                    if (serial) {
+                        serial.populate()
+                        const nft = serial.nft_id; //await nftRepository.findById(serial.nft_id);
+                        if (nft)
+                            nfts.push(nft);
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            return handlerSuccess(req, res, nfts);
         } else {
             return handlerError(req, res, {error: transferResult.response.data});
         }

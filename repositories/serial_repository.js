@@ -29,6 +29,15 @@ module.exports = {
         }
         return serial;
     },
+    findOneSerialDetail: async function (where) {
+        let serial = await SerialModel.findOne(where)
+            .sort({createdAt: -1, _id: 1})
+            .populate({path: 'nft_id', populate: {path: 'collection_id'}});
+        if (!serial) {
+            return null;
+        }
+        return serial;
+    },
     findAll: async function (findParams, pagination) {
         try {
             let serials = await SerialModel.find(findParams)
