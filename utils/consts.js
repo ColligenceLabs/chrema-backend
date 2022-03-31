@@ -134,6 +134,42 @@ module.exports = {
             value: 'graffiti',
             title: 'Graffiti',
         },
+        ART: {
+            value: 'art',
+            title: 'Art'
+        },
+        COLLECTIBLES: {
+            value: 'collectibles',
+            title: 'Collectibles'
+        },
+        DOMAINNAMES: {
+            value: 'domainNames',
+            title: 'Domain Names'
+        },
+        MUSIC: {
+            value: 'music',
+            title: 'Music'
+        },
+        PHOTOGRAPHY: {
+            value: 'photography',
+            title: 'Photography'
+        },
+        SPORTS: {
+            value: 'sports',
+            title: 'Sports'
+        },
+        TRADINGCARDS: {
+            value: 'tradingCards',
+            title: 'Trading Cards'
+        },
+        UTILITY: {
+            value: 'utility',
+            title: 'Utility'
+        },
+        VIRTUALWORLDS: {
+            value: 'virtualWorlds',
+            title: 'Virtual Worlds'
+        },
         // KPOP: {
         //     value: 'kpop',
         //     title: 'Kpop',
