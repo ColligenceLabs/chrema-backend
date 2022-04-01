@@ -1817,6 +1817,21 @@ module.exports = {
            return handlerError(req, res, result.error);
         return handlerSuccess(req, res, result);
     },
+    selectTokenId: async (req, res, next) => {
+        const nftId = req.query.nft_id;
+        const serials = await serialRepository.findByNftIdAndUpdate(nftId);
+        console.log(serials);
+        if (serials.length > 0)
+            return handlerSuccess(req, res, serials[0].token_id);
+        else
+            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+    },
+    cancelBuy: async (req, res, next) => {
+        const nftId = req.query.nft_id;
+        const tokenId = req.query.token_id;
+        const result = await serialRepository.update({nft_id: nftId, token_id: tokenId}, {status: SERIAL_STATUS.ACTIVE});
+        return handlerSuccess(req, res, result);
+    }
 };
 
 async function sellNFTs(nftId) {

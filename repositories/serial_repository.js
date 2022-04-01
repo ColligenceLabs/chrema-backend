@@ -2,7 +2,6 @@ const {SerialModel, UserModel, AdminModel, TransactionModel} = require('../model
 var nftBlockchain = require('../controllers/blockchain/nft_controller');
 var mongoose = require('mongoose');
 var consts = require('../utils/consts');
-var {SERIAL_STATUS} = require('../utils/consts');
 
 module.exports = {
     findByIdSerial: async function (id) {
@@ -92,6 +91,20 @@ module.exports = {
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'nft_id', select: 'metadata'})
                 // .populate({path: 'owner_id', select: 'uid'});
+            return serials;
+        } catch (error) {
+            return error;
+        }
+    },
+    findByNftIdAndUpdate: async function (nftId) {
+        try {
+            let serials = await SerialModel.find({nft_id: nftId, status: consts.SERIAL_STATUS.ACTIVE})
+                .sort({createdAt: 1, _id: 1}).limit(1);
+            if (serials.length > 0) {
+                serials[0].status = consts.SERIAL_STATUS.SELLING;
+                serials[0].updatedAt = Date.now();
+                serials[0].save();
+            }
             return serials;
         } catch (error) {
             return error;

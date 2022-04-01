@@ -148,6 +148,9 @@ router.get('/nft/user-nfts', isAuth.validateToken, nftController.userNFTs);
 
 router.get('/nft/batch-sell', isAuth.validateToken, nftController.sellNFTs);
 
+router.get('/nft/select-tokenid', isAuth.validateToken, nftController.selectTokenId);
+router.get('/nft/cancel-buy', isAuth.validateToken, nftController.cancelBuy);
+
 router.put(
     '/nft/update-schedule',
     validateNft.updateNftSchedule(),
