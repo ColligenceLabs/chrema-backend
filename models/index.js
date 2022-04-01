@@ -12,4 +12,5 @@ module.exports = {
     HistoryModel: require('./history_model'),
     ContractModel: require('./contract_model'),
     CreatorModel: require('./creator_model'),
+    TradeModel: require('./trade_model'),
 };
