@@ -1,11 +1,21 @@
 const Web3 = require('web3');
 const web3 = new Web3(process.env.PROVIDER_URL);
+const CaverExtKAS = require('caver-js-ext-kas');
 const fs = require('fs');
 const consts = require('../../utils/consts');
 var ObjectID = require('mongodb').ObjectID;
 const collectionRepository = require('../../repositories/collection_repository');
-const {NftModel, SerialModel, TransactionModel, ListenerModel} = require('../../models');
+const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
+const marketAbi = require('../../config/abi/market.json');
 let lastBlock = 0;
+
+const chainId = process.env.KLAYTN_CHAIN_ID | 0;
+const accessKeyId = process.env.ACCESS_KEY_ID;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
+const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
+
+const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
+const marketContract =  new caver.contract(marketAbi, marketAddress);
 
 // load last checked block from file
 function loadConf() {
@@ -29,10 +39,11 @@ function hexToAddress(hexVal) {
 
 // get events
 async function getLastEvents() {
-    let toBlock = (await web3.eth.getBlockNumber()) * 1;
+    const delay = process.env.CRAWLER_DELAY;
+    let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
     // console.log(toBlock);
     if (toBlock - lastBlock > 4000) {
-        toBlock = lastBlock * 1 + 4000;
+        toBlock = lastBlock * 1 + 4000 - delay;
     }
     // console.log(lastBlock, toBlock);
 
@@ -241,10 +252,62 @@ async function getLastEvents() {
     );
 }
 
+async function getMarketEvents() {
+    const delay = process.env.CRAWLER_DELAY;
+    let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
+    // console.log(toBlock);
+    if (toBlock - lastBlock > 4000) {
+        toBlock = lastBlock * 1 + 4000 - delay;
+    }
+    // console.log(lastBlock, toBlock);
+
+    marketContract.getPastEvents('allEvents', {fromBlock: 85762200, toBlock: toBlock})
+        .then(async function (events) {
+            for (let i = 0; events.length > i; i++ ) {
+                try {
+                    if (events[i].event === 'Trade'){
+                        const tokenIdHex = '0x' + events[i].returnValues.tokenId.toString(16);
+                        let serial = await SerialModel.findOneAndUpdate(
+                            {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.SELLING},
+                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner: events[i].returnValues.buyer}},
+                            {returnNewDocument: true}
+                        );
+                        if (!serial) continue;
+                        const nft = await NftModel.findOneAndUpdate({_id: serial.nft_id._id},
+                            {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
+                        await TradeModel.create({
+                            tx_hash: events[i].transactionHash,
+                            seller: events[i].returnValues.seller,
+                            buyer: events[i].returnValues.buyer,
+                            contract_address: events[i].returnValues.nft,
+                            token_id: tokenIdHex,
+                            price: caver.utils.convertFromPeb(events[i].returnValues.price, 'KLAY'),
+                            fee: caver.utils.convertFromPeb(events[i].returnValues.fee, 'KLAY'),
+                            collection_id: nft.collection_id,
+                            serial_id: serial.id,
+                        });
+                        console.log(events[i].transactionHash, 'Trade create success.');
+                    }
+                    else if (events[i].event === 'CancelSellToken'){
+                        // console.log(events[i]);
+                    }
+                    else if (events[i].event !== 'Ask') {
+                        // what mean Ask event??
+                        // console.log(events[i]);
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        });
+}
+
 // init
 loadConf();
 
 // set timer to get events every 2 seconds
 setInterval(function () {
     getLastEvents();
+    getMarketEvents();
 }, 2000);
+
