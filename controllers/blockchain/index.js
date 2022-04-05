@@ -261,7 +261,7 @@ async function getMarketEvents() {
     }
     // console.log(lastBlock, toBlock);
 
-    marketContract.getPastEvents('allEvents', {fromBlock: 85762200, toBlock: toBlock})
+    marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
             for (let i = 0; events.length > i; i++ ) {
                 try {
@@ -307,7 +307,7 @@ loadConf();
 
 // set timer to get events every 2 seconds
 setInterval(function () {
-    getLastEvents();
     getMarketEvents();
+    getLastEvents();
 }, 2000);
 
