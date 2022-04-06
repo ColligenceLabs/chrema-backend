@@ -14,9 +14,6 @@ const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
-const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
-const marketContract =  new caver.contract(marketAbi, marketAddress);
-
 // load last checked block from file
 function loadConf() {
     if (fs.existsSync('lastcheckedblock.conf')) {
@@ -249,7 +246,9 @@ async function getLastEvents() {
             }
             console.log(err);
         },
-    );
+    ).catch((e) => {
+        console.log('collection contract getEvents', e);
+    });
 }
 
 async function getMarketEvents() {
@@ -260,6 +259,8 @@ async function getMarketEvents() {
         toBlock = lastBlock * 1 + 4000 - delay;
     }
     // console.log(lastBlock, toBlock);
+    const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
+    const marketContract =  new caver.contract(marketAbi, marketAddress);
 
     marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
@@ -299,6 +300,8 @@ async function getMarketEvents() {
                     console.log(e);
                 }
             }
+        }).catch((e) => {
+            console.log('market contract getEvents', e);
         });
 }
 
