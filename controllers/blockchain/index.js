@@ -9,6 +9,7 @@ const marketAbi = require('../../config/abi/market.json');
 let lastBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
+const useCrawler = process.env.USE_CRAWLER;
 
 // load last checked block from file
 function loadConf() {
@@ -34,6 +35,7 @@ function hexToAddress(hexVal) {
 async function getLastEvents(toBlock) {
     const contracts = await collectionRepository.getContracts();
 
+    console.log('=====>', contracts);
     web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
         {fromBlock: lastBlock, toBlock: toBlock, address: contracts},
@@ -285,18 +287,21 @@ async function getMarketEvents(toBlock) {
         });
 }
 
-// init
-loadConf();
+if (useCrawler === 'true') {
+    // init
+    loadConf();
 
-// set timer to get events every 2 seconds
-setInterval(async function () {
-    const delay = process.env.CRAWLER_DELAY;
-    let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
-    // console.log(toBlock);
-    if (toBlock - lastBlock > 4000) {
-        toBlock = lastBlock * 1 + 4000 - delay;
-    }
-    await getMarketEvents(toBlock);
-    getLastEvents(toBlock);
-}, 2000);
+    // set timer to get events every 2 seconds
+    setInterval(async function () {
+        const delay = process.env.CRAWLER_DELAY;
+        let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
+        // console.log(toBlock);
+        if (toBlock - lastBlock > 4000) {
+            toBlock = lastBlock * 1 + 4000 - delay;
+        }
+        await getMarketEvents(toBlock);
+        getLastEvents(toBlock);
+    }, 2000);
+}
+
 
