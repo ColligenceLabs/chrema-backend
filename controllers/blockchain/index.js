@@ -32,7 +32,6 @@ function hexToAddress(hexVal) {
 
 // get events
 async function getLastEvents(toBlock) {
-    console.log('3333');
     const contracts = await collectionRepository.getContracts();
 
     web3.eth.getPastLogs(
@@ -243,7 +242,6 @@ async function getLastEvents(toBlock) {
 async function getMarketEvents(toBlock) {
     const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
 
-    console.log('1111');
     await marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
             for (let i = 0; events.length > i; i++ ) {
@@ -285,7 +283,6 @@ async function getMarketEvents(toBlock) {
         }).catch((e) => {
             console.log('market contract getEvents', e);
         });
-    console.log('2222');
 }
 
 // init
