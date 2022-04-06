@@ -19,6 +19,10 @@ const CollectionSchema = new Schema(
             type: String,
             required: true,
         },
+        image_link: {
+            type: String,
+            required: false,
+        },
         path: {
             type: String,
             required: false,
