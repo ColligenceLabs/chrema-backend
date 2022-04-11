@@ -249,12 +249,15 @@ async function getMarketEvents(toBlock) {
             for (let i = 0; events.length > i; i++ ) {
                 try {
                     if (events[i].event === 'Trade'){
-                        const tokenIdHex = '0x' + events[i].returnValues.tokenId.toString(16);
+                        console.log(events[i].transactionHash, 'Trade event handle start.');
+                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                        console.log(events[i].returnValues.nft.toLowerCase(), tokenIdHex);
                         let serial = await SerialModel.findOneAndUpdate(
                             {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.SELLING},
                             {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner: events[i].returnValues.buyer}},
                             {returnNewDocument: true}
                         );
+                        console.log(serial);
                         if (!serial) continue;
                         const nft = await NftModel.findOneAndUpdate({_id: serial.nft_id._id},
                             {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
@@ -264,8 +267,8 @@ async function getMarketEvents(toBlock) {
                             buyer: events[i].returnValues.buyer,
                             contract_address: events[i].returnValues.nft,
                             token_id: tokenIdHex,
-                            price: caver.utils.convertFromPeb(events[i].returnValues.price, 'KLAY'),
-                            fee: caver.utils.convertFromPeb(events[i].returnValues.fee, 'KLAY'),
+                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                            fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
                             collection_id: nft.collection_id,
                             serial_id: serial.id,
                         });
