@@ -1298,6 +1298,25 @@ module.exports = {
         }
     },
 
+    async indexNftsR(req, res, next) {
+        try {
+            var findParams = getFindParams(req.query);
+
+            const nfts = await nftRepository.findRandom(findParams);
+            if (!nfts) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            const productRes = convertProductResponse(nfts);
+            return handlerSuccess(req, res, {
+                items: productRes
+            });
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async getDetailNft(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {
