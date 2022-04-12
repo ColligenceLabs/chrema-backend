@@ -98,6 +98,8 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 // Market APIs
 router.get('/market/indexs', marketController.indexCollections);
 
+router.get('/market/indexsR', marketController.indexCollectionsR);
+
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
 

@@ -206,6 +206,39 @@ module.exports = {
         }
     },
 
+    async indexCollectionsR(req, res, next) {
+        try {
+            validateRouter(req, res);
+            const findParams = await getFindParams(req.query);
+            const count = req.body.count ? req.body.count : 1;
+
+            const collections = await collectionRepository.findAll(findParams, );
+            if (!collections) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            let collectionsResp = [];
+            for (let i = 0; i < collections.length; i++) {
+                const nfts = await nftRepository.findAllNftsByCollectionId(collections[i]._id);
+                if (nfts) {
+                    const products = convertProductResponse(nfts);
+                    const selling = products.filter((prod) => prod.selling === true);
+                    if (selling.length) {
+                        collectionsResp.push(collections[i]);
+                    }
+                }
+            };
+
+            return handlerSuccess(req, res, {
+                items: collectionsResp.sort(() => Math.random() - Math.random()).slice(0, count),
+                selling: []
+            });
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async getMyCollections(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {
