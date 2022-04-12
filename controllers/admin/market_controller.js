@@ -210,9 +210,9 @@ module.exports = {
         try {
             validateRouter(req, res);
             const findParams = await getFindParams(req.query);
-            const count = req.body.count ? req.body.count : 1;
+            const count = req.query.count ? req.query.count : 1;
 
-            const collections = await collectionRepository.findAll(findParams, );
+            const collections = await collectionRepository.findAll(findParams, {page: null, perPage: null});
             if (!collections) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
