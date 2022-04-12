@@ -1467,18 +1467,18 @@ module.exports = {
 
     async updateSchedule(req, res, next) {
         try {
-            var data = getUpdateScheduleBodys(req.body);
+            const data = getUpdateScheduleBodys(req.body);
 
             if (isEmptyObject(data)) {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
 
-            var nfts = await nftRepository.findByIds(req.body.ids);
+            const nfts = await nftRepository.findByIds(req.body.ids);
 
             if (!nfts.length) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
-
+            const useKas = req.body.use_kas;
             let current_time = new Date();
             let input = {};
             const errorNftIds = [];
@@ -1535,19 +1535,27 @@ module.exports = {
                 }
                 let successNfts = [];
                 let failNfts = [];
-                // market contract 에 readyToSell 호출
-                for (let i = 0; i < sellingStatusSellArr.length; i++) {
-                    const sellResult = await sellNFTs(sellingStatusSellArr[i]);
-                    if (sellResult.status === 200) {
-                        const updateNft = await nftRepository.updateSchedule([sellingStatusSellArr[i]], input);
-                        if (updateNft)
-                            successNfts.push(sellingStatusSellArr[i]);
-                        else
+                if (useKas == true) {
+                    // market contract 에 readyToSell 호출
+                    for (let i = 0; i < sellingStatusSellArr.length; i++) {
+                        const sellResult = await sellNFTs(sellingStatusSellArr[i]);
+                        if (sellResult.status === 200) {
+                            const updateNft = await nftRepository.updateSchedule([sellingStatusSellArr[i]], input);
+                            if (updateNft)
+                                successNfts.push(sellingStatusSellArr[i]);
+                            else
+                                failNfts.push(sellingStatusSellArr[i]);
+                        } else
                             failNfts.push(sellingStatusSellArr[i]);
-                    } else
-                        failNfts.push(sellingStatusSellArr[i]);
+                    }
+                    if (failNfts.length > 0)
+                        return handlerError(req, res, {success: successNfts, fail: failNfts});
+                } else {
+                    const updateNft = await nftRepository.updateSchedule(sellingStatusSellArr, data);
+                    if (!updateNft) {
+                        return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                    }
                 }
-                return handlerSuccess(req, res, {success: successNfts, fail: failNfts});
             }
 
             if (sellingStatusStopArr.length > 0) {

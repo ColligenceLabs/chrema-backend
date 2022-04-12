@@ -1,6 +1,5 @@
 const Web3 = require('web3');
 const web3 = new Web3(process.env.PROVIDER_URL);
-const CaverExtKAS = require('caver-js-ext-kas');
 const fs = require('fs');
 const consts = require('../../utils/consts');
 var ObjectID = require('mongodb').ObjectID;
@@ -9,13 +8,8 @@ const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = req
 const marketAbi = require('../../config/abi/market.json');
 let lastBlock = 0;
 
-const chainId = process.env.KLAYTN_CHAIN_ID | 0;
-const accessKeyId = process.env.ACCESS_KEY_ID;
-const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
-
-const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
-const marketContract =  new caver.contract(marketAbi, marketAddress);
+const useCrawler = process.env.USE_CRAWLER;
 
 // load last checked block from file
 function loadConf() {
@@ -38,17 +32,10 @@ function hexToAddress(hexVal) {
 }
 
 // get events
-async function getLastEvents() {
-    const delay = process.env.CRAWLER_DELAY;
-    let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
-    // console.log(toBlock);
-    if (toBlock - lastBlock > 4000) {
-        toBlock = lastBlock * 1 + 4000 - delay;
-    }
-    // console.log(lastBlock, toBlock);
-
+async function getLastEvents(toBlock) {
     const contracts = await collectionRepository.getContracts();
 
+    console.log('=====>', contracts);
     web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
         {fromBlock: lastBlock, toBlock: toBlock, address: contracts},
@@ -249,29 +236,28 @@ async function getLastEvents() {
             }
             console.log(err);
         },
-    );
+    ).catch((e) => {
+        console.log('collection contract getEvents', e);
+    });
 }
 
-async function getMarketEvents() {
-    const delay = process.env.CRAWLER_DELAY;
-    let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
-    // console.log(toBlock);
-    if (toBlock - lastBlock > 4000) {
-        toBlock = lastBlock * 1 + 4000 - delay;
-    }
-    // console.log(lastBlock, toBlock);
+async function getMarketEvents(toBlock) {
+    const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
 
-    marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
+    await marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
             for (let i = 0; events.length > i; i++ ) {
                 try {
                     if (events[i].event === 'Trade'){
-                        const tokenIdHex = '0x' + events[i].returnValues.tokenId.toString(16);
+                        console.log(events[i].transactionHash, 'Trade event handle start.');
+                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                        console.log(events[i].returnValues.nft.toLowerCase(), tokenIdHex);
                         let serial = await SerialModel.findOneAndUpdate(
                             {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.SELLING},
                             {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner: events[i].returnValues.buyer}},
                             {returnNewDocument: true}
                         );
+                        console.log(serial);
                         if (!serial) continue;
                         const nft = await NftModel.findOneAndUpdate({_id: serial.nft_id._id},
                             {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
@@ -281,8 +267,8 @@ async function getMarketEvents() {
                             buyer: events[i].returnValues.buyer,
                             contract_address: events[i].returnValues.nft,
                             token_id: tokenIdHex,
-                            price: caver.utils.convertFromPeb(events[i].returnValues.price, 'KLAY'),
-                            fee: caver.utils.convertFromPeb(events[i].returnValues.fee, 'KLAY'),
+                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                            fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
                             collection_id: nft.collection_id,
                             serial_id: serial.id,
                         });
@@ -299,15 +285,26 @@ async function getMarketEvents() {
                     console.log(e);
                 }
             }
+        }).catch((e) => {
+            console.log('market contract getEvents', e);
         });
 }
 
-// init
-loadConf();
+if (useCrawler === 'true') {
+    // init
+    loadConf();
 
-// set timer to get events every 2 seconds
-setInterval(function () {
-    getMarketEvents();
-    getLastEvents();
-}, 2000);
+    // set timer to get events every 2 seconds
+    setInterval(async function () {
+        const delay = process.env.CRAWLER_DELAY;
+        let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
+        // console.log(toBlock);
+        if (toBlock - lastBlock > 4000) {
+            toBlock = lastBlock * 1 + 4000 - delay;
+        }
+        await getMarketEvents(toBlock);
+        getLastEvents(toBlock);
+    }, 2000);
+}
+
 
