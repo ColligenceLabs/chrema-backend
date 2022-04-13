@@ -67,6 +67,7 @@ exports.ErrorMessage = {
     DELETE_COLLECTION_IS_NOT_SUCCESS: 'Delete collection is not success!',
     NFT_ALREADY_IN_COLLECTION: 'Nft is already in a collection!',
     COLLECTION_IS_OVERSIZE: 'Collection is maximum 4 nfts!',
+    COLLECTION_ALREADY_EXIST: 'Contract Address already exist!',
 
     //company error
     COMPANY_IS_NOT_FOUND: 'Company is not found!',

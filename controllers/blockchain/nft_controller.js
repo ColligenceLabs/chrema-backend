@@ -1,9 +1,11 @@
 const axios = require('axios');
 const logger = require('../../utils/logger');
+const Web3 = require('web3');
 const CaverExtKAS = require('caver-js-ext-kas');
-const marketAbi = require('../../config/abi/market.json');
+const nftAbi = require('../../config/abi/kip17.json');
 require('dotenv').config();
 
+const web3 = new Web3(process.env.PROVIDER_URL);
 const chainId = process.env.KLAYTN_CHAIN_ID | 0;
 const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
@@ -343,4 +345,50 @@ module.exports = {
             return handlerError(req, res, {error: transferResult.error});
         }
     },
+
+    _getAllTokens: async (contractAddress) => {
+        console.log('hi there.', contractAddress);
+        // const result = await caver.kas.kip17.getTokenList(contractAddress, {size: 5, cursor: undefined});
+        const tokens = [];
+        let cursor = '';
+        do {
+            const result = await caver.kas.kip17.getTokenList(contractAddress, {size: 1000, cursor});
+            if (result.items.length > 0)
+                tokens.push(...result.items);
+            cursor = result.cursor;
+        } while (cursor !== '');
+
+        return tokens;
+    },
+    _getAllTokensWeb3: async (contractAddress) => {
+        const nftContract = new web3.eth.Contract(nftAbi, contractAddress)
+        // const symbol = await nftContract.methods.symbol().call();
+        const totalSupply = await nftContract.methods.totalSupply().call();
+        const tokens = [];
+        for (let i = 0; i < totalSupply; i++) {
+            try {
+                let tokenId = await nftContract.methods.tokenByIndex(i).call();
+                let tokenUri = await nftContract.methods.tokenURI(tokenId).call();
+                let owner = await nftContract.methods.ownerOf(tokenId).call();
+                tokenId = '0x' + tokenId.toString(16);
+                tokens.push({tokenId, tokenUri, owner});
+                // tokenURI = tokenURI.replace('https://ipfs.io', 'https://infura-ipfs.io');
+                // const tokenInfo = await module.exports._getTokenInfo(tokenURI);
+                // console.log(i, tokenURI, tokenInfo.data, tokenOwner);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        return tokens;
+    },
+    _getTokenInfo: async (tokenURI) => {
+        const config = {
+            method: 'get',
+            url: tokenURI,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        return axios(config);
+    }
 };
