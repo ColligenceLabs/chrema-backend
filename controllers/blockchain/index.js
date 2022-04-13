@@ -35,7 +35,7 @@ function hexToAddress(hexVal) {
 async function getLastEvents(toBlock) {
     const contracts = await collectionRepository.getContracts();
 
-    console.log('=====>', contracts);
+    // console.log('Contracts : ', contracts);
     web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
         {fromBlock: lastBlock, toBlock: toBlock, address: contracts},

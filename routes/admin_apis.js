@@ -98,6 +98,8 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 // Market APIs
 router.get('/market/indexs', marketController.indexCollections);
 
+router.get('/market/indexsR', marketController.indexCollectionsR);
+
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
 
@@ -129,6 +131,8 @@ router.post('/nft/kas/deploy17', isAuth.validateToken, nftController.deploy17);
 router.post('/nft/kas/deploy37', isAuth.validateToken, nftController.deploy37);
 
 router.get('/nft/indexs', nftController.indexNfts);
+
+router.get('/nft/indexsR', nftController.indexNftsR);
 
 router.get('/nft/detail/:id', nftController.getDetailNft);
 

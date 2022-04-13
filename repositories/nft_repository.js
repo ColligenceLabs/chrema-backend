@@ -38,6 +38,19 @@ module.exports = {
             return error;
         }
     },
+    findRandom: async function (findParams) {
+        try {
+            var nfts = await NftModel.find(findParams)
+                .limit(4)
+                // .sort({createdAt: -1, start_date: -1, _id: 1})
+                .populate({path: 'collection_id'})
+                .populate({path: 'creator_id'});
+            nfts.sort(() => Math.random() - Math.random());
+            return nfts.slice(0, 4);
+        } catch (error) {
+            return error;
+        }
+    },
     findIdsNftByName: async function (name) {
         const findByName = {};
         const findByDesc = {};
