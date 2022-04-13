@@ -38,11 +38,9 @@ module.exports = {
         }
     },
 
-    findOnSale: async function (findParams, pagination) {
+    findOnSale: async function (findParams) {
         try {
             let collections = await CollectionModel.find(findParams)
-                .skip((pagination.page - 1) * pagination.perPage)
-                // .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'creator_id', select: ['full_name', 'image']});
             return collections;

@@ -178,7 +178,7 @@ module.exports = {
             const count = await collectionRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
-            const collections = await collectionRepository.findOnSale(findParams, {page, perPage});
+            const collections = await collectionRepository.findOnSale(findParams);
             if (!collections) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
@@ -195,8 +195,12 @@ module.exports = {
                  }
             };
 
+            const start = (+req.query.page - 1) * +req.query.perPage;
+            let end = +start + +req.query.perPage;
+            if (end > collectionsResp.length) end = collectionsResp.length;
+            console.log('===>', start, end)
             return handlerSuccess(req, res, {
-                items: collectionsResp.slice(0, req.query.perPage),
+                items: collectionsResp.slice(start, end),
                 selling: [],
                 headers: responseHeaders,
             });
