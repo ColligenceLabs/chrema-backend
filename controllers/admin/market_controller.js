@@ -172,7 +172,8 @@ module.exports = {
             let page = +req.query.page || 1;
             let perPage;
             if (req.query.perPage) {
-                perPage = +req.query.perPage || 20;
+                // perPage = +req.query.perPage || 20;
+                perPage = 20;
             }
 
             const count = await collectionRepository.count(findParams);
@@ -196,7 +197,7 @@ module.exports = {
             };
 
             return handlerSuccess(req, res, {
-                items: collectionsResp,
+                items: collectionsResp.slice(0, req.query.perPage),
                 selling: [],
                 headers: responseHeaders,
             });
