@@ -145,6 +145,14 @@ module.exports = {
             return error;
         }
     },
+    createWithoutSerial: async function (newNft) {
+        try {
+            let nft = await NftModel.create(newNft);
+            return nft;
+        } catch (error) {
+            return error;
+        }
+    },
     createByWallet: async function (newNft, inputSerial, tokenIds, ipfs_links, type) {
         try {
             let nft = await NftModel.create(newNft);

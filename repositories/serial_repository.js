@@ -144,6 +144,18 @@ module.exports = {
             return error;
         }
     },
+    createWithOwner: async function (input, owner) {
+        try {
+            let newSerial = {
+                owner_id: owner,
+                ...input,
+            };
+            let serial = await SerialModel.create(newSerial);
+            return serial;
+        } catch (error) {
+            return error;
+        }
+    },
     updateById: async function (id, where) {
         try {
             let serial = await SerialModel.updateOne({_id: id}, {$set: where});

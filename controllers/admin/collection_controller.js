@@ -1,6 +1,7 @@
 const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
+const serialRepository = require('../../repositories/serial_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum} = require('../../utils/helper');
 const logger = require('../../utils/logger');
@@ -11,6 +12,7 @@ var collectionUploadRepository = require('../../repositories/collection_upload_r
 const consts = require('../../utils/consts');
 const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
+const {_getAllTokens, _getAllTokensWeb3, _getTokenInfo} = require('../blockchain/nft_controller');
 
 module.exports = {
     classname: 'CollectionController',
@@ -89,6 +91,17 @@ module.exports = {
                 return handlerError(req, res, 'No smart contract address');
             }
 
+            if (req.body.typed_contract === 'true') {
+                // 이미 등록된 contractAddress 인지 확인 필요.
+                // const contractAddress = '0xb9eda5c4bd2dfe83b9ea3b57e62fdadec2c18598';  // 이미 등록된 contractAddress
+                // const contractAddress = '0x464b60257a0e6c77b1cc2515c86593daa83e665e';     // 등록되지 않은 kaikas를 통해 생성된 contractAddress
+                const contractAddress = req.body.contract_address;
+                // collection 에서 해당 contract_address 로 조회 중복 체크
+                const collection = await collectionRepository.findByContractAddress(contractAddress);
+                if (collection) {
+                    return handlerError(req, res, ErrorMessage.COLLECTION_ALREADY_EXIST);
+                }
+            }
             //upload file
             // await collectionUploadRepository(req, res);
 
@@ -159,6 +172,64 @@ module.exports = {
             await fs.mkdir(`./uploads/${req.body.contract_address}/thumbnail`, { recursive: true }, (err) => {
                 if (err) throw err;
             });
+            if (req.body.typed_contract === 'true') {
+                const contractAddress = req.body.contract_address.toLowerCase();
+                // nft, serials 를 생성한다. 우선 모두 실패처리.
+                // 1. kaikas api 로 모튼 nft 조회.
+                // 2. kaikas api 로 조회 안될 경우 web3 로 조회
+                // 3. 조회된 nft 정보로 nft 생성하고 serials를 total supply 만큼 생성한다.
+                let result;
+                try {
+                    result = await _getAllTokens(contractAddress);
+                } catch (e) {
+                    console.log(e);
+                    result = e;
+                }
+                if (result._code === 1100101) {
+                    console.log('kaikas 로 조회 안됨.');
+                    try {
+                        result = await _getAllTokensWeb3(contractAddress);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+                result.sort((a, b) => {
+                    return parseInt(a.tokenId) - parseInt(b.tokenId);
+                });
+                let beforeUri;
+                let tokenMeta;
+                let nft;
+                let count;
+                const newNFTs = [];
+                for (let i = 0; i < result.length; i++) {
+                    if (beforeUri !== result[i].tokenUri) {
+                        beforeUri = result[i].tokenUri;
+                        tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://infura-ipfs.io'));
+                        // console.log(i, tokenMeta.data);
+                        // nft 생성
+                        // const newNFT = getNewNFT(tokenMeta, new ObjectID(collection._id), req.body.creator_id);
+                        const newNFT = getNewNFT(tokenMeta.data, collection._id, req.body.creator_id);
+                        console.log(newNFT);
+                        nft = await nftRepository.createWithoutSerial(newNFT);
+                        console.log(nft);
+                        count = 1;
+                        newNFTs.push(nft._id);
+                    }
+                    const newSerial = {
+                        nft_id: nft._id,
+                        index: count++,
+                        type: nft.type,
+                        token_id: result[i].tokenId,
+                        transfered: 1,
+                        ipfs_link: beforeUri,
+                        contract_address: contractAddress,
+                        status: consts.SERIAL_STATUS.ACTIVE,
+                    }
+                    await serialRepository.createWithOwner(newSerial, result[i].owner);
+                }
+                console.log(collection._id, newNFTs);
+            }
+
             return handlerSuccess(req, res, collection);
             // } else {
             //     return handlerError(req, res, ErrorMessage.NFT_ALREADY_IN_COLLECTION);
@@ -563,4 +634,27 @@ function getUpdateBodys(updates) {
     }
 
     return updateBodys;
+}
+
+function getNewNFT(tokenMeta, collection_id, creator) {
+    let newNft = {
+        metadata: tokenMeta,
+        // company_id: req.body.company_id,
+        collection_id,
+        creator_id: creator,
+        type: 0,
+        price: 0,
+        quantity: tokenMeta.total_minted,
+        quantity_selling: 0,
+        onchain: 'true',
+        start_date: null,
+        end_date: null,
+        status: NFT_STATUS.ACTIVE,
+        // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+        // ...(req.body?.category && {category: req.body.category}),
+        category: tokenMeta.category,
+        description: tokenMeta.description,
+        transfered: 0
+    };
+    return newNft;
 }
