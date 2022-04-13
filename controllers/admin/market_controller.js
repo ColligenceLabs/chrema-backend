@@ -172,14 +172,13 @@ module.exports = {
             let page = +req.query.page || 1;
             let perPage;
             if (req.query.perPage) {
-                // perPage = +req.query.perPage || 20;
-                perPage = 20;
+                perPage = +req.query.perPage || 20;
             }
 
             const count = await collectionRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
-            const collections = await collectionRepository.findAll(findParams, {page, perPage});
+            const collections = await collectionRepository.findOnSale(findParams, {page, perPage});
             if (!collections) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
