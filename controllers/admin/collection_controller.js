@@ -191,6 +191,7 @@ module.exports = {
                         result = await _getAllTokensWeb3(contractAddress);
                     } catch (e) {
                         console.log(e);
+                        return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
                     }
                 }
                 result.sort((a, b) => {

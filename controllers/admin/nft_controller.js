@@ -1487,18 +1487,10 @@ module.exports = {
             // selling status = 0 vs time > now > time
             for (let i = 0; i < nfts.length; i++) {
                 if (nfts[i].selling_status === 0) {
-                    if (
-                        checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date) ===
-                        true
-                    ) {
+                    if (checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date))
                         errorNftIds.push(nfts[i].id);
-                    }
-                    if (
-                        checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date) ===
-                        false
-                    ) {
+                    else
                         sellingStatusSellArr.push(nfts[i].id);
-                    }
                 }
                 if (nfts[i].selling_status === 1) {
                     sellingStatusStopArr.push(nfts[i].id);
@@ -1939,6 +1931,11 @@ function getFindParams(filters) {
 
     if (filters.collection_id) {
         findParams.collection_id = filters.collection_id;
+    }
+    if (filters.collection_id && filters.onSale === 'true') {
+        findParams.quantity_selling = {$gt: 0}
+        findParams.start_date = {$lte: new Date()}
+        findParams.end_date = {$gte: new Date()}
     }
 
     const findByName = Object.assign({}, findParams);
