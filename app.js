@@ -65,6 +65,11 @@ app.use('/nft-api', apisBlockchainRouter);
 app.use('/images', express.static('images'));
 app.use('/talkenNft', express.static('uploads'));
 
+app.use('/health', function (req, res, next) {
+    // next(createError(404));
+    res.status(200).json({ result: "Alive..." });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     // next(createError(404));
