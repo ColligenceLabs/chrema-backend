@@ -263,7 +263,7 @@ module.exports = {
         await sleep(2000);
         return {status: 200, result: 1};
     },
-    _sellNFT: async (collectionAddress, tokenId, price) => {
+    _sellNFT: async (collectionAddress, tokenId, price, quote) => {
         const gasPrice = await caver.klay.getGasPrice();
         const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
         const accounts = await caver.kas.wallet.getAccountList();

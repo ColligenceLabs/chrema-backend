@@ -33,6 +33,11 @@ const NftSchema = new Schema(
             type: Number,
             default: 0,
         },
+        quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
         name: {
             type: String,
         },

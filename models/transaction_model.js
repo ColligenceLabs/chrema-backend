@@ -37,6 +37,11 @@ const TransactionSchema = new Schema(
             type: Number,
             default: 0,
         },
+        quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
         iap_info: {
             type: String,
             default: null

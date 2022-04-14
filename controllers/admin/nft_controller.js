@@ -190,6 +190,7 @@ module.exports = {
                     creator_id: creator._id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
+                    ...(req.body?.quote && {quote: req.body.quote}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
                     ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
@@ -451,6 +452,7 @@ module.exports = {
                     creator_id: creator._id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
+                    ...(req.body?.quote && {quote: req.body.quote}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
                     ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
@@ -641,6 +643,7 @@ module.exports = {
                 // buyer: user.id,
                 buyer: req.body.to_address,
                 price: nft.price,
+                quote: nft.quote,
                 status: consts.TRANSACTION_STATUS.PROCESSING,
             });
 
@@ -903,6 +906,7 @@ module.exports = {
                 contract_type: req.body.contract_type,
                 onchain: "false",
                 ...(req.body?.price && {price: req.body.price}),
+                ...(req.body?.quote && {quote: req.body.quote}),
                 ...(req.body?.quantity && {quantity: req.body.quantity}),
                 ...(req.body?.quantity && {quantity_selling: 0}),
                 ...(req.body?.start_date && {start_date: req.body.start_date}),
@@ -1158,6 +1162,7 @@ module.exports = {
                     creator_id: creator._id,
                     type: req.body.type * 1,
                     ...(req.body?.price && {price: req.body.price}),
+                    ...(req.body?.quote && {quote: req.body.quote}),
                     ...(req.body?.quantity && {quantity: req.body.quantity}),
                     ...(req.body?.quantity && {quantity_selling: 0}),
                     ...(req.body?.start_date && {start_date: req.body.start_date}),
@@ -1744,6 +1749,7 @@ module.exports = {
                 seller: collection.creator_id,
                 // buyer: user.id,
                 price: nft.price,
+                quote: nft.quote,
                 buyer: req.body.to_address,
                 status: consts.TRANSACTION_STATUS.PROCESSING,
             });
@@ -1880,9 +1886,10 @@ async function sellNFTs(nftId) {
             seller: collection.creator_id,
             buyer: marketAddress,
             price: nft.price,
+            quote: nft.quote,
             status: consts.TRANSACTION_STATUS.PROCESSING,
         });
-        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString());
+        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString(), nft.quote);
         if (transferResult.status === 200) {
             tx.tx_id = transferResult.result;
             tx.date = Date.now();
