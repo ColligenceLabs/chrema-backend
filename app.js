@@ -51,7 +51,7 @@ i18n.configure({
 
 app.use('/admp', indexRouter);
 app.use('/user-api', apisRouter);
-app.use(`/${process.env.PREFIX}/admin-api`, apisAdminRouter);
+app.use(`${process.env.PREFIX}/admin-api`, apisAdminRouter);
 // app.use('/admin-api', apisAdminRouter);
 
 // for testing
