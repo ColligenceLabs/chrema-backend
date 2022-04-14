@@ -41,7 +41,7 @@ module.exports = {
     findRandom: async function (findParams) {
         try {
             var nfts = await NftModel.find(findParams)
-                .limit(4)
+                // .limit(4)
                 // .sort({createdAt: -1, start_date: -1, _id: 1})
                 .populate({path: 'collection_id'})
                 .populate({path: 'creator_id'});
