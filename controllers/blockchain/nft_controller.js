@@ -166,6 +166,17 @@ module.exports = {
         }
     },
 
+    _burn17: async (contract, from, tokenId) => {
+        try {
+            let result = await caver.kas.kip17.burn(contract, from, parseInt(tokenId));
+            return {status: 200, result: result};
+        } catch (error) {
+            console.log(error);
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
+
     _transfer: async (from, owner, to, tokenId) => {
         try {
             let result = await caver.kas.kip17.transfer(
@@ -323,6 +334,20 @@ module.exports = {
         let tokenId = req.body.token_id;
 
         let burnResult = await module.exports._burn(from, tokenId);
+        if (burnResult.status == 200) {
+            console.log(burnResult.result);
+            return handlerSuccess(req, res, burnResult.result);
+        } else {
+            return handlerError(req, res, {error: burnResult.error});
+        }
+    },
+
+    burn17: async (req, res, next) => {
+        let contract = req.body.contract_address;
+        let from = req.body.from;
+        let tokenId = req.body.token_id;
+
+        let burnResult = await module.exports._burn17(contract, from, tokenId);
         if (burnResult.status == 200) {
             console.log(burnResult.result);
             return handlerSuccess(req, res, burnResult.result);
