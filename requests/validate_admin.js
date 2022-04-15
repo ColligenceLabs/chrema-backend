@@ -33,7 +33,7 @@ module.exports = {
                 .trim()
                 .custom(async(value) => {
                     let admins = await AdminModel.find().sort({createdAt: -1, _id: 1});
-                    console.log("admins::::",admins);
+                    // console.log("admins::::",admins);
                     return AdminModel.findOne({email: value}).then((admin) => {
                         if (!admin) {
                             return Promise.reject(ErrorMessage.ACCOUNT_IS_NOT_FOUND);

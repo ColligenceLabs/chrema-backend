@@ -271,12 +271,12 @@ module.exports = {
         let receipt;
         try {
             const marketContract = new caver.contract(marketAbi, marketAddress);
-            const gasLimit = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice)
+            const gasLimit = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote)
                 .estimateGas({
                     from: kasAddr
                 });
 
-            receipt = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice).send({
+            receipt = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote).send({
                 from: kasAddr,
                 gasPrice,
                 gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),

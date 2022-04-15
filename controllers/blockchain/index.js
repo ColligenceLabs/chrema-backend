@@ -5,7 +5,8 @@ const consts = require('../../utils/consts');
 var ObjectID = require('mongodb').ObjectID;
 const collectionRepository = require('../../repositories/collection_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
-const marketAbi = require('../../config/abi/market.json');
+// const marketAbi = require('../../config/abi/market.json');
+const marketAbi = require('../../config/abi/marketV3.json');
 let lastBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
