@@ -15,6 +15,7 @@ const contractRepository = require('../../repositories/contract_repository');
 const collectionRepository = require('../../repositories/collection_repository');
 const creatorRepository = require('../../repositories/creator_repository');
 const consts = require('../../utils/consts');
+const quoteTokens = require('../../utils/quoteTokens');
 const fs = require('fs');
 
 const {
@@ -1532,11 +1533,12 @@ module.exports = {
                 }
                 let successNfts = [];
                 let failNfts = [];
-                if (useKas == true) {
+                if (useKas === 'true') {
                     // market contract 에 readyToSell 호출
                     for (let i = 0; i < sellingStatusSellArr.length; i++) {
                         const sellResult = await sellNFTs(sellingStatusSellArr[i]);
-                        if (sellResult.status === 200) {
+                        console.log(sellResult, sellingStatusSellArr[i]);
+                        if (sellResult.status === 200 && sellResult.result.fail.length === 0) {
                             const updateNft = await nftRepository.updateSchedule([sellingStatusSellArr[i]], input);
                             if (updateNft)
                                 successNfts.push(sellingStatusSellArr[i]);
@@ -1889,7 +1891,9 @@ async function sellNFTs(nftId) {
             quote: nft.quote,
             status: consts.TRANSACTION_STATUS.PROCESSING,
         });
-        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString(), nft.quote);
+        const quoteToken = quoteTokens[nft.quote][process.env.KLAYTN_CHAIN_ID];
+        console.log(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
+        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
         if (transferResult.status === 200) {
             tx.tx_id = transferResult.result;
             tx.date = Date.now();

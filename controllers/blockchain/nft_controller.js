@@ -3,6 +3,7 @@ const logger = require('../../utils/logger');
 const Web3 = require('web3');
 const CaverExtKAS = require('caver-js-ext-kas');
 const nftAbi = require('../../config/abi/kip17.json');
+const marketAbi = require('../../config/abi/marketV3.json');
 require('dotenv').config();
 
 const web3 = new Web3(process.env.PROVIDER_URL);
@@ -275,6 +276,7 @@ module.exports = {
         return {status: 200, result: 1};
     },
     _sellNFT: async (collectionAddress, tokenId, price, quote) => {
+        console.log()
         const gasPrice = await caver.klay.getGasPrice();
         const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
         const accounts = await caver.kas.wallet.getAccountList();
