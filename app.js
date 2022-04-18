@@ -89,8 +89,8 @@ app.use(function (err, req, res, next) {
 
 //‘0 0 * * *’  0h0’ daily
 // Run at 15:15 UTC daily, 00:15 in KR-JP
-cron.schedule('15 15 * * *', async function() {
-// cron.schedule('*/1 * * * *', async function() {
+// cron.schedule('15 15 * * *', async function() {
+cron.schedule('*/1 * * * *', async function() {
     //call statistic function
     statisticsService.statistics();
 });
