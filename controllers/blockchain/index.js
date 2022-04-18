@@ -255,7 +255,7 @@ async function getMarketEvents(toBlock) {
                         console.log(events[i].returnValues.nft.toLowerCase(), tokenIdHex);
                         let serial = await SerialModel.findOneAndUpdate(
                             {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.SELLING},
-                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner: events[i].returnValues.buyer}},
+                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer}},
                             {returnNewDocument: true}
                         );
                         console.log(serial);
