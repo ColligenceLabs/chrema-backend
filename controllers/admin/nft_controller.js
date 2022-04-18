@@ -1846,17 +1846,18 @@ module.exports = {
     },
     selectTokenId: async (req, res, next) => {
         const nftId = req.query.nft_id;
-        const serials = await serialRepository.findByNftIdAndUpdate(nftId);
-        console.log(serials);
-        if (serials.length > 0)
-            return handlerSuccess(req, res, serials[0].token_id);
+        const serial = await serialRepository.findByNftIdAndUpdate(nftId);
+        const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
+        if (serial)
+            return handlerSuccess(req, res, serial.token_id);
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
     },
     cancelBuy: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const tokenId = req.query.token_id;
-        const result = await serialRepository.update({nft_id: nftId, token_id: tokenId}, {status: SERIAL_STATUS.ACTIVE});
+        const result = await serialRepository.update({nft_id: nftId, token_id: tokenId}, {status: SERIAL_STATUS.SELLING});
+        const nft = await nftRepository.updateQuantitySelling(nftId, 1);
         return handlerSuccess(req, res, result);
     }
 };
@@ -1908,7 +1909,7 @@ async function sellNFTs(nftId) {
             await tx.save();
             failToSellTokens.push(serials[i].token_id);
         }
-        await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress});
+        await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
     }
     return {status: 200, result: {success: readyToSellTokens, fail: failToSellTokens}};
 }

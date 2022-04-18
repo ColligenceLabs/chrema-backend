@@ -254,14 +254,14 @@ async function getMarketEvents(toBlock) {
                         const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
                         console.log(events[i].returnValues.nft.toLowerCase(), tokenIdHex);
                         let serial = await SerialModel.findOneAndUpdate(
-                            {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.SELLING},
+                            {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, status: consts.SERIAL_STATUS.BUYING},
                             {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer}},
                             {returnNewDocument: true}
                         );
                         console.log(serial);
                         if (!serial) continue;
-                        const nft = await NftModel.findOneAndUpdate({_id: serial.nft_id._id},
-                            {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
+                        const nft = await NftModel.findOne({_id: serial.nft_id._id});
+                        //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
                         await TradeModel.create({
                             tx_hash: events[i].transactionHash,
                             seller: events[i].returnValues.seller,

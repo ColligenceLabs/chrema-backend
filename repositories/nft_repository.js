@@ -181,6 +181,14 @@ module.exports = {
             return error;
         }
     },
+    updateQuantitySelling: async function (id, count) {
+        try {
+            let nft = await NftModel.updateOne({_id: id}, {$inc: {quantity_selling: count}});
+            return nft;
+        } catch (error) {
+            return error;
+        }
+    },
 
     delete: async function (id, where) {
         try {

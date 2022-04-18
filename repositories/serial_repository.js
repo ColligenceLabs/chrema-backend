@@ -98,14 +98,11 @@ module.exports = {
     },
     findByNftIdAndUpdate: async function (nftId) {
         try {
-            let serials = await SerialModel.find({nft_id: nftId, status: consts.SERIAL_STATUS.ACTIVE})
-                .sort({createdAt: 1, _id: 1}).limit(1);
-            if (serials.length > 0) {
-                serials[0].status = consts.SERIAL_STATUS.SELLING;
-                serials[0].updatedAt = Date.now();
-                serials[0].save();
-            }
-            return serials;
+            let serial = await SerialModel.findOneAndUpdate(
+                {nft_id: nftId, status: consts.SERIAL_STATUS.SELLING},
+                {status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}
+            ).sort({createdAt: 1, _id: 1});
+            return serial;
         } catch (error) {
             return error;
         }

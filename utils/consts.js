@@ -48,7 +48,8 @@ module.exports = {
         ACTIVE: 'active',
         INACTIVE: 'inactive',
         SUSPEND: 'suspend',
-        SELLING: 'selling'
+        SELLING: 'selling',
+        BUYING: 'buying'
     },
     //transfer to wallet
     TRANSFERED: {
