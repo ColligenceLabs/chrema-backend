@@ -15,7 +15,7 @@ module.exports = {
 
     findLine: async function (findParams) {
         try {
-            var statistics = await StatisticsModel.find(findParams)
+            var statistics = await StatisticsModel.find(findParams, {timeout: true})
                 .select(STATISTICS_LINE_FIELD)
                 .sort({date: 1});
 
