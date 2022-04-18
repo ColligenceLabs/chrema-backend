@@ -1809,7 +1809,7 @@ module.exports = {
         let size = req.query.size;
         let cursor = req.query.cursor;
 
-        const transferResult = await nftBlockchain._userNFTs(address, size, cursor);
+        const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
 
         if (transferResult.status == 200) {
             let nfts = [];
