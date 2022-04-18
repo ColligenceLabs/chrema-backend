@@ -1810,7 +1810,6 @@ module.exports = {
         let cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
-
         if (transferResult.status == 200) {
             let nfts = [];
             try {
@@ -1822,15 +1821,19 @@ module.exports = {
                     });
                     // find nft
                     if (serial) {
-                        const nft = serial.nft_id; //await nftRepository.findById(serial.nft_id);
-                        if (nft)
+                        const nft = serial.nft_id;
+                        // console.log(nft);
+                        const exist = nfts.some((item) => {
+                            return item._id.toString() === nft._id.toString();
+                        });
+                        if (!exist)
                             nfts.push(nft);
                     }
                 }
             } catch (e) {
                 console.log(e);
             }
-            return handlerSuccess(req, res, nfts);
+            return handlerSuccess(req, res, {nfts, cursor: transferResult.data.cursor});
         } else {
             return handlerError(req, res, {error: transferResult.response.data});
         }
