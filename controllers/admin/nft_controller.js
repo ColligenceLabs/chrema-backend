@@ -1806,7 +1806,7 @@ module.exports = {
     },
     userNFTs: async (req, res, next) => {
         const address = req.query.address;
-        let size = 5; //req.query.size;
+        let size = req.query.size;
         let cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor);
