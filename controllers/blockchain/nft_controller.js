@@ -239,7 +239,8 @@ module.exports = {
     },
 
     _userNFTs: async (address, size, cursor) => {
-        const url = `https://th-api.klaytnapi.com/v2/account/${address}/token?kind=nft&size=${size}`;
+        console.log(cursor);
+        const url = `https://th-api.klaytnapi.com/v2/account/${address}/token?kind=nft&size=${size}&cursor=${cursor}`;
         const config = {
             method: 'get',
             url: url,
