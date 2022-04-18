@@ -1810,7 +1810,7 @@ module.exports = {
         let cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
-
+        console.log(transferResult);
         if (transferResult.status == 200) {
             let nfts = [];
             try {
@@ -1830,7 +1830,7 @@ module.exports = {
             } catch (e) {
                 console.log(e);
             }
-            return handlerSuccess(req, res, nfts);
+            return handlerSuccess(req, res, {nfts, cursor: transferResult.data.cursor});
         } else {
             return handlerError(req, res, {error: transferResult.response.data});
         }
