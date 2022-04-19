@@ -270,6 +270,7 @@ async function getMarketEvents(toBlock) {
                             token_id: tokenIdHex,
                             price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
                             fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
+                            quote: nft.quote,
                             collection_id: nft.collection_id,
                             serial_id: serial.id,
                         });
