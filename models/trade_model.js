@@ -41,6 +41,10 @@ const TradeSchema = new Schema(
             type: String,
             default: '000000000',
         },
+        quote: {
+            type: String,
+            required: false
+        },
         createdAt: {
             type: Date,
             default: Date.now,

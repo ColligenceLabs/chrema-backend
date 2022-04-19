@@ -1806,10 +1806,30 @@ module.exports = {
             next(error);
         }
     },
+    userSerials: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const ownerId = req.query.owner_id;
+        const nftId = req.query.nft_id;
+        const serials = await serialRepository.findByOwnerIdAndNftId(ownerId, nftId);
+        console.log(serials);
+        if (serials.length > 0)
+            return handlerSuccess(req, res, serials);
+        else
+            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+    },
     userNFTs: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
         const address = req.query.address;
-        let size = req.query.size;
-        let cursor = req.query.cursor;
+        const size = req.query.size;
+        const cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
         if (transferResult.status == 200) {
@@ -1852,9 +1872,10 @@ module.exports = {
     selectTokenId: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const serial = await serialRepository.findByNftIdAndUpdate(nftId);
-        const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
-        if (serial)
+        if (serial) {
+            const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
             return handlerSuccess(req, res, serial.token_id);
+        }
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
     },
