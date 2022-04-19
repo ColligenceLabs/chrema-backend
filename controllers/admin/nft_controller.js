@@ -1870,9 +1870,10 @@ module.exports = {
     selectTokenId: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const serial = await serialRepository.findByNftIdAndUpdate(nftId);
-        const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
-        if (serial)
+        if (serial) {
+            const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
             return handlerSuccess(req, res, serial.token_id);
+        }
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
     },
