@@ -85,6 +85,16 @@ module.exports = {
             return error;
         }
     },
+    findByOwnerIdAndNftId: async function (ownerId, nftId) {
+        try {
+            let serials = await SerialModel.find({owner_id: ownerId, nft_id: nftId})
+                .sort({createdAt: -1, _id: 1});
+            // .populate({path: 'owner_id', select: 'uid'});
+            return serials;
+        } catch (error) {
+            return error;
+        }
+    },
     findByNftId: async function (nftId) {
         try {
             let serials = await SerialModel.find({nft_id: nftId})

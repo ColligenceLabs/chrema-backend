@@ -1804,10 +1804,30 @@ module.exports = {
             next(error);
         }
     },
+    userSerials: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const ownerId = req.query.owner_id;
+        const nftId = req.query.nft_id;
+        const serials = await serialRepository.findByOwnerIdAndNftId(ownerId, nftId);
+        console.log(serials);
+        if (serials.length > 0)
+            return handlerSuccess(req, res, serials);
+        else
+            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+    },
     userNFTs: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
         const address = req.query.address;
-        let size = req.query.size;
-        let cursor = req.query.cursor;
+        const size = req.query.size;
+        const cursor = req.query.cursor;
 
         const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
         if (transferResult.status == 200) {
