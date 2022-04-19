@@ -1978,7 +1978,7 @@ function getFindParams(filters) {
 
     const nft_id = filters.nft_id;
     if (filters.nft_id) {
-        findParams.nft_id = {$ne: nft_id};
+        findParams._id = {$ne: nft_id};
     }
 
     const findByName = Object.assign({}, findParams);
