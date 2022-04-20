@@ -110,6 +110,10 @@ const NftSchema = new Schema(
             enum: getValueInEnum(NFT_STATUS),
             default: NFT_STATUS.INACTIVE,
         },
+        imported: {
+            type: String,
+            default: 'false',
+        },
         createdAt: {
             type: Date,
             default: Date.now,

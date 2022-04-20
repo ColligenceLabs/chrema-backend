@@ -655,6 +655,7 @@ function getNewNFT(tokenMeta, collection_id, creator) {
         // ...(req.body?.category && {category: req.body.category}),
         category: tokenMeta.category,
         description: tokenMeta.description,
+        imported: 'true',
         transfered: 0
     };
     return newNft;
