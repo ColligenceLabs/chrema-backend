@@ -1308,6 +1308,8 @@ module.exports = {
         try {
             var findParams = getFindParams(req.query);
 
+            console.log('3--->', findParams)
+
             const nfts = await nftRepository.findRandom(findParams);
             if (!nfts) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
@@ -1972,6 +1974,11 @@ function getFindParams(filters) {
         findParams.quantity_selling = {$gt: 0}
         findParams.start_date = {$lte: new Date()}
         findParams.end_date = {$gte: new Date()}
+    }
+
+    const nft_id = filters.nft_id;
+    if (filters.nft_id) {
+        findParams._id = {$ne: nft_id};
     }
 
     const findByName = Object.assign({}, findParams);
