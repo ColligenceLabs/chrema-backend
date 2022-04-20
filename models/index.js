@@ -13,4 +13,6 @@ module.exports = {
     ContractModel: require('./contract_model'),
     CreatorModel: require('./creator_model'),
     TradeModel: require('./trade_model'),
+    HourTradeModel: require('./hour_trade_model'),
+    DayTradeModel: require('./day_trade_model'),
 };

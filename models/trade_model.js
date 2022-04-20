@@ -1,12 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const {getValueInEnum} = require('../utils/helper');
 
 const TradeSchema = new Schema(
     {
         tx_hash: {
             type: String,
             required: false,
+            unique : true
+        },
+        block_number: {
+            type: Number,
+            default: 0,
+        },
+        chain_id: {
+            type: String,
+            default: 0,
         },
         serial_id: {
             type: Schema.Types.ObjectId,
@@ -45,6 +53,10 @@ const TradeSchema = new Schema(
             type: String,
             required: false
         },
+        trade_date: {
+            type: Date,
+            required: false
+        },
         createdAt: {
             type: Date,
             default: Date.now,
@@ -52,6 +64,6 @@ const TradeSchema = new Schema(
     },
     {usePushEach: true},
 );
-TradeSchema.index({createdAt: 1, collection_id: 1}, {background: true});
+TradeSchema.index({trade_date: -1, collection_id: 1}, {background: true});
 
 module.exports = mongoose.model('Trade', TradeSchema);

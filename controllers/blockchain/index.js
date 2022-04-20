@@ -1,9 +1,12 @@
 const Web3 = require('web3');
 const web3 = new Web3(process.env.PROVIDER_URL);
+const axios = require('axios');
 const fs = require('fs');
 const consts = require('../../utils/consts');
+const logger = require('../../utils/logger');
 var ObjectID = require('mongodb').ObjectID;
 const collectionRepository = require('../../repositories/collection_repository');
+const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
 // const marketAbi = require('../../config/abi/market.json');
 const marketAbi = require('../../config/abi/marketV3.json');
@@ -11,6 +14,23 @@ let lastBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const useCrawler = process.env.USE_CRAWLER;
+
+async function getCoinPrice() {
+    const url = 'https://bcn-api.talken.io/coinmarketcap/cmcQuotes?cmcIds=4256,11552';
+    try {
+        const response = await axios(url);
+        const klayUsd = response.data.data[4256].quote.USD.price;
+        const klayKrw = response.data.data[4256].quote.KRW.price;
+        const talkUsd = response.data.data[11552].quote.USD.price;
+        const talkKrw = response.data.data[11552].quote.KRW.price;
+        const result = {klay: {USD: klayUsd, KRW: klayKrw},talk: {USD: talkUsd, KRW: talkKrw}};
+
+        return result;
+    } catch (error) {
+        logger.error(new Error(error));
+        return error;
+    }
+}
 
 // load last checked block from file
 function loadConf() {
@@ -247,6 +267,10 @@ async function getMarketEvents(toBlock) {
 
     await marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
+            let coinPrice;
+            if (events.length > 0) {
+                coinPrice = await getCoinPrice();
+            }
             for (let i = 0; events.length > i; i++ ) {
                 try {
                     if (events[i].event === 'Trade'){
@@ -260,10 +284,14 @@ async function getMarketEvents(toBlock) {
                         );
                         console.log(serial);
                         if (!serial) continue;
+                        const block = await web3.eth.getBlock(events[i].blockNumber);
+                        console.log(block.timestamp);
                         const nft = await NftModel.findOne({_id: serial.nft_id._id});
                         //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
-                        await TradeModel.create({
+                        const trade = await TradeModel.create({
                             tx_hash: events[i].transactionHash,
+                            block_number: events[i].blockNumber,
+                            chain_id: process.env.KLAYTN_CHAIN_ID,
                             seller: events[i].returnValues.seller,
                             buyer: events[i].returnValues.buyer,
                             contract_address: events[i].returnValues.nft,
@@ -273,7 +301,16 @@ async function getMarketEvents(toBlock) {
                             quote: nft.quote,
                             collection_id: nft.collection_id,
                             serial_id: serial.id,
+                            trade_date: new Date(block.timestamp * 1000)
                         });
+                        // update hour trade statistics
+                        let hourIndex = Math.floor(block.timestamp / 3600);
+                        let hourStartUnix = hourIndex * 3600;
+                        await tradeRepository.updateHourData(trade.collection_id, hourStartUnix, trade.price, trade.quote, coinPrice);
+                        // update day trade statistics
+                        let dayID = Math.floor(block.timestamp / 86400);
+                        let dayStartUnix = dayID * 86400;
+                        await tradeRepository.updateDayData(trade.collection_id, dayStartUnix, trade.price, trade.quote, coinPrice);
                         console.log(events[i].transactionHash, 'Trade create success.');
                     }
                     else if (events[i].event === 'CancelSellToken'){
