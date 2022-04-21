@@ -1003,7 +1003,7 @@ module.exports = {
             const newSerial = {
                 type: req.body.type,
                 ...(req.body?.status && {status: req.body.status}),
-                contract_address: collection.contract_address
+                contract_address: collection.contract_address.toLowerCase()
             };
 
             if (newNft.type === 1) {
