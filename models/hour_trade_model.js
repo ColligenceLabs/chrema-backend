@@ -12,10 +12,6 @@ const HourTradeSchema = new Schema(
             type: Number,
             default: 0,
         },
-        total_volume: {
-            type: Number,
-            default: 0,
-        },
         total_volume_usd: {
             type: Number,
             default: 0,
