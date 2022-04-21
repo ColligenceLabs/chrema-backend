@@ -38,6 +38,11 @@ const SerialSchema = new Schema(
             type: Number,
             default: 0,
         },
+        quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
         contract_address: {
             type: String
         },
