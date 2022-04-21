@@ -95,6 +95,21 @@ module.exports = {
             return error;
         }
     },
+    findFloorPrice: async function (contract_address) {
+        try {
+            // let serial = await SerialModel.findOne({status: consts.SERIAL_STATUS.SELLING, contract_address})
+            //     .sort({price: 1});
+            let prices = SerialModel.aggregate([
+                {$match: {contract_address: contract_address}},
+                {$group: {_id: '$quote', floorPrice: {$min: '$price'}}},
+                {$sort: {_id: -1}}
+            ])
+            // .populate({path: 'owner_id', select: 'uid'});
+            return prices;
+        } catch (error) {
+            return error;
+        }
+    },
     findByNftId: async function (nftId) {
         try {
             let serials = await SerialModel.find({nft_id: nftId})

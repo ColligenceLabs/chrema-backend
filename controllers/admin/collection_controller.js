@@ -8,11 +8,11 @@ const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEn
 const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
-const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
-var collectionUploadRepository = require('../../repositories/collection_upload_repository');
+const {isEmptyObject, validateRouter, imageResize, getCoinPrice} = require('../../utils/helper');
 const consts = require('../../utils/consts');
+const BigNumber = require('bignumber.js');
 const fs = require('fs');
-var ObjectID = require('mongodb').ObjectID;
+const ObjectID = require('mongodb').ObjectID;
 const {_getAllTokens, _getAllTokensWeb3, _getTokenInfo} = require('../blockchain/nft_controller');
 
 module.exports = {
@@ -478,12 +478,27 @@ module.exports = {
             const retCollections = [];
             for (let i = 0; i < result.length; i++) {
                 const collection = collections.filter((item) => item._id.toString() === result[i]._id.toString());
-                retCollections. push({...collection[0]._doc, ...result[i]});
+                // console.log(collection);
+                const floorPrices = await serialRepository.findFloorPrice(collection[0].contract_address);
+                const filteredPrices = floorPrices.filter(price => price._id === 'talk' || price._id === 'klay');
+                let floorPrice;
+                if (filteredPrices.length > 0) {
+                    const coinPrices = await getCoinPrice();
+                    if (filteredPrices.length === 1) {
+                        floorPrice = filteredPrices[0];
+                    } else {
+                        const price1 = new BigNumber(filteredPrices[0].floorPrice).multipliedBy(coinPrices[filteredPrices[0]._id].USD).toNumber();
+                        const price2 = new BigNumber(filteredPrices[1].floorPrice).multipliedBy(coinPrices[filteredPrices[1]._id].USD).toNumber();
+                        floorPrice = price1 > price2 ? filteredPrices[1] : filteredPrices[0];
+                        console.log(price1, price2,floorPrice);
+                    }
+                }
+                retCollections. push({...collection[0]._doc, ...result[i], floorPrice});
             }
             handlerSuccess(req, res, retCollections);
         } catch (e) {
             logger.error(new Error(e));
-            next(error);
+            handlerError(req, res, e);
         }
     },
 

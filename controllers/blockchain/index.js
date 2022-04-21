@@ -1,10 +1,10 @@
 const Web3 = require('web3');
 const web3 = new Web3(process.env.PROVIDER_URL);
-const axios = require('axios');
 const fs = require('fs');
 const consts = require('../../utils/consts');
 const logger = require('../../utils/logger');
-var ObjectID = require('mongodb').ObjectID;
+const {getCoinPrice} = require('../../utils/helper');
+const ObjectID = require('mongodb').ObjectID;
 const collectionRepository = require('../../repositories/collection_repository');
 const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
@@ -14,23 +14,6 @@ let lastBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const useCrawler = process.env.USE_CRAWLER;
-
-async function getCoinPrice() {
-    const url = 'https://bcn-api.talken.io/coinmarketcap/cmcQuotes?cmcIds=4256,11552';
-    try {
-        const response = await axios(url);
-        const klayUsd = response.data.data[4256].quote.USD.price;
-        const klayKrw = response.data.data[4256].quote.KRW.price;
-        const talkUsd = response.data.data[11552].quote.USD.price;
-        const talkKrw = response.data.data[11552].quote.KRW.price;
-        const result = {klay: {USD: klayUsd, KRW: klayKrw},talk: {USD: talkUsd, KRW: talkKrw}};
-
-        return result;
-    } catch (error) {
-        logger.error(new Error(error));
-        return error;
-    }
-}
 
 // load last checked block from file
 function loadConf() {

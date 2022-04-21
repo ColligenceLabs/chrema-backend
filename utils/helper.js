@@ -4,6 +4,7 @@ const {validationResult} = require('express-validator');
 const moment = require('moment-timezone');
 var consts = require('./consts');
 var sharp = require('sharp');
+const axios = require('axios');
 var fs = require('fs');
 var fsx = require('fs-extra')
 
@@ -146,6 +147,23 @@ exports.imageRename = async (imgInput, renameOutput) => {
             console.log("rename success");
         }
     })
+}
+
+exports.getCoinPrice = async () => {
+    const url = 'https://bcn-api.talken.io/coinmarketcap/cmcQuotes?cmcIds=4256,11552';
+    try {
+        const response = await axios(url);
+        const klayUsd = response.data.data[4256].quote.USD.price;
+        const klayKrw = response.data.data[4256].quote.KRW.price;
+        const talkUsd = response.data.data[11552].quote.USD.price;
+        const talkKrw = response.data.data[11552].quote.KRW.price;
+        const result = {klay: {USD: klayUsd, KRW: klayKrw},talk: {USD: talkUsd, KRW: talkKrw}};
+
+        return result;
+    } catch (error) {
+        console.log(new Error(error));
+        return error;
+    }
 }
 
 exports.imageMove = async (imgInput, renameOutput) => {
