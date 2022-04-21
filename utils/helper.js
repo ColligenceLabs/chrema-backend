@@ -149,7 +149,7 @@ exports.imageRename = async (imgInput, renameOutput) => {
 }
 
 exports.imageMove = async (imgInput, renameOutput) => {
-    fsx.move(imgInput, renameOutput, (err) => {
+    fsx.move(imgInput, renameOutput, { overwrite: true }, (err) => {
 
         if (err) {
             console.log("error:", err);

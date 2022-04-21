@@ -108,13 +108,16 @@ async function getLastEvents(toBlock) {
                                 }
                             }
                             // keccak hash : TransferSingle(address,address,address,uint256,uint256)
+                            // https://baobab.scope.klaytn.com/tx/0xa376776f1fd040e1e78499c9d15db374b64ccb27d994c2bcd31f7c4a4d9a06a5?tabId=eventLog
                             else if (
                                 result[i].topics[0] ==
                                 '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62'
                             ) {
                                 let contractAddress = result[i].address.toLowerCase();
-                                let tokenIdDeciaml = '0x' + data[0].toString(16);
+                                const data = web3.eth.abi.decodeParameters(['uint256', 'uint256'], result[i].data);
+                                let tokenIdDeciaml = parseInt(data[0]);
                                 let tokenIdHex = '0x' + tokenIdDeciaml.toString(16);
+
                                 let transactionHash = result[i].transactionHash;
                                 // transfer
                                 if (

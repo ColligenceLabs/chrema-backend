@@ -34,6 +34,10 @@ const SerialSchema = new Schema(
             // required: true,
             default: '000000000',
         },
+        price: {
+            type: Number,
+            default: 0,
+        },
         contract_address: {
             type: String
         },

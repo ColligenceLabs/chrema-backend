@@ -41,6 +41,7 @@ mongoose.connect(process.env.MONGO_HOST, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,
+    useFindAndModify: false
 });
 // config language package
 i18n.configure({

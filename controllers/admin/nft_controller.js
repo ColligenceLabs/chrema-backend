@@ -947,6 +947,23 @@ module.exports = {
             // newNft.ipfs_links = ipfs_links;
             ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
             newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+            if (collection.contract_type === 'KIP17') {
+                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
+            } else {
+                // ERC-1155
+                try {
+                    if (fs.existsSync(`./uploads/nfts/metadata/${collection.directory}`) === false) {
+                        console.log("Create metadata directory...");
+                        await fs.mkdir(`./uploads/nfts/metadata/${collection.directory}`, { recursive: true }, (err) => {
+                            if (err) throw err;
+                        });
+                    }
+                } catch(e) {
+                    console.log("Error accessing metadata directory...")
+                }
+
+                newNft.metadata_link = ALT_URL + `/nfts/metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) +'.json';
+            }
 
             if (
                 req.body?.status === NFT_STATUS.SUSPEND ||
@@ -956,7 +973,11 @@ module.exports = {
             }
 
             // write json file
-            await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), 1);
+            if (collection.contract_type === 'KIP17') {
+                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), 1);
+            } else {
+                await writeJson(consts.UPLOAD_PATH + `metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) + ".json", JSON.stringify(metadata_ipfs), 1);
+            }
 
             // TODO : What and why ?
             if (newNft.start_date && newNft.end_date) {
@@ -982,7 +1003,7 @@ module.exports = {
             const newSerial = {
                 type: req.body.type,
                 ...(req.body?.status && {status: req.body.status}),
-                contract_address: collection.contract_address
+                contract_address: collection.contract_address.toLowerCase()
             };
 
             if (newNft.type === 1) {
