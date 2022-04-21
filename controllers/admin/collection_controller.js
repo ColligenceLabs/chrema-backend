@@ -136,8 +136,10 @@ module.exports = {
                 ...(req.body?.category && {category: req.body.category}),
                 category: req.body.category,
                 maximum_supply: req.body.maximum_supply ?? 0,
-                description: req.body.description ?? ''
+                description: req.body.description ?? '',
+                directory: req.body.directory ?? ''
             };
+            // string: http://localhost:4000/talkenNft///{id}.json
             // let nft_id = JSON.parse(req.body.nft_id);
             //
             // if (nft_id.length > 4) {

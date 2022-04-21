@@ -56,6 +56,11 @@ const CollectionSchema = new Schema(
             required: true,
             trim: true,
         },
+        directory: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         description: {
             type: String,
             required: false,
