@@ -20,7 +20,7 @@ const HourTradeSchema = new Schema(
             type: Number,
             default: 0,
         },
-        total_volume_won: {
+        total_volume_krw: {
             type: Number,
             default: 0,
         },

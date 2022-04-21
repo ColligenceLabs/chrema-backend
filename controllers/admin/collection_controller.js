@@ -2,6 +2,7 @@ const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
 const serialRepository = require('../../repositories/serial_repository');
+const tradeRepository = require('../../repositories/trade_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum} = require('../../utils/helper');
 const logger = require('../../utils/logger');
@@ -460,6 +461,26 @@ module.exports = {
             return handlerSuccess(req, res, 'Delete collections success');
         } catch (error) {
             logger.error(new Error(error));
+            next(error);
+        }
+    },
+    async getTopCollections(req, res, next) {
+        console.log(req.query.days);
+        const days = req.query.days ? req.query.days : '1d';
+        const limit = req.query.size ? parseInt(req.query.size) : 10;
+        const skip = req.query.page ? parseInt(req.query.page) * limit : 0;
+        try {
+            const result = await tradeRepository.selectTopCollections(days, limit, skip);
+            const collection_ids = result.map((item) => {return item._id});
+            const collections = await collectionRepository.findByIds(collection_ids);
+            const retCollections = [];
+            for (let i = 0; i < result.length; i++) {
+                const collection = collections.filter((item) => item._id.toString() === result[i]._id.toString());
+                retCollections. push({...collection[0]._doc, ...result[i]});
+            }
+            handlerSuccess(req, res, retCollections);
+        } catch (e) {
+            logger.error(new Error(e));
             next(error);
         }
     },

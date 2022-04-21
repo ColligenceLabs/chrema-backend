@@ -284,7 +284,7 @@ async function getMarketEvents(toBlock) {
                         );
                         console.log(serial);
                         if (!serial) continue;
-                        const block = await web3.eth.getBlock(events[i].blockNumber);
+                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
                         console.log(block.timestamp);
                         const nft = await NftModel.findOne({_id: serial.nft_id._id});
                         //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
