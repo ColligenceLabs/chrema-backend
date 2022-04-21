@@ -2,16 +2,17 @@ const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
 const serialRepository = require('../../repositories/serial_repository');
+const tradeRepository = require('../../repositories/trade_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum} = require('../../utils/helper');
 const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
-const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
-var collectionUploadRepository = require('../../repositories/collection_upload_repository');
+const {isEmptyObject, validateRouter, imageResize, getCoinPrice} = require('../../utils/helper');
 const consts = require('../../utils/consts');
+const BigNumber = require('bignumber.js');
 const fs = require('fs');
-var ObjectID = require('mongodb').ObjectID;
+const ObjectID = require('mongodb').ObjectID;
 const {_getAllTokens, _getAllTokensWeb3, _getTokenInfo} = require('../blockchain/nft_controller');
 
 module.exports = {
@@ -465,6 +466,41 @@ module.exports = {
             next(error);
         }
     },
+    async getTopCollections(req, res, next) {
+        console.log(req.query.days);
+        const days = req.query.days ? req.query.days : '1d';
+        const limit = req.query.size ? parseInt(req.query.size) : 10;
+        const skip = req.query.page ? parseInt(req.query.page) * limit : 0;
+        try {
+            const result = await tradeRepository.selectTopCollections(days, limit, skip);
+            const collection_ids = result.map((item) => {return item._id});
+            const collections = await collectionRepository.findByIds(collection_ids);
+            const retCollections = [];
+            for (let i = 0; i < result.length; i++) {
+                const collection = collections.filter((item) => item._id.toString() === result[i]._id.toString());
+                // console.log(collection);
+                const floorPrices = await serialRepository.findFloorPrice(collection[0].contract_address);
+                const filteredPrices = floorPrices.filter(price => price._id === 'talk' || price._id === 'klay');
+                let floorPrice;
+                if (filteredPrices.length > 0) {
+                    const coinPrices = await getCoinPrice();
+                    if (filteredPrices.length === 1) {
+                        floorPrice = filteredPrices[0];
+                    } else {
+                        const price1 = new BigNumber(filteredPrices[0].floorPrice).multipliedBy(coinPrices[filteredPrices[0]._id].USD).toNumber();
+                        const price2 = new BigNumber(filteredPrices[1].floorPrice).multipliedBy(coinPrices[filteredPrices[1]._id].USD).toNumber();
+                        floorPrice = price1 > price2 ? filteredPrices[1] : filteredPrices[0];
+                        console.log(price1, price2,floorPrice);
+                    }
+                }
+                retCollections. push({...collection[0]._doc, ...result[i], floorPrice});
+            }
+            handlerSuccess(req, res, retCollections);
+        } catch (e) {
+            logger.error(new Error(e));
+            handlerError(req, res, e);
+        }
+    },
 
     async addNftToCollection(req, res, next) {
         try {
@@ -657,6 +693,7 @@ function getNewNFT(tokenMeta, collection_id, creator) {
         // ...(req.body?.category && {category: req.body.category}),
         category: tokenMeta.category,
         description: tokenMeta.description,
+        imported: 'true',
         transfered: 0
     };
     return newNft;

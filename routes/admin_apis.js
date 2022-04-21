@@ -81,6 +81,8 @@ router.put('/collection/update-status/:id', isAuth.validateToken, collectionCont
 
 router.put('/collection/addnft/:id', isAuth.validateToken, collectionController.addNftToCollection);
 
+router.get('/collection/top', collectionController.getTopCollections)
+
 router.put(
     '/collection/removenft/:id',
     isAuth.validateToken,

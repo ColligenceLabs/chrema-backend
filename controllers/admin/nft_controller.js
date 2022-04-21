@@ -1956,7 +1956,7 @@ async function sellNFTs(nftId) {
             await tx.save();
             failToSellTokens.push(serials[i].token_id);
         }
-        await serialRepository.updateById(serials[i]._id, {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
+        await serialRepository.updateById(serials[i]._id, {price: nft.price, quote: nft.quote, owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
     }
     return {status: 200, result: {success: readyToSellTokens, fail: failToSellTokens}};
 }

@@ -397,7 +397,7 @@ module.exports = {
                 let tokenId = await nftContract.methods.tokenByIndex(i).call();
                 let tokenUri = await nftContract.methods.tokenURI(tokenId).call();
                 let owner = await nftContract.methods.ownerOf(tokenId).call();
-                tokenId = '0x' + tokenId.toString(16);
+                tokenId = '0x' + parseInt(tokenId).toString(16);
                 tokens.push({tokenId, tokenUri, owner});
                 // tokenURI = tokenURI.replace('https://ipfs.io', 'https://infura-ipfs.io');
                 // const tokenInfo = await module.exports._getTokenInfo(tokenURI);
