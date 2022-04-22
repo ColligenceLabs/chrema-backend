@@ -130,7 +130,7 @@ module.exports = {
                 contract_address: req.body.contract_address,
                 contract_type: req.body.contract_type,
                 // path: '/talkenNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
-                path: '/talkenNft/uploads/collections/' + imgInput,
+                path: process.env.API_PREFIX + '/talkenNft/uploads/collections/' + imgInput,
                 image_link: ALT_URL + 'collections/' + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
