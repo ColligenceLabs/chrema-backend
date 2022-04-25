@@ -1309,7 +1309,10 @@ module.exports = {
             const count = await nftRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
-            const nfts = await nftRepository.findAll(findParams, {page, perPage});
+            const createAt = req.query.createAt ? req.query.createAt : -1
+            const price = req.query.price ? req.query.price : 1
+
+            const nfts = await nftRepository.findAllExt(findParams, {page, perPage}, createAt, price);
             if (!nfts) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
