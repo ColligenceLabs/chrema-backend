@@ -146,6 +146,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "price",
         "type": "uint256"
       },
@@ -193,6 +199,11 @@
       },
       {
         "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "_maximumPrice",
         "type": "uint256"
       },
@@ -227,6 +238,11 @@
         "internalType": "uint256",
         "name": "_quantity",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
     "name": "buyTokenETH",
@@ -258,6 +274,11 @@
       {
         "internalType": "uint256",
         "name": "_quantity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
         "type": "uint256"
       },
       {
@@ -300,6 +321,11 @@
       {
         "internalType": "uint256",
         "name": "_quantity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
         "type": "uint256"
       },
       {
@@ -416,6 +442,11 @@
           "internalType": "address",
           "name": "quote",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sold",
+          "type": "uint256"
         }
       ],
       "internalType": "struct Market4.AsksMap[]",
