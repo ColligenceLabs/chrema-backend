@@ -1574,6 +1574,7 @@ module.exports = {
                         return handlerError(req, res, {success: successNfts, fail: failNfts});
                 } else {
                     const updateNft = await nftRepository.updateSchedule(sellingStatusSellArr, data);
+                    await serialRepository.update({nft_id: {$in: sellingStatusSellArr}}, {price: updateNft.price, quote: updateNft.quote, owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
                     if (!updateNft) {
                         return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                     }

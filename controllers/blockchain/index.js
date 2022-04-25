@@ -9,7 +9,7 @@ const collectionRepository = require('../../repositories/collection_repository')
 const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
 // const marketAbi = require('../../config/abi/market.json');
-const marketAbi = require('../../config/abi/marketV3.json');
+const marketAbi = require('../../config/abi/marketV4.json');
 let lastBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
@@ -250,7 +250,6 @@ async function getLastEvents(toBlock) {
 
 async function getMarketEvents(toBlock) {
     const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
-
     await marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
         .then(async function (events) {
             let coinPrice;
