@@ -1309,10 +1309,10 @@ module.exports = {
             const count = await nftRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
-            const createAt = req.query.createAt ? req.query.createAt : -1
-            const price = req.query.price ? req.query.price : 1
+            const flCreateAt = req.query.createAt ? req.query.createAt : -1
+            const flPrice = req.query.price ? req.query.price : 1
 
-            const nfts = await nftRepository.findAllExt(findParams, {page, perPage}, createAt, price);
+            const nfts = await nftRepository.findAllExt(findParams, {page, perPage}, flCreateAt, flPrice);
             if (!nfts) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
@@ -2003,6 +2003,14 @@ function getFindParams(filters) {
     const nft_id = filters.nft_id;
     if (filters.nft_id) {
         findParams._id = {$ne: nft_id};
+    }
+
+    if (filters.low || filters.high) {
+        if (filters.high > 0) {
+            findParams.price = { $lte: filters.high,  $gte: filters.low };
+        } else {
+            findParams.price = { $gte: filters.low };
+        }
     }
 
     const findByName = Object.assign({}, findParams);
