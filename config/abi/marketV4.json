@@ -351,11 +351,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "_seller",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "_quantity",
         "type": "uint256"
