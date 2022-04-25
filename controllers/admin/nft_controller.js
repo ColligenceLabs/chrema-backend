@@ -1309,6 +1309,31 @@ module.exports = {
             const count = await nftRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
+            const nfts = await nftRepository.findAll(findParams, {page, perPage});
+            if (!nfts) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            const productRes = convertProductResponse(nfts);
+            return handlerSuccess(req, res, {
+                items: productRes,
+                headers: responseHeaders,
+            });
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    async indexNftsM(req, res, next) {
+        try {
+            var findParams = getFindParams(req.query);
+            let page = +req.query.page || 1;
+            let perPage = +req.query.perPage || 20;
+
+            const count = await nftRepository.count(findParams);
+            const responseHeaders = getHeaders(count, page, perPage);
+
             const flCreatedAt = req.query.createdAt;
             const flPrice = req.query.price;
 

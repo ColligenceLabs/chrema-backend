@@ -136,6 +136,8 @@ router.get('/nft/indexs', nftController.indexNfts);
 
 router.get('/nft/indexsR', nftController.indexNftsR);
 
+router.get('/nft/indexsM', nftController.indexNftsM);
+
 router.get('/nft/detail/:id', nftController.getDetailNft);
 
 router.put('/nft/update/:id', isAuth.validateToken, nftController.updateNft);
