@@ -38,18 +38,18 @@ module.exports = {
             return error;
         }
     },
-    findAllExt: async function (findParams, pagination = null, flCreateAt, flPrice) {
+    findAllExt: async function (findParams, pagination = null, flCreatedAt, flPrice) {
         try {
             if (pagination) {
                 var nfts = await NftModel.find(findParams)
                     .skip((pagination.page - 1) * pagination.perPage)
                     .limit(pagination.perPage)
-                    .sort({createdAt: flCreateAt, price: flPrice, start_date: -1, _id: 1})
+                    .sort({createdAt: flCreatedAt, price: flPrice, start_date: -1, _id: 1})
                     .populate({path: 'collection_id'})
                     .populate({path: 'creator_id'});
             } else {
                 var nfts = await NftModel.find(findParams)
-                    .sort({createdAt: -1, start_date: -1, _id: 1})
+                    .sort({createdAt: flCreatedAt, price: flPrice, start_date: -1, _id: 1})
                     .populate({path: 'collection_id'})
                     .populate({path: 'creator_id'});
             }
