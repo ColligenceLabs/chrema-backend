@@ -38,6 +38,26 @@ module.exports = {
             return error;
         }
     },
+    findAllExt: async function (findParams, pagination = null, flCreatedAt, flPrice) {
+        try {
+            if (pagination) {
+                var nfts = await NftModel.find(findParams)
+                    .skip((pagination.page - 1) * pagination.perPage)
+                    .limit(pagination.perPage)
+                    .sort({createdAt: flCreatedAt, price: flPrice, start_date: -1, _id: 1})
+                    .populate({path: 'collection_id'})
+                    .populate({path: 'creator_id'});
+            } else {
+                var nfts = await NftModel.find(findParams)
+                    .sort({createdAt: flCreatedAt, price: flPrice, start_date: -1, _id: 1})
+                    .populate({path: 'collection_id'})
+                    .populate({path: 'creator_id'});
+            }
+            return nfts;
+        } catch (error) {
+            return error;
+        }
+    },
     findRandom: async function (findParams) {
         try {
             var nfts = await NftModel.find(findParams)
