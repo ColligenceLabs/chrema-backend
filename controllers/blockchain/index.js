@@ -109,12 +109,12 @@ async function getLastEvents(toBlock) {
                                 ) {
                                     // mint
                                     await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, collection_id: collectionId, type: consts.LISTENER_TYPE.MINT});
-                                    let serial = await SerialModel.findOneAndUpdate(
+                                    let result = await SerialModel.updateMany(
                                         {contract_address: contractAddress, token_id: tokenIdHex, owner: null, status: consts.SERIAL_STATUS.INACTIVE},
-                                        {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
-                                        {returnNewDocument: true}
+                                        {$set: {status: consts.SERIAL_STATUS.ACTIVE}}
                                     );
-                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {$inc: {quantity_selling: 1}, status: consts.NFT_STATUS.ACTIVE});
+                                    const serial = await SerialModel.findOne({contract_address: contractAddress, token_id: tokenIdHex});
+                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {status: consts.NFT_STATUS.ACTIVE});
                                 } else if (
                                     result[i].topics[3] ==
                                     '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -122,43 +122,13 @@ async function getLastEvents(toBlock) {
                                     // burn
                                     let amount = data[1];
                                     await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, collection_id: collectionId, type: consts.LISTENER_TYPE.BURN});
-                                    let serial = await SerialModel.findOneAndUpdate(
+                                    let result = await SerialModel.updateMany(
                                         {contract_address: contractAddress, token_id: tokenIdHex},
                                         {$set: {status: consts.SERIAL_STATUS.SUSPEND}},
                                         {returnNewDocument: true}
                                     );
-
-                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {$inc: {quantity_selling: - data[1]}, status: consts.NFT_STATUS.SUSPEND});
-
-                                    // TODO 여러개가 한번에 팔리는 경우에 대한 처리 필요(여러개의 serial 을 suspend 처리해야함?)
-
-                                    // // suspend serial
-                                    // let serial = await serialRepository.findOneSerial({
-                                    //     token_id: tokenId,
-                                    //     owner: null,
-                                    // });
-                                    // if (serial) {
-                                    //     let nft = await nftRepository.findById(serial.nft_id._id);
-                                    //     if (nft) {
-                                    //         let serialList = await serialRepository.findAllSerialWithCondition(
-                                    //             {
-                                    //                 nft_id: nft._id,
-                                    //                 status: consts.SERIAL_STATUS.ACTIVE,
-                                    //             },
-                                    //         );
-                                    //         let quantitySelling = calcQuantitySellingNumber(
-                                    //             serialList,
-                                    //         );
-                                    //         await nftRepository.update(nft._id, {
-                                    //             quantity_selling: quantitySelling,
-                                    //         });
-                                    //         // suspend serial
-                                    //         await serialRepository.update(
-                                    //             {_id: serial._id},
-                                    //             {status: consts.SERIAL_STATUS.SUSPEND},
-                                    //         );
-                                    //     }
-                                    // }
+                                    const serial = await SerialModel.findOne({contract_address: contractAddress, token_id: tokenIdHex});
+                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {quantity_selling: 0, status: consts.NFT_STATUS.SUSPEND});
                                 } else {
                                     // buy or airdrop nft
                                     // TODO 여러개가 한번에 팔리는 경우에 대한 처리 필요(여러개의 serial 을 suspend 처리해야함?)
