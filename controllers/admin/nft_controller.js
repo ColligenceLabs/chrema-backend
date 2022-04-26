@@ -1916,36 +1916,50 @@ module.exports = {
         }
         const address = req.query.address;
         const size = req.query.size;
+        const page = req.query.page;
         const cursor = req.query.cursor;
 
-        const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
-        if (transferResult.status == 200) {
-            let nfts = [];
-            try {
-                for (let i = 0; i < transferResult.data.items.length; i++) {
-                    // find serial
-                    const serial = await serialRepository.findOneSerialDetail({
-                        contract_address: transferResult.data.items[i].contractAddress,
-                        token_id: transferResult.data.items[i].extras.tokenId,
-                    });
-                    // find nft
-                    if (serial) {
-                        const nft = serial.nft_id;
-                        // console.log(nft);
-                        const exist = nfts.some((item) => {
-                            return item._id.toString() === nft._id.toString();
-                        });
-                        if (!exist)
-                            nfts.push(nft);
-                    }
-                }
-            } catch (e) {
-                console.log(e);
-            }
-            return handlerSuccess(req, res, {nfts, cursor: transferResult.data.cursor});
-        } else {
-            return handlerError(req, res, {error: transferResult.response.data});
+        let nfts = [];
+        const serials = await serialRepository.findByOwnerId(address, size, page ? page : 0);
+        for (let i = 0; i < serials.length; i++) {
+            const nft = serials[i].nft_id;
+            const exist = nfts.some((item) => {
+                return item._id.toString() === nft._id.toString();
+            });
+            if (!exist)
+                nfts.push(nft);
         }
+
+
+        // const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
+        // if (transferResult.status == 200) {
+        //     let nfts = [];
+        //     try {
+        //         for (let i = 0; i < transferResult.data.items.length; i++) {
+        //             // find serial
+        //             const serial = await serialRepository.findOneSerialDetail({
+        //                 contract_address: transferResult.data.items[i].contractAddress,
+        //                 token_id: transferResult.data.items[i].extras.tokenId,
+        //             });
+        //             // find nft
+        //             if (serial) {
+        //                 const nft = serial.nft_id;
+        //                 // console.log(nft);
+        //                 const exist = nfts.some((item) => {
+        //                     return item._id.toString() === nft._id.toString();
+        //                 });
+        //                 if (!exist)
+        //                     nfts.push(nft);
+        //             }
+        //         }
+        //     } catch (e) {
+        //         console.log(e);
+        //     }
+        //     console.log(nfts);
+            return handlerSuccess(req, res, {nfts});
+        // } else {
+        //     return handlerError(req, res, {error: transferResult.response.data});
+        // }
     },
     sellNFTs: async (req, res, next) => {
         // contract_address, nft_id 를 사용해서 serials 모두 sell 처리
