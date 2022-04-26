@@ -34,7 +34,7 @@ const CollectionSchema = new Schema(
                     enum: getCollectionCateValueInEnum(COLLECTION_CATE),
                 },
             ],
-            default: [COLLECTION_CATE.OTHER.value],
+            default: [COLLECTION_CATE.COLLECTIBLES.value],
         },
         company_id: {
             type: Schema.Types.ObjectId,
