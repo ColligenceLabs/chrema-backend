@@ -273,7 +273,7 @@ async function getMarketEvents(toBlock) {
                     }
                     else if (events[i].event !== 'Ask') {
                         // what mean Ask event??
-                        // console.log(events[i]);
+                        console.log(events[i]);
                     }
                 } catch (e) {
                     console.log(e);
