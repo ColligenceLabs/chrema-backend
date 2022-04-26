@@ -478,8 +478,7 @@ module.exports = {
             const retCollections = [];
             for (let i = 0; i < result.length; i++) {
                 const collection = collections.filter((item) => item._id.toString() === result[i]._id.toString());
-                // console.log(collection);
-                const floorPrices = await serialRepository.findFloorPrice(collection[0].contract_address);
+                const floorPrices = await serialRepository.findFloorPrice(collection[0].contract_address.toLowerCase());
                 const filteredPrices = floorPrices.filter(price => price._id === 'talk' || price._id === 'klay');
                 let floorPrice;
                 if (filteredPrices.length > 0) {
@@ -489,8 +488,7 @@ module.exports = {
                     } else {
                         const price1 = new BigNumber(filteredPrices[0].floorPrice).multipliedBy(coinPrices[filteredPrices[0]._id].USD).toNumber();
                         const price2 = new BigNumber(filteredPrices[1].floorPrice).multipliedBy(coinPrices[filteredPrices[1]._id].USD).toNumber();
-                        floorPrice = price1 > price2 ? filteredPrices[1] : filteredPrices[0];
-                        console.log(price1, price2,floorPrice);
+                        floorPrice = price1 > price2 ? filteredPrices[0] : filteredPrices[1];
                     }
                 }
                 retCollections. push({...collection[0]._doc, ...result[i], floorPrice});
