@@ -120,106 +120,34 @@ module.exports = {
         },
     },
     COLLECTION_CATE: {
-        OTHER: {
-            value: 'other',
-            title: 'Other',
-        },
-        TOP: {
-            value: 'top',
-            title: 'Top',
-        },
-        GAME: {
-            value: 'game',
-            title: 'Game',
-        },
-        GRAFFITI: {
-            value: 'graffiti',
-            title: 'Graffiti',
+        TALKEN: {
+            value: 'talken',
+            title: 'Talken',
         },
         ART: {
             value: 'art',
-            title: 'Art'
+            title: 'Art',
         },
         COLLECTIBLES: {
             value: 'collectibles',
             title: 'Collectibles'
         },
-        DOMAINNAMES: {
-            value: 'domainNames',
-            title: 'Domain Names'
+        MEMBERSHIP: {
+            value: 'membership',
+            title: 'Membership'
         },
-        MUSIC: {
-            value: 'music',
-            title: 'Music'
+        PIECES: {
+            value: 'pieces',
+            title: 'Pieces'
         },
-        PHOTOGRAPHY: {
-            value: 'photography',
-            title: 'Photography'
+        GAMES: {
+            value: 'games',
+            title: 'Games'
         },
-        SPORTS: {
-            value: 'sports',
-            title: 'Sports'
-        },
-        TRADINGCARDS: {
-            value: 'tradingCards',
-            title: 'Trading Cards'
-        },
-        UTILITY: {
-            value: 'utility',
-            title: 'Utility'
-        },
-        VIRTUALWORLDS: {
-            value: 'virtualWorlds',
+        VIRTUAL: {
+            value: 'virtual',
             title: 'Virtual Worlds'
-        },
-        // KPOP: {
-        //     value: 'kpop',
-        //     title: 'Kpop',
-        // },
-        // POP: {
-        //     value: 'pop',
-        //     title: 'Pop',
-        // },
-        // BALLAD: {
-        //     value: 'ballad',
-        //     title: 'Ballad',
-        // },
-        // USUK: {
-        //     value: 'usuk',
-        //     title: 'US-UK',
-        // },
-        // DANCE: {
-        //     value: 'dance',
-        //     title: 'Dance',
-        // },
-        // DISCO: {
-        //     value: 'disco',
-        //     title: 'Disco',
-        // },
-        // JAZZ: {
-        //     value: 'jazz',
-        //     title: 'Jazz',
-        // },
-        // BLUES: {
-        //     value: 'blues',
-        //     title: 'Blues',
-        // },
-        // HIPHOP: {
-        //     value: 'hiphop',
-        //     title: 'Hip hop',
-        // },
-        // FOLK: {
-        //     value: 'folk',
-        //     title: 'Folk',
-        // },
-        // ROCK: {
-        //     value: 'rock',
-        //     title: 'Rock',
-        // },
-        // INSTRUMENTAL: {
-        //     value: 'instrumental',
-        //     title: 'Instrumental',
-        // },
+        }
     },
     HISTORY_MEMO: {
         PAYMENT: 'Payment',
