@@ -1544,7 +1544,7 @@ module.exports = {
             const sellingStatusStopArr = [];
             // selling status = 0 vs time > now > time
             for (let i = 0; i < nfts.length; i++) {
-                if (nfts[i].selling_status === 0) {
+                if (nfts[i].selling_status === consts.SELLING_STATUS.SELL) {
                     if (checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date))
                         errorNftIds.push(nfts[i].id);
                     else{
@@ -1552,7 +1552,7 @@ module.exports = {
                         sellingQuantityArr.push(nfts[i].quantity);
                     }
                 }
-                if (nfts[i].selling_status === 1) {
+                if (nfts[i].selling_status === consts.SELLING_STATUS.STOP) {
                     sellingStatusStopArr.push(nfts[i].id);
                 }
             }
@@ -1636,6 +1636,37 @@ module.exports = {
             }
 
             return handlerSuccess(req, res, 'Update Nfts successed!');
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    async stopSelling(req, res, next) {
+        try {
+            const data = {selling_status: 1, start_date: null, end_date: null, updatedAt: Date.now()};
+            const nft = await nftRepository.findById(req.body.id);
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+            const useKas = req.body.use_kas;
+
+            let successNfts = [];
+            let failNfts = [];
+            if (useKas === 'true') {
+                // TODO : market contract 에 cancelSellToken 호출
+
+                // if (failNfts.length > 0)
+                //     return handlerError(req, res, {success: successNfts, fail: failNfts});
+            } else {
+                const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
+                await serialRepository.update({nft_id: nft._id}, {owner_id: marketAddress, status: consts.SERIAL_STATUS.SUSPEND});
+                if (!updateNft) {
+                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                }
+            }
+
+            return handlerSuccess(req, res, 'Stop selling successed!');
         } catch (error) {
             logger.error(new Error(error));
             next(error);
@@ -2179,7 +2210,7 @@ function convertProductResponse(products) {
     products.forEach((element) => {
         let item = Object.assign({}, element._doc);
         if (element.quantity_selling > 0) {
-            if (element.selling_status === 0) {
+            if (element.selling_status === consts.SELLING_STATUS.SELL) {
                 if (checkTimeCurrent(element.start_date, current_time, element.end_date) === true) {
                     productsRes.push({
                         ...item,
@@ -2196,7 +2227,7 @@ function convertProductResponse(products) {
                     });
                 }
             }
-            if (element.selling_status === 1) {
+            if (element.selling_status === consts.SELLING_STATUS.STOP) {
                 productsRes.push({
                     ...item,
                     selling: false,

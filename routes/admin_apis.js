@@ -146,6 +146,8 @@ router.put('/nft/update-status/:id', isAuth.validateToken, nftController.updateN
 
 router.put('/nft/update-schedule', isAuth.validateToken, nftController.updateSchedule);
 
+router.put('/nft/stop-selling', isAuth.validateToken, nftController.stopSelling);
+
 router.put('/nft/update-onchain/:id', isAuth.validateToken, nftController.updateNftOnchain);
 
 router.put('/nft/update-transfered/:id', isAuth.validateToken, nftController.increaseTransfered);
