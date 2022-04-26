@@ -1540,14 +1540,17 @@ module.exports = {
             let input = {};
             const errorNftIds = [];
             const sellingStatusSellArr = [];
+            const sellingQuantityArr = [];
             const sellingStatusStopArr = [];
             // selling status = 0 vs time > now > time
             for (let i = 0; i < nfts.length; i++) {
                 if (nfts[i].selling_status === 0) {
                     if (checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date))
                         errorNftIds.push(nfts[i].id);
-                    else
+                    else{
                         sellingStatusSellArr.push(nfts[i].id);
+                        sellingQuantityArr.push(nfts[i].quantity);
+                    }
                 }
                 if (nfts[i].selling_status === 1) {
                     sellingStatusStopArr.push(nfts[i].id);
@@ -1602,7 +1605,10 @@ module.exports = {
                         return handlerError(req, res, {success: successNfts, fail: failNfts});
                 } else {
                     const updateNft = await nftRepository.updateSchedule(sellingStatusSellArr, data);
-                    await serialRepository.update({nft_id: {$in: sellingStatusSellArr}}, {price: updateNft.price, quote: updateNft.quote, owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
+                    for (let i = 0; i < sellingStatusSellArr.length; i++) {
+                        await nftRepository.updateQuantitySelling(sellingStatusSellArr[i], sellingQuantityArr[i]);
+                    }
+                    await serialRepository.update({nft_id: {$in: sellingStatusSellArr}}, {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
                     if (!updateNft) {
                         return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                     }
