@@ -1578,7 +1578,7 @@ module.exports = {
                     {nft_id: nft._id, owner_id: {$in: [req.body.seller, null]}}
                     , {owner_id: marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
                 );
-                await nftRepository.updateQuantitySelling(nft._id, result.nModified);
+                await nftRepository.updateSellingData(nft._id, result.nModified);
 
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
@@ -1594,7 +1594,7 @@ module.exports = {
 
     async stopSelling(req, res, next) {
         try {
-            const data = {quantity_selling: 0, start_date: null, end_date: null, updatedAt: Date.now()};
+            const data = {quantity_selling: 0, sell_amount: 0, start_date: null, end_date: null, updatedAt: Date.now()};
             const account = req.body.owner;
             const nft = await nftRepository.findById(req.body.id);
             if (!nft) {
@@ -1602,13 +1602,9 @@ module.exports = {
             }
             const useKas = req.body.use_kas;
 
-            let successNfts = [];
-            let failNfts = [];
             if (useKas === 'true') {
                 // TODO : market contract 에 cancelSellToken 호출
 
-                // if (failNfts.length > 0)
-                //     return handlerError(req, res, {success: successNfts, fail: failNfts});
             } else {
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
                 await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
