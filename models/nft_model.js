@@ -28,11 +28,11 @@ const NftSchema = new Schema(
         sell_amount: {
             type: Number,
             required: false,
-            default: 1,
+            default: 0,
         },
         quantity_selling: {
             type: Number,
-            default: 1,
+            default: 0,
         },
         price: {
             type: Number,
