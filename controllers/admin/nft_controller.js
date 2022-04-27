@@ -1525,16 +1525,15 @@ module.exports = {
     async updateSchedule(req, res, next) {
         try {
             const data = getUpdateScheduleBodys(req.body);
-
             if (isEmptyObject(data)) {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
 
             const nfts = await nftRepository.findByIds(req.body.ids);
-
             if (!nfts.length) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
+
             const useKas = req.body.use_kas;
             let current_time = new Date();
             let input = {};
@@ -1542,6 +1541,11 @@ module.exports = {
             const sellingStatusSellArr = [];
             const sellingQuantityArr = [];
             const sellingStatusStopArr = [];
+
+            if (req.body.seller) {
+                input.seller = req.body.seller;
+            }
+
             // selling status = 0 vs time > now > time
             for (let i = 0; i < nfts.length; i++) {
                 if (nfts[i].selling_status === consts.SELLING_STATUS.SELL) {
@@ -1661,7 +1665,7 @@ module.exports = {
                 //     return handlerError(req, res, {success: successNfts, fail: failNfts});
             } else {
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
-                await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, status: consts.SERIAL_STATUS.ACTIVE});
+                await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
@@ -1971,12 +1975,12 @@ module.exports = {
            return handlerError(req, res, result.error);
         return handlerSuccess(req, res, result);
     },
-    selectTokenId: async (req, res, next) => {
+    selectSerials: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const serial = await serialRepository.findByNftIdAndUpdate(nftId);
         if (serial) {
             const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
-            return handlerSuccess(req, res, serial.token_id);
+            return handlerSuccess(req, res, serial);
         }
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);

@@ -25,6 +25,11 @@ const SerialSchema = new Schema(
             // required: true,
             default: null,
         },
+        seller: {
+            type: String,
+            // required: true,
+            default: null,
+        },
         transfered: {
             type: Number,
             default: TRANSFERED.NOT_TRANSFER,
