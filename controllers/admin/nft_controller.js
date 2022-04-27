@@ -1644,7 +1644,8 @@ module.exports = {
 
     async stopSelling(req, res, next) {
         try {
-            const data = {selling_status: 1, start_date: null, end_date: null, updatedAt: Date.now()};
+            const data = {quantity_selling: 0, start_date: null, end_date: null, updatedAt: Date.now()};
+            const account = req.body.owner;
             const nft = await nftRepository.findById(req.body.id);
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
@@ -1660,7 +1661,7 @@ module.exports = {
                 //     return handlerError(req, res, {success: successNfts, fail: failNfts});
             } else {
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
-                await serialRepository.update({nft_id: nft._id}, {owner_id: marketAddress, status: consts.SERIAL_STATUS.ACTIVE});
+                await serialRepository.update({nft_id: nft._id}, {owner_id: account, status: consts.SERIAL_STATUS.ACTIVE});
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
