@@ -1920,10 +1920,12 @@ module.exports = {
     selectSerials: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const buyer = req.query.buyer;
-        const serial = await serialRepository.findByNftIdAndUpdate(nftId, buyer);
-        if (serial) {
-            const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
-            return handlerSuccess(req, res, serial);
+        const amount = parseInt(req.query.amount);
+        const serials = await serialRepository.findByNftIdAndUpdate(nftId, buyer, amount);
+        console.log('=====', serials);
+        if (serials.length > 0) {
+            const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -serials.length);
+            return handlerSuccess(req, res, serials);
         }
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
@@ -1933,7 +1935,7 @@ module.exports = {
         const tokenId = req.query.token_id;
         const buyer = req.query.buyer;
         const result = await serialRepository.update({nft_id: nftId, token_id: tokenId, buyer}, {buyer: null, status: SERIAL_STATUS.SELLING});
-        const nft = await nftRepository.updateQuantitySelling(nftId, 1);
+        const nft = await nftRepository.updateQuantitySelling(nftId, result.nModified);
         return handlerSuccess(req, res, result);
     }
 };

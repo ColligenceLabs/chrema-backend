@@ -133,13 +133,14 @@ module.exports = {
             return error;
         }
     },
-    findByNftIdAndUpdate: async function (nftId, buyer) {
+    findByNftIdAndUpdate: async function (nftId, buyer, amount) {
         try {
-            let serial = await SerialModel.findOneAndUpdate(
-                {nft_id: nftId, status: consts.SERIAL_STATUS.SELLING},
-                {buyer, status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}
-            ).sort({createdAt: 1, _id: 1});
-            return serial;
+            const serials = await SerialModel.find({nft_id: nftId, status: consts.SERIAL_STATUS.SELLING})
+                .sort({createdAt: 1, _id: 1})
+                .limit(amount);
+            const serialIds = serials.map((doc) => doc._id);
+            const result = await SerialModel.updateMany({_id: {$in: serialIds}}, {$set: {buyer, status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}});
+            return serials;
         } catch (error) {
             return error;
         }
