@@ -1530,106 +1530,56 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
 
-            const nfts = await nftRepository.findByIds(req.body.ids);
-
-            if (!nfts.length) {
+            const nft = await nftRepository.findById(req.body.id);
+            if (!nft) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
             const useKas = req.body.use_kas;
             let current_time = new Date();
             let input = {};
-            const errorNftIds = [];
-            const sellingStatusSellArr = [];
-            const sellingQuantityArr = [];
-            const sellingStatusStopArr = [];
             // selling status = 0 vs time > now > time
-            for (let i = 0; i < nfts.length; i++) {
-                if (nfts[i].selling_status === consts.SELLING_STATUS.SELL) {
-                    if (checkTimeCurrent(nfts[i].start_date, current_time, nfts[i].end_date))
-                        errorNftIds.push(nfts[i].id);
-                    else{
-                        sellingStatusSellArr.push(nfts[i].id);
-                        sellingQuantityArr.push(nfts[i].quantity);
-                    }
-                }
-                if (nfts[i].selling_status === consts.SELLING_STATUS.STOP) {
-                    sellingStatusStopArr.push(nfts[i].id);
-                }
+            if (nft.selling_status === consts.SELLING_STATUS.SELL) {
+                if (checkTimeCurrent(nft.start_date, current_time, nft.end_date))
+                    return handlerError(
+                        req,
+                        res,
+                        `Nft id "${nft._id}" is not allow to update!`,
+                    );
             }
+            let startDate = new Date(convertTimezone(data.start_date).setSeconds(0, 0));
+            input.start_date = startDate;
 
-            if (errorNftIds.length > 0) {
-                return handlerError(
-                    req,
-                    res,
-                    `Nft ids "${errorNftIds.join(', ')}" is not allow to update!`,
-                );
-            }
-
-            // check start_date
-            if (sellingStatusSellArr.length > 0) {
-                let startDate = new Date(convertTimezone(data.start_date).setSeconds(0, 0));
-                input.start_date = startDate;
-                // if (startDate > current_time) {
-                // } else {
-                //     return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
-                // }
-
-                // check end_date
-                let endDate = null;
-                if (data.end_date) {
-                    endDate = new Date(convertTimezone(data.end_date).setSeconds(0, 0));
-                    if (endDate > startDate) {
-                        // if (endDate > current_time && endDate > startDate) {
-                        input.end_date = endDate;
-                    } else {
-                        return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
-                    }
-                }
-                let successNfts = [];
-                let failNfts = [];
-                if (useKas === 'true') {
-                    // market contract 에 readyToSell 호출
-                    for (let i = 0; i < sellingStatusSellArr.length; i++) {
-                        const sellResult = await sellNFTs(sellingStatusSellArr[i]);
-                        console.log(sellResult, sellingStatusSellArr[i]);
-                        if (sellResult.status === 200 && sellResult.result.fail.length === 0) {
-                            const updateNft = await nftRepository.updateSchedule([sellingStatusSellArr[i]], input);
-                            if (updateNft)
-                                successNfts.push(sellingStatusSellArr[i]);
-                            else
-                                failNfts.push(sellingStatusSellArr[i]);
-                        } else
-                            failNfts.push(sellingStatusSellArr[i]);
-                    }
-                    if (failNfts.length > 0)
-                        return handlerError(req, res, {success: successNfts, fail: failNfts});
-                } else {
-                    const updateNft = await nftRepository.updateSchedule(sellingStatusSellArr, data);
-                    for (let i = 0; i < sellingStatusSellArr.length; i++) {
-                        await nftRepository.updateQuantitySelling(sellingStatusSellArr[i], sellingQuantityArr[i]);
-                    }
-                    await serialRepository.update({nft_id: {$in: sellingStatusSellArr}}, {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING});
-                    if (!updateNft) {
-                        return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
-                    }
-                }
-            }
-
-            if (sellingStatusStopArr.length > 0) {
-                const newStartDate = req.body.start_date;
-                const newEndDate = req.body.end_date;
-
-                data.start_date = new Date(convertTimezone(newStartDate).setSeconds(0, 0));
-
-                if (new Date(newEndDate) > new Date(newStartDate)) {
-                    data.end_date = new Date(convertTimezone(newEndDate).setSeconds(0, 0));
+            // check end_date
+            let endDate = null;
+            if (data.end_date) {
+                endDate = new Date(convertTimezone(data.end_date).setSeconds(0, 0));
+                if (endDate > startDate) {
+                    // if (endDate > current_time && endDate > startDate) {
+                    input.end_date = endDate;
                 } else {
                     return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
                 }
+            }
 
-                // TODO 판매취소 호출??
+            if (useKas === 'true') {
+                const sellResult = await sellNFTs(nft);
+                console.log(sellResult, nft._id);
+                if (sellResult.status === 200 && sellResult.result.fail.length === 0) {
+                    const updateNft = await nftRepository.updateSchedule([nft._id], input);
+                    if (updateNft)
+                        return handlerSuccess(req, res, 'Update Nfts successed!');
+                    else
+                        return handlerError(req, res, {fail: nft});
+                } else
+                    return handlerError(req, res, {fail: nft});
+            } else {
+                const updateNft = await nftRepository.updateSchedule([nft._id], data);
+                const result = await serialRepository.update(
+                    {nft_id: nft._id, owner_id: {$in: [req.body.seller, null]}}
+                    , {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING}
+                );
+                await nftRepository.updateQuantitySelling(nft._id, result.nModified);
 
-                const updateNft = await nftRepository.updateSchedule(sellingStatusStopArr, data);
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
@@ -1990,8 +1940,7 @@ module.exports = {
     }
 };
 
-async function sellNFTs(nftId) {
-    const nft = await nftRepository.findById(nftId);
+async function sellNFTs(nft) {
     if (!nft) {
         return {status: 500, error: ErrorMessage.NFT_IS_NOT_FOUND};
     }
@@ -2002,7 +1951,7 @@ async function sellNFTs(nftId) {
         return {status: 500, error: ErrorMessage.COLLECTION_IS_NOT_FOUND};
     }
 
-    const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
+    const serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
     if (!serials) {
         return {status: 500, error: ErrorMessage.SERIAL_IS_NOT_FOUND};
     }
