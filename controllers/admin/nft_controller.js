@@ -1576,7 +1576,7 @@ module.exports = {
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
                 const result = await serialRepository.update(
                     {nft_id: nft._id, owner_id: {$in: [req.body.seller, null]}}
-                    , {owner_id: marketAddress, status: consts.SERIAL_STATUS.SELLING}
+                    , {owner_id: marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
                 );
                 await nftRepository.updateQuantitySelling(nft._id, result.nModified);
 
