@@ -1611,7 +1611,7 @@ module.exports = {
                 //     return handlerError(req, res, {success: successNfts, fail: failNfts});
             } else {
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
-                await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, status: consts.SERIAL_STATUS.ACTIVE});
+                await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
@@ -1940,7 +1940,8 @@ module.exports = {
     }
 };
 
-async function sellNFTs(nft) {
+async function sellNFTs(nftId) {
+    const nft = await nftRepository.findById(nftId);
     if (!nft) {
         return {status: 500, error: ErrorMessage.NFT_IS_NOT_FOUND};
     }
@@ -1951,7 +1952,7 @@ async function sellNFTs(nft) {
         return {status: 500, error: ErrorMessage.COLLECTION_IS_NOT_FOUND};
     }
 
-    const serials = await serialRepository.findByNftIdNotTRransfered(nft._id);
+    const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
     if (!serials) {
         return {status: 500, error: ErrorMessage.SERIAL_IS_NOT_FOUND};
     }
