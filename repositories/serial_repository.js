@@ -133,11 +133,11 @@ module.exports = {
             return error;
         }
     },
-    findByNftIdAndUpdate: async function (nftId) {
+    findByNftIdAndUpdate: async function (nftId, buyer) {
         try {
             let serial = await SerialModel.findOneAndUpdate(
                 {nft_id: nftId, status: consts.SERIAL_STATUS.SELLING},
-                {status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}
+                {buyer, status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}
             ).sort({createdAt: 1, _id: 1});
             return serial;
         } catch (error) {
