@@ -1921,12 +1921,12 @@ module.exports = {
            return handlerError(req, res, result.error);
         return handlerSuccess(req, res, result);
     },
-    selectTokenId: async (req, res, next) => {
+    selectSerials: async (req, res, next) => {
         const nftId = req.query.nft_id;
         const serial = await serialRepository.findByNftIdAndUpdate(nftId);
         if (serial) {
             const nft = await nftRepository.updateQuantitySelling(new ObjectID(nftId), -1);
-            return handlerSuccess(req, res, serial.token_id);
+            return handlerSuccess(req, res, serial);
         }
         else
             return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
