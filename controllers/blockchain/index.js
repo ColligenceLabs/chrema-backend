@@ -11,6 +11,7 @@ const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = req
 // const marketAbi = require('../../config/abi/market.json');
 const marketAbi = require('../../config/abi/marketV4.json');
 let lastBlock = 0;
+let lastMarketBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const useCrawler = process.env.USE_CRAWLER;
@@ -23,11 +24,21 @@ function loadConf() {
     } else {
         lastBlock = 68397139;
     }
+    if (fs.existsSync('lastmarketblock.conf')) {
+        let rawdata = fs.readFileSync('lastmarketblock.conf');
+        lastMarketBlock = parseInt(rawdata);
+    } else {
+        lastMarketBlock = 68397139;
+    }
 }
 
 // save last event's block to file - incase reload service
 function saveConf() {
     fs.writeFileSync('lastcheckedblock.conf', lastBlock + '');
+}
+
+function saveMarketConf() {
+    fs.writeFileSync('lastmarketblock.conf', lastMarketBlock + '');
 }
 
 // convert hex result to address
@@ -280,6 +291,8 @@ async function getMarketEvents(toBlock) {
                     console.log(e);
                 }
             }
+            lastMarketBlock = toBlock + 1;
+            saveMarketConf();
         }).catch((e) => {
             console.log('market contract getEvents', e);
         });
@@ -292,12 +305,13 @@ if (useCrawler === 'true') {
     // set timer to get events every 2 seconds
     setInterval(async function () {
         const delay = process.env.CRAWLER_DELAY;
-        let toBlock = (await web3.eth.getBlockNumber()) * 1 - delay;
+        let toBlock = (await web3.eth.getBlockNumber()) * 1;
         // console.log(toBlock);
+        await getMarketEvents(toBlock);
+        toBlock = toBlock - delay;
         if (toBlock - lastBlock > 4000) {
             toBlock = lastBlock * 1 + 4000 - delay;
         }
-        await getMarketEvents(toBlock);
         getLastEvents(toBlock);
     }, 2000);
 }
