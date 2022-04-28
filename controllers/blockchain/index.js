@@ -231,18 +231,20 @@ async function getMarketEvents(toBlock) {
                     if (events[i].event === 'Trade'){
                         console.log(events[i].transactionHash, 'Trade event handle start.');
                         const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
-                        console.log(events[i].returnValues.nft.toLowerCase(), tokenIdHex);
-                        let serial = await SerialModel.findOneAndUpdate(
-                            {contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, buyer: events[i].returnValues.buyer, status: consts.SERIAL_STATUS.BUYING},
-                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer, buyer: null}},
-                            {returnNewDocument: true}
+                        console.log(events[i].returnValues);
+                        let serials = await SerialModel.find({contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, buyer: events[i].returnValues.buyer, status: consts.SERIAL_STATUS.BUYING});
+                        const serialIds = serials.map((doc) => doc._id);
+                        console.log('=====>', serialIds);
+                        const result = await SerialModel.updateMany(
+                            {_id: {$in: serialIds}},
+                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer, buyer: null}}
                         );
-                        console.log(serial);
-                        if (!serial) continue;
+                        if (serialIds.length === 0) continue;
                         const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
-                        console.log(block.timestamp);
-                        const nft = await NftModel.findOne({_id: serial.nft_id._id});
+                        console.log(block.timestamp, serials[0].nft_id._id);
+                        const nft = await NftModel.findOne({_id: serials[0].nft_id._id});
                         //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
+                        console.log(web3.utils.fromWei(events[i].returnValues.price, 'ether'), web3.utils.fromWei(events[i].returnValues.fee, 'ether'));
                         const trade = await TradeModel.create({
                             tx_hash: events[i].transactionHash,
                             block_number: events[i].blockNumber,
@@ -255,7 +257,6 @@ async function getMarketEvents(toBlock) {
                             fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
                             quote: nft.quote,
                             collection_id: nft.collection_id,
-                            serial_id: serial.id,
                             trade_date: new Date(block.timestamp * 1000)
                         });
                         // update hour trade statistics
