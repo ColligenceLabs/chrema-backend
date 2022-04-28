@@ -237,7 +237,7 @@ async function getMarketEvents(toBlock) {
                         console.log('=====>', serialIds);
                         const result = await SerialModel.updateMany(
                             {_id: {$in: serialIds}},
-                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer, buyer: null}}
+                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer, seller: null, buyer: null}}
                         );
                         if (serialIds.length === 0) continue;
                         const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));

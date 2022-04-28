@@ -19,7 +19,7 @@ const TradeSchema = new Schema(
         serial_id: {
             type: Schema.Types.ObjectId,
             ref: 'Serial',
-            required: true,
+            required: false,
         },
         seller: {
             type: String,
