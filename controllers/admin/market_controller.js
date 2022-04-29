@@ -25,7 +25,10 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
-            const sales = await saleRepository.findByNftId(req.params.nftId);
+            const page = req.query.page ? parseInt(req.query.page) : 0;
+            const size = req.query.size ? parseInt(req.query.size) : 10;
+            const sales = await saleRepository.findByNftId(req.params.nftId, page, size);
+            console.log(sales);
             return handlerSuccess(req, res, sales);
         } catch (e) {
             logger.error(new Error(e));
