@@ -1,20 +1,66 @@
 const {validationResult} = require('express-validator');
 const collectionRepository = require('../../repositories/collection_repository');
 const nftRepository = require('../../repositories/nft_repository');
+const serialRepository = require('../../repositories/serial_repository');
+const saleRepository = require('../../repositories/sale_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum, checkTimeCurrent} = require('../../utils/helper');
 const logger = require('../../utils/logger');
-const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL} = require('../../utils/consts');
+const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL, SERIAL_STATUS} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
 var collectionUploadRepository = require('../../repositories/collection_upload_repository');
 const consts = require('../../utils/consts');
 const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
+const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'MarketController',
 
+    async sellUserNft(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+            console.log(req.body);
+            const {
+                seller,
+                quantity,
+                price,
+                collectionId,
+                nftId,
+                tokenId,
+                serialIds
+            } = req.body
+            // sale collection 에 row 생성
+            const newSale = {
+                seller,
+                quantity,
+                price,
+                collection_id : collectionId,
+                nft_id: nftId,
+                token_id: tokenId
+            }
+            const sale = await saleRepository.createSale(newSale);
+            // serials 판매상태로 변경
+            if (!sale) {
+                return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
+            }
+            // nft의 user_selling_quantity 증가
+            await nftRepository.updateUserQuantitySelling(nftId, quantity);
+
+            // serialIds
+            await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, seller, owner_id: marketAddress});
+            return handlerSuccess(req, res, sale);
+        } catch (e) {
+            logger.error(new Error(e));
+            console.log(e);
+            return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
+        }
+    },
     async getAvailableNfts(req, res, next) {
         try {
             var errors = validationResult(req);

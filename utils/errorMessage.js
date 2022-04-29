@@ -88,4 +88,7 @@ exports.ErrorMessage = {
 
     //statistics
     LINE_NOT_FOUND: 'Line is not found!',
+
+    //market
+    USER_NFT_SELL_FAIL: 'nft sell registor fail',
 };

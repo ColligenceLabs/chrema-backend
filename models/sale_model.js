@@ -33,6 +33,10 @@ const SaleSchema = new Schema(
             ref: 'Nft',
             required: false,
         },
+        token_id: {
+            type: String,
+            default: '000000000',
+        },
         createdAt: {
             type: Date,
             default: Date.now,

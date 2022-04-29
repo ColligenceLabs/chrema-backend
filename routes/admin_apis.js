@@ -20,6 +20,7 @@ var validateAdmin = require('../requests/validate_admin');
 var validateNft = require('../requests/validate_nft');
 var validateSerial = require('../requests/validate_serial');
 var validateReward = require('../requests/validate_reward');
+var validateMarket = require('../requests/validate_market');
 
 // Require utils
 var isAuth = require('../utils/validate_token');
@@ -99,8 +100,8 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 
 // Market APIs
 router.get('/market/indexs', marketController.indexCollections);
-
 router.get('/market/indexsR', marketController.indexCollectionsR);
+router.post('/market/sellNft', isAuth.validateToken, validateMarket.sellUserNft(), marketController.sellUserNft);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);
