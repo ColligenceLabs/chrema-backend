@@ -1,4 +1,4 @@
-var {body} = require('express-validator');
+var {body, param} = require('express-validator');
 
 module.exports = {
     classname: 'ValidateMarket',
@@ -14,4 +14,9 @@ module.exports = {
             body('serialIds').not().isEmpty().withMessage('Missing serialIds parameter'),
         ];
     },
+    saleList: () => {
+        return [
+            param('nftId').not().isEmpty().withMessage('Missing nftId parameter'),
+        ]
+    }
 };

@@ -102,6 +102,7 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 router.get('/market/indexs', marketController.indexCollections);
 router.get('/market/indexsR', marketController.indexCollectionsR);
 router.post('/market/sellNft', isAuth.validateToken, validateMarket.sellUserNft(), marketController.sellUserNft);
+router.get('/market/saleList/:nftId', validateMarket.saleList(), marketController.saleList);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);

@@ -18,6 +18,21 @@ const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 module.exports = {
     classname: 'MarketController',
 
+    async saleList(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+            const sales = await saleRepository.findByNftId(req.params.nftId);
+            return handlerSuccess(req, res, sales);
+        } catch (e) {
+            logger.error(new Error(e));
+            console.log(e);
+            return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
+        }
+    },
     async sellUserNft(req, res, next) {
         try {
             const errors = validationResult(req);
@@ -25,7 +40,6 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
-            console.log(req.body);
             const {
                 seller,
                 quantity,
