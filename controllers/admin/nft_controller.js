@@ -1876,7 +1876,7 @@ module.exports = {
             if (!exist)
                 nfts.push(nft);
         }
-
+        console.log('=====>', serials.length, nfts.length);
 
         // const transferResult = await nftBlockchain._userNFTs(address, size, cursor ? cursor : '');
         // if (transferResult.status == 200) {

@@ -87,7 +87,7 @@ module.exports = {
     },
     findByOwnerId: async function (ownerId, page, size) {
         try {
-            let serials = await SerialModel.find({owner_id: ownerId})
+            let serials = await SerialModel.find({$or: [{owner_id: ownerId}, {seller: ownerId}]})
                 .sort({createdAt: -1, _id: 1})
                 .skip(page * size)
                 .limit(size)
