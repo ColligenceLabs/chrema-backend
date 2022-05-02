@@ -18,6 +18,11 @@ const SaleSchema = new Schema(
             type: Number,
             required: true
         },
+        quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
         sold: {
             type: Number,
             required: false,

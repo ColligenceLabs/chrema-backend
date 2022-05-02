@@ -8,8 +8,8 @@ const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEn
 const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL, SERIAL_STATUS} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
-const {isEmptyObject, validateRouter, imageResize} = require('../../utils/helper');
-var collectionUploadRepository = require('../../repositories/collection_upload_repository');
+const {isEmptyObject, validateRouter, getCoinPrice} = require('../../utils/helper');
+const BigNumber = require('bignumber.js');
 const consts = require('../../utils/consts');
 const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
@@ -25,11 +25,20 @@ module.exports = {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);
             }
-            const page = req.query.page ? parseInt(req.query.page) : 0;
-            const size = req.query.size ? parseInt(req.query.size) : 10;
+            const page = +req.query.page || 1;
+            const size = +req.query.size || 10;
+            const count = await saleRepository.count();
+            const responseHeaders = getHeaders(count, page, size);
+
             const sales = await saleRepository.findByNftId(req.params.nftId, page, size);
-            console.log(sales);
-            return handlerSuccess(req, res, sales);
+            const coinPrices = await getCoinPrice();
+            const result = sales.map((sale) => {
+                const priceUsd = (new BigNumber(sale.price)).multipliedBy(new BigNumber(coinPrices[sale.quote].USD)).toNumber();
+                const newSale = {...sale._doc, priceUsd};
+                return newSale;
+            })
+            // console.log(result);
+            return handlerSuccess(req, res, {items: result, headers: responseHeaders});
         } catch (e) {
             logger.error(new Error(e));
             console.log(e);
@@ -47,6 +56,7 @@ module.exports = {
                 seller,
                 quantity,
                 price,
+                quote,
                 collectionId,
                 nftId,
                 tokenId,
@@ -57,9 +67,10 @@ module.exports = {
                 seller,
                 quantity,
                 price,
+                quote,
                 collection_id : collectionId,
                 nft_id: nftId,
-                token_id: tokenId
+                token_id: tokenId,
             }
             const sale = await saleRepository.createSale(newSale);
             // serials 판매상태로 변경
@@ -70,7 +81,7 @@ module.exports = {
             await nftRepository.updateUserQuantitySelling(nftId, quantity);
 
             // serialIds
-            await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, seller, owner_id: marketAddress});
+            await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, quote, seller, owner_id: marketAddress});
             return handlerSuccess(req, res, sale);
         } catch (e) {
             logger.error(new Error(e));
