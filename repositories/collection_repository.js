@@ -42,7 +42,7 @@ module.exports = {
         try {
             let collections = await CollectionModel.find(findParams)
                 .sort({createdAt: -1, _id: 1})
-                .populate({path: 'creator_id', select: ['full_name', 'image']});
+                .populate({path: 'creator_id', select: ['full_name', 'image', 'description']});
             return collections;
         } catch (error) {
             return error;
