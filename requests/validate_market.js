@@ -35,5 +35,11 @@ module.exports = {
             query('seller').not().isEmpty().withMessage('Missing seller parameter'),
             query('sale_id').not().isEmpty().withMessage('Missing sale id parameter'),
         ]
+    },
+    cancelSale: () => {
+        return [
+            param('id').not().isEmpty().withMessage('Missing sale id parameter'),
+            query('seller').not().isEmpty().withMessage('Missing seller parameter'),
+        ]
     }
 };

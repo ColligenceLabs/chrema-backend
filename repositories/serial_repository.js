@@ -157,6 +157,13 @@ module.exports = {
             return error;
         }
     },
+    findUserNftAmountSerialIds: async function (nftId, seller, amount) {
+        const serials = await SerialModel.find({nft_id: nftId, seller, status: consts.SERIAL_STATUS.SELLING})
+            .sort({createdAt: 1, _id: 1})
+            .limit(amount);
+        const serialIds = serials.map((doc) => doc._id);
+        return serialIds;
+    },
     findByNftIdNotTRransfered: async function (nftId) {
         try {
 

@@ -17,6 +17,27 @@ const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'MarketController',
+    cancelSale: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const saleId = req.params.id;
+        const seller = req.query.seller;
+
+        // market contract 에서 해당 주소의 sale 있는지 확인 후 삭제?
+        // 해당 sale 정보와 seller 주소로 실제 nft 검증 후 삭제?
+        // 인증정보가 실제 사용자인지 확인가능?
+        const sale = await saleRepository.findById(saleId);
+        console.log('=====>', sale);
+        await nftRepository.updateUserQuantitySelling(sale.nft_id, -sale.quantity);
+        const serialIds = await serialRepository.findUserNftAmountSerialIds(sale.nft_id, sale.seller, sale.quantity);
+        await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.ACTIVE, seller: null, owner_id: sale.seller});
+        const result = await saleRepository.deleteSale(saleId, seller);
+        console.log(saleId, seller);
+        return handlerSuccess(req, res, result);
+    },
     cancelBuy: async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

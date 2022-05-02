@@ -10,12 +10,25 @@ module.exports = {
             return e;
         }
     },
+    findById: async function(saleId) {
+        try {
+            const sale = await SaleModel.findOne({_id: saleId});
+            return sale;
+        } catch (e) {
+            console.log(e);
+            return e;
+        }
+    },
     createSale: async function(sale) {
         const result = await SaleModel.create(sale);
         if (!result)
             return null;
         else
             return result;
+    },
+    deleteSale: async function(id, seller) {
+        const result = await SaleModel.deleteOne({_id: id, seller});
+        return result;
     },
     findOneAndUpdate: async function(findParams, where) {
         const result = await SaleModel.findOneAndUpdate(findParams, where);
