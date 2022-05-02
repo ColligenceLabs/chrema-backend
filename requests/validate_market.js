@@ -1,4 +1,4 @@
-var {body, param} = require('express-validator');
+var {body, param, query} = require('express-validator');
 
 module.exports = {
     classname: 'ValidateMarket',
@@ -17,6 +17,23 @@ module.exports = {
     saleList: () => {
         return [
             param('nftId').not().isEmpty().withMessage('Missing nftId parameter'),
+        ]
+    },
+    selectUserSerials: () => {
+        return [
+            query('nft_id').not().isEmpty().withMessage('Missing nft id parameter'),
+            query('buyer').not().isEmpty().withMessage('Missing buyer parameter'),
+            query('seller').not().isEmpty().withMessage('Missing seller parameter'),
+            query('amount').not().isEmpty().withMessage('Missing amount parameter'),
+            query('sale_id').not().isEmpty().withMessage('Missing sale id parameter'),
+        ]
+    },
+    cancelBuy: () => {
+        return [
+            query('nft_id').not().isEmpty().withMessage('Missing nft id parameter'),
+            query('buyer').not().isEmpty().withMessage('Missing buyer parameter'),
+            query('seller').not().isEmpty().withMessage('Missing seller parameter'),
+            query('sale_id').not().isEmpty().withMessage('Missing sale id parameter'),
         ]
     }
 };

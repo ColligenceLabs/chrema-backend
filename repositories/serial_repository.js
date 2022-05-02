@@ -145,6 +145,18 @@ module.exports = {
             return error;
         }
     },
+    findUserNftAndUpdate: async function (nftId, buyer, seller, amount) {
+        try {
+            const serials = await SerialModel.find({nft_id: nftId, seller, status: consts.SERIAL_STATUS.SELLING})
+                .sort({createdAt: 1, _id: 1})
+                .limit(amount);
+            const serialIds = serials.map((doc) => doc._id);
+            const result = await SerialModel.updateMany({_id: {$in: serialIds}}, {$set: {buyer, status: consts.SERIAL_STATUS.BUYING, updatedAt: Date.now()}});
+            return serials;
+        } catch (error) {
+            return error;
+        }
+    },
     findByNftIdNotTRransfered: async function (nftId) {
         try {
 

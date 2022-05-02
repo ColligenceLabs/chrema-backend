@@ -91,4 +91,5 @@ exports.ErrorMessage = {
 
     //market
     USER_NFT_SELL_FAIL: 'nft sell registor fail',
+    ALREADY_BUYING: 'Already in the process of purchasing nft'
 };

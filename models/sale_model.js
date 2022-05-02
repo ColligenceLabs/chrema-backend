@@ -9,6 +9,10 @@ const SaleSchema = new Schema(
             type: String,
             required: true
         },
+        buyer: {
+            type: String,
+            required: true
+        },
         quantity: {
             type: Number,
             required: true,

@@ -103,6 +103,8 @@ router.get('/market/indexs', marketController.indexCollections);
 router.get('/market/indexsR', marketController.indexCollectionsR);
 router.post('/market/sellNft', isAuth.validateToken, validateMarket.sellUserNft(), marketController.sellUserNft);
 router.get('/market/saleList/:nftId', validateMarket.saleList(), marketController.saleList);
+router.get('/market/select-user-serials', validateMarket.selectUserSerials(), marketController.selectUserSerials);
+router.get('/market/cancel-buy-usernft', validateMarket.cancelBuy(), marketController.cancelBuy);
 
 //Serials apis
 router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(), serialController.createSerial);

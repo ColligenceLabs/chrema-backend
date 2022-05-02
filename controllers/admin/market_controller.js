@@ -17,6 +17,49 @@ const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'MarketController',
+    cancelBuy: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const nftId = req.query.nft_id;
+        const tokenId = req.query.token_id;
+        const saleId = req.query.sale_id;
+        const buyer = req.query.buyer;
+        const seller = req.query.seller;
+        const result = await serialRepository.update({nft_id: nftId, token_id: tokenId, seller, buyer}, {buyer: null, status: SERIAL_STATUS.SELLING});
+        const nft = await nftRepository.updateUserQuantitySelling(nftId, result.nModified);
+        await saleRepository.findOneAndUpdate({_id: saleId}, {buyer: null, sold: 0});
+        return handlerSuccess(req, res, result);
+    },
+    async selectUserSerials(req, res, next) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const nftId = req.query.nft_id;
+        const buyer = req.query.buyer;
+        const seller = req.query.seller;
+        const amount = parseInt(req.query.amount);
+        const saleId = req.query.sale_id;
+        // sale 컬렉션에서 판매숫자 차감처리
+        const result = await saleRepository.findOneAndUpdate({_id: saleId, sold: 0}, {buyer, sold: amount});
+        console.log(result);
+        if (result.nModified === 0) {
+            return handlerError(req, res, ErrorMessage.ALREADY_BUYING);
+        }
+        // serials에서 판매중 처리
+        const serials = await serialRepository.findUserNftAndUpdate(nftId, buyer, seller, amount);
+        console.log('=====', serials);
+        if (serials.length > 0) {
+            const nft = await nftRepository.updateUserQuantitySelling(nftId, -serials.length);
+            return handlerSuccess(req, res, serials);
+        }
+        else
+            return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+    },
 
     async saleList(req, res, next) {
         try {
