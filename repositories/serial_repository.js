@@ -1,7 +1,8 @@
 const {SerialModel, UserModel, AdminModel, TransactionModel} = require('../models');
-var nftBlockchain = require('../controllers/blockchain/nft_controller');
-var mongoose = require('mongoose');
-var consts = require('../utils/consts');
+const nftBlockchain = require('../controllers/blockchain/nft_controller');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const consts = require('../utils/consts');
 
 module.exports = {
     findByIdSerial: async function (id) {
@@ -112,11 +113,25 @@ module.exports = {
             // let serial = await SerialModel.findOne({status: consts.SERIAL_STATUS.SELLING, contract_address})
             //     .sort({price: 1});
             let prices = SerialModel.aggregate([
-                {$match: {contract_address: contract_address}},
+                {$match: {contract_address: contract_address, status: consts.SERIAL_STATUS.SELLING}},
                 {$group: {_id: '$quote', floorPrice: {$min: '$price'}}},
                 {$sort: {_id: -1}}
             ])
             // .populate({path: 'owner_id', select: 'uid'});
+            return prices;
+        } catch (error) {
+            return error;
+        }
+    },
+    findNftFloorPrice: async function (nftId, tokenId) {
+        try {
+            // let serial = await SerialModel.findOne({status: consts.SERIAL_STATUS.SELLING, contract_address})
+            //     .sort({price: 1});
+            let prices = SerialModel.aggregate([
+                {$match: {$and: [{nft_id: new ObjectId(nftId)}, {status: consts.SERIAL_STATUS.SELLING}]}},
+                {$group: {_id: '$quote', floorPrice: {$min: '$price'}}},
+                {$sort: {_id: -1}}
+            ]);
             return prices;
         } catch (error) {
             return error;

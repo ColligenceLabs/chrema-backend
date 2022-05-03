@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 var consts = require('./consts');
 var sharp = require('sharp');
 const axios = require('axios');
+const BigNumber = require('bignumber.js');
 var fs = require('fs');
 var fsx = require('fs-extra')
 
@@ -187,4 +188,16 @@ exports.writeJson = async(linkHash,data, num) => {
             console.log(`write json file success ... #${num}`);
         }
      });
+};
+
+exports.getFloorPrice = (filteredPrices, coinPrices) => {
+    let floorPrice;
+    if (filteredPrices.length === 1) {
+        floorPrice = filteredPrices[0];
+    } else {
+        const price1 = new BigNumber(filteredPrices[0].floorPrice).multipliedBy(coinPrices[filteredPrices[0]._id].USD).toNumber();
+        const price2 = new BigNumber(filteredPrices[1].floorPrice).multipliedBy(coinPrices[filteredPrices[1]._id].USD).toNumber();
+        floorPrice = price1 > price2 ? filteredPrices[1] : filteredPrices[0];
+    }
+    return floorPrice;
 };
