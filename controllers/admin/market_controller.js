@@ -753,7 +753,7 @@ function convertProductResponse(products) {
     const productsRes = [];
     products.forEach((element) => {
         let item = Object.assign({}, element._doc);
-        if (element.quantity_selling > 0) {
+        if (element.quantity_selling > 0 || element.user_quantity_selling > 0) {
             if (element.selling_status === consts.SELLING_STATUS.SELL) {
                 if (checkTimeCurrent(element.start_date, current_time, element.end_date) === true) {
                     productsRes.push({

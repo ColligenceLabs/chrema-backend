@@ -1335,7 +1335,7 @@ module.exports = {
             const responseHeaders = getHeaders(count, page, perPage);
 
             const flCreatedAt = req.query.createdAt;
-            const flPrice = req.query.price;
+            const flPrice = req.query.price === 0 ? 1 : -1;
 
             const nfts = await nftRepository.findAllExt(findParams, {page, perPage}, flCreatedAt, flPrice);
             if (!nfts) {
@@ -2023,7 +2023,7 @@ function getFindParams(filters) {
         findParams.collection_id = filters.collection_id;
     }
     if (filters.collection_id && filters.onSale === 'true') {
-        findParams.quantity_selling = {$gt: 0}
+        findParams.$or = [ { quantity_selling: {$gt: 0} }, { user_quantity_selling: {$gt: 0} } ]
         findParams.start_date = {$lte: new Date()}
         findParams.end_date = {$gte: new Date()}
     }
@@ -2174,7 +2174,7 @@ function convertProductResponse(products) {
     const productsRes = [];
     products.forEach((element) => {
         let item = Object.assign({}, element._doc);
-        if (element.quantity_selling > 0) {
+        if (element.quantity_selling > 0 || element.user_quantity_selling > 0) {
             if (element.selling_status === consts.SELLING_STATUS.SELL) {
                 if (checkTimeCurrent(element.start_date, current_time, element.end_date) === true) {
                     productsRes.push({
