@@ -91,7 +91,7 @@ module.exports = {
             }
             const page = +req.query.page || 1;
             const size = +req.query.size || 10;
-            const count = await saleRepository.count();
+            const count = await saleRepository.count(req.params.nftId);
             const responseHeaders = getHeaders(count, page, size);
 
             const sales = await saleRepository.findByNftId(req.params.nftId, page, size);
