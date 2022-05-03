@@ -11,7 +11,7 @@ const SaleSchema = new Schema(
         },
         buyer: {
             type: String,
-            required: true
+            required: false
         },
         quantity: {
             type: Number,
