@@ -543,9 +543,12 @@ module.exports = {
             }
 
             let nft = await nftRepository.create(newNfts[0], newSerials[0], tokenIds, ipfs_links);
+            // let [nft, error] = await nftRepository.createWithError(newNfts[0], newSerials[0], tokenIds, ipfs_links);
 
             if (!nft) {
+            // if (!nft && error) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
+                // return handlerError(req, res, error);
             }
             let txHashs = [];
             for (let i = 0; i < tokenIds.length; i++) {
