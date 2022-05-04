@@ -558,7 +558,7 @@ module.exports = {
                 // mint nft
                 // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
-                console.log('---- mint resule ------->', mintResult)
+                console.log('---- mint result ------->', mintResult)
                 if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
                     // return handlerError(req, res, {error: mintResult.error});
                     console.log('====>', mintResult.error);
