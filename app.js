@@ -22,7 +22,10 @@ var statisticsService = require('./service/statistical_service');
 var app = express();
 
 // enabling cors
-app.use(cors());
+app.use(cors({
+        origin: ['http://localhost:3000', 'http://localhost:8080'],
+        credentials: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
