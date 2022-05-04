@@ -34,9 +34,9 @@ module.exports = {
         const result = await SaleModel.findOneAndUpdate(findParams, where);
         return result;
     },
-    count: async function() {
+    count: async function(nftId) {
         try {
-            return await SaleModel.countDocuments({sold: 0});
+            return await SaleModel.countDocuments({nft_id: nftId, sold: 0});
         } catch (e) {
             return e;
         }

@@ -8,9 +8,10 @@ const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEn
 const logger = require('../../utils/logger');
 const {COLLECTION_STATUS, NFT_STATUS, COLLECTION_CATE, IPFS_URL, ALT_URL, SERIAL_STATUS} = require('../../utils/consts');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
-const {isEmptyObject, validateRouter, getCoinPrice} = require('../../utils/helper');
+const {isEmptyObject, validateRouter, getCoinPrice, getFloorPrice} = require('../../utils/helper');
 const BigNumber = require('bignumber.js');
 const consts = require('../../utils/consts');
+const moment = require('moment');
 const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
@@ -30,12 +31,27 @@ module.exports = {
         // 해당 sale 정보와 seller 주소로 실제 nft 검증 후 삭제?
         // 인증정보가 실제 사용자인지 확인가능?
         const sale = await saleRepository.findById(saleId);
-        console.log('=====>', sale);
         await nftRepository.updateUserQuantitySelling(sale.nft_id, -sale.quantity);
         const serialIds = await serialRepository.findUserNftAmountSerialIds(sale.nft_id, sale.seller, sale.quantity);
         await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.ACTIVE, seller: null, owner_id: sale.seller});
         const result = await saleRepository.deleteSale(saleId, seller);
-        console.log(saleId, seller);
+        // 취소시 nft floor_price 수정
+        const nft = await nftRepository.findById(sale.nft_id);
+        if (nft.user_quantity_selling === 0 && nft.quantity_selling === 0) {
+            nft.start_date = null;
+            nft.end_date = null;
+            nft.floor_price = null;
+            nft.floor_quote = null;
+        } else {
+            const prices = await serialRepository.findNftFloorPrice(sale.nft_id, sale.token_id);
+            const filteredPrices = prices.filter(price => price._id === 'talk' || price._id === 'klay');
+            const coinPrices = await getCoinPrice();
+            const floorPrice = getFloorPrice(filteredPrices, coinPrices);
+            nft.floor_price = floorPrice.floorPrice;
+            nft.floor_quote = floorPrice._id;
+        }
+
+        await nft.save();
         return handlerSuccess(req, res, result);
     },
     cancelBuy: async (req, res, next) => {
@@ -91,7 +107,7 @@ module.exports = {
             }
             const page = +req.query.page || 1;
             const size = +req.query.size || 10;
-            const count = await saleRepository.count();
+            const count = await saleRepository.count(req.params.nftId);
             const responseHeaders = getHeaders(count, page, size);
 
             const sales = await saleRepository.findByNftId(req.params.nftId, page, size);
@@ -141,11 +157,35 @@ module.exports = {
             if (!sale) {
                 return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
             }
-            // nft의 user_selling_quantity 증가
+            // nft의 user_selling_quantity, end_date, floor_price, floor_quote 업데이트
             await nftRepository.updateUserQuantitySelling(nftId, quantity);
 
             // serialIds
             await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, quote, seller, owner_id: marketAddress});
+
+            const nft = await nftRepository.findById(nftId);
+            if (nft.start_date === null)
+                nft.start_date = moment();
+            nft.end_date = moment().add(30, 'days');
+            console.log(nft.floor_price);
+            if (!nft.floor_price) {
+                nft.floor_price = sale.price;
+                nft.floor_quote = sale.quote;
+            } else if (sale.price < nft.floor_price){
+                // 사용자가 quote 를 변경할 수 없다는 가정.
+                nft.floor_price = sale.price;
+                // 사용자가 quote 를 변경할 수 있게 되면 아래 로직으로 계산해야함.
+                // const prices = await serialRepository.findNftFloorPrice(nftId, tokenId);
+                // const filteredPrices = prices.filter(price => price._id === 'talk' || price._id === 'klay');
+                // const coinPrices = await getCoinPrice();
+                // const floorPrice = getFloorPrice(filteredPrices, coinPrices);
+                // const newPrice = getFloorPrice([floorPrice, {_id: sale.quote, floorPrice: sale.price}], coinPrices);
+                // nft.floor_price = newPrice.floorPrice;
+                // nft.floor_quote = newPrice._id;
+            }
+
+            await nft.save();
+
             return handlerSuccess(req, res, sale);
         } catch (e) {
             logger.error(new Error(e));

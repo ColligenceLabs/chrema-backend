@@ -47,6 +47,15 @@ const NftSchema = new Schema(
             required: false,
             default: 'talk'
         },
+        floor_price: {
+            type: Number,
+            default: 0,
+        },
+        floor_quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
         name: {
             type: String,
         },
