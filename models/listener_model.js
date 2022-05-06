@@ -19,13 +19,38 @@ const ListenerSchema = new Schema(
             type: String,
             required: false,
         },
-        contract_id: {
+        nft_id: {
             type: Schema.Types.ObjectId,
-            ref: 'Contract',
+            ref: 'Nft',
         },
-        collection_id: {
-            type: Schema.Types.ObjectId,
-            ref: 'Collection',
+        from: {
+            type: String,
+            default: null,
+        },
+        to: {
+            type: String,
+            default: null,
+        },
+        quantity: {
+            type: Number,
+            default: 0,
+        },
+        price: {
+            type: Number,
+            default: 0,
+        },
+        quote: {
+            type: String,
+            required: false,
+            default: 'talk'
+        },
+        block_number: {
+            type: Number,
+            default: 0,
+        },
+        block_date: {
+            type: Date,
+            required: false
         },
         createdAt: {
             type: Date,

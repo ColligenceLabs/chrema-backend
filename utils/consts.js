@@ -34,6 +34,10 @@ module.exports = {
     LISTENER_TYPE: {
         BURN: 0,
         MINT: 1,
+        SELL: 2,
+        BUY: 3,
+        CANCEL: 4,
+        TRANSFER: 5
     },
     SELLING_STATUS: {
         SELL: 0,

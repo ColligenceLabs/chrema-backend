@@ -15,6 +15,7 @@ let lastMarketBlock = 0;
 
 const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const useCrawler = process.env.USE_CRAWLER;
+const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
 
 // load last checked block from file
 function loadConf() {
@@ -77,31 +78,58 @@ async function getLastEvents(toBlock) {
                                 console.log(`tokenIdDeciaml: ${tokenIdDeciaml} hash: ${transactionHash}`);
 
                                 if (fromAddress == '0x0000000000000000000000000000000000000000') {// mint
-                                    await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, type: consts.LISTENER_TYPE.MINT});
                                     let serial = await SerialModel.findOneAndUpdate(
-                                        {contract_address: contractAddress, token_id: tokenIdHex, owner: null, status: consts.SERIAL_STATUS.INACTIVE},
+                                        {
+                                            contract_address: contractAddress,
+                                            token_id: tokenIdHex,
+                                            owner: null,
+                                            status: consts.SERIAL_STATUS.INACTIVE,
+                                        },
                                         {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
-                                        {returnNewDocument: true}
+                                        {returnNewDocument: true},
                                     );
-                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {$inc: {quantity_selling: 1}, status: consts.NFT_STATUS.ACTIVE});
+                                    await ListenerModel.create({
+                                        token_id: tokenIdDeciaml,
+                                        tx_id: transactionHash,
+                                        from: fromAddress,
+                                        to: toAddress,
+                                        nft_id: serial.nft_id._id,
+                                        contract_address: contractAddress,
+                                        type: consts.LISTENER_TYPE.MINT,
+                                    });
+                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {
+                                        $inc: {quantity_selling: 1},
+                                        status: consts.NFT_STATUS.ACTIVE,
+                                    });
                                 } else if (toAddress == '0x0000000000000000000000000000000000000000') {// burn
-                                    await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, type: consts.LISTENER_TYPE.BURN});
                                     let serial = await SerialModel.findOneAndUpdate(
                                         {contract_address: contractAddress, token_id: tokenIdHex},
                                         {$set: {status: consts.SERIAL_STATUS.SUSPEND}},
-                                        {returnNewDocument: true}
+                                        {returnNewDocument: true},
                                     );
-                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {$inc: {quantity_selling: -1}, status: consts.NFT_STATUS.SUSPEND});
+                                    await ListenerModel.create({
+                                        token_id: tokenIdDeciaml,
+                                        tx_id: transactionHash,
+                                        nft_id: serial.nft_id._id,
+                                        from: fromAddress,
+                                        to: toAddress,
+                                        contract_address: contractAddress,
+                                        type: consts.LISTENER_TYPE.BURN,
+                                    });
+                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {
+                                        $inc: {quantity_selling: -1},
+                                        status: consts.NFT_STATUS.SUSPEND,
+                                    });
                                 } else {// other transfer(buy, airdrop)
                                     let transaction = await TransactionModel.findOneAndUpdate(
                                         {tx_id: transactionHash},
                                         {$set: {status: consts.TRANSACTION_STATUS.SUCCESS}},
-                                        {returnNewDocument: true}
+                                        {returnNewDocument: true},
                                     );
                                     if (transaction) await SerialModel.findOneAndUpdate({_id: transaction.serial_id._id}, {transfered: consts.TRANSFERED.TRANSFERED});
                                 }
                             }
-                            // keccak hash : TransferSingle(address,address,address,uint256,uint256)
+                                // keccak hash : TransferSingle(address,address,address,uint256,uint256)
                             // https://baobab.scope.klaytn.com/tx/0xa376776f1fd040e1e78499c9d15db374b64ccb27d994c2bcd31f7c4a4d9a06a5?tabId=eventLog
                             else if (
                                 result[i].topics[0] ==
@@ -109,6 +137,7 @@ async function getLastEvents(toBlock) {
                             ) {
                                 let contractAddress = result[i].address.toLowerCase();
                                 const data = web3.eth.abi.decodeParameters(['uint256', 'uint256'], result[i].data);
+                                console.log('====!!!!', result[i].topics, data);
                                 let tokenIdDeciaml = parseInt(data[0]);
                                 let tokenIdHex = '0x' + tokenIdDeciaml.toString(16);
 
@@ -119,12 +148,26 @@ async function getLastEvents(toBlock) {
                                     '0x0000000000000000000000000000000000000000000000000000000000000000'
                                 ) {
                                     // mint
-                                    await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, collection_id: collectionId, type: consts.LISTENER_TYPE.MINT});
                                     let result = await SerialModel.updateMany(
-                                        {contract_address: contractAddress, token_id: tokenIdHex, owner: null, status: consts.SERIAL_STATUS.INACTIVE},
-                                        {$set: {status: consts.SERIAL_STATUS.ACTIVE}}
+                                        {
+                                            contract_address: contractAddress,
+                                            token_id: tokenIdHex,
+                                            owner: null,
+                                            status: consts.SERIAL_STATUS.INACTIVE,
+                                        },
+                                        {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
                                     );
-                                    const serial = await SerialModel.findOne({contract_address: contractAddress, token_id: tokenIdHex});
+                                    const serial = await SerialModel.findOne({
+                                        contract_address: contractAddress,
+                                        token_id: tokenIdHex,
+                                    });
+                                    await ListenerModel.create({
+                                        token_id: tokenIdDeciaml,
+                                        tx_id: transactionHash,
+                                        nft_id: serial.nft_id._id,
+                                        contract_address: contractAddress,
+                                        type: consts.LISTENER_TYPE.MINT,
+                                    });
                                     if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {status: consts.NFT_STATUS.ACTIVE});
                                 } else if (
                                     result[i].topics[3] ==
@@ -132,21 +175,33 @@ async function getLastEvents(toBlock) {
                                 ) {
                                     // burn
                                     let amount = data[1];
-                                    await ListenerModel.create({token_id: tokenIdDeciaml, tx_id: transactionHash, contract_address: contractAddress, collection_id: collectionId, type: consts.LISTENER_TYPE.BURN});
                                     let result = await SerialModel.updateMany(
                                         {contract_address: contractAddress, token_id: tokenIdHex},
                                         {$set: {status: consts.SERIAL_STATUS.SUSPEND}},
-                                        {returnNewDocument: true}
+                                        {returnNewDocument: true},
                                     );
-                                    const serial = await SerialModel.findOne({contract_address: contractAddress, token_id: tokenIdHex});
-                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {quantity_selling: 0, status: consts.NFT_STATUS.SUSPEND});
+                                    const serial = await SerialModel.findOne({
+                                        contract_address: contractAddress,
+                                        token_id: tokenIdHex,
+                                    });
+                                    await ListenerModel.create({
+                                        token_id: tokenIdDeciaml,
+                                        tx_id: transactionHash,
+                                        nft_id: serial.nft_id._id,
+                                        contract_address: contractAddress,
+                                        type: consts.LISTENER_TYPE.BURN,
+                                    });
+                                    if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {
+                                        quantity_selling: 0,
+                                        status: consts.NFT_STATUS.SUSPEND,
+                                    });
                                 } else {
                                     // buy or airdrop nft
                                     // TODO 여러개가 한번에 팔리는 경우에 대한 처리 필요(여러개의 serial 을 suspend 처리해야함?)
                                     let transaction = await TransactionModel.findOneAndUpdate(
                                         {tx_id: transactionHash},
                                         {$set: {status: consts.TRANSACTION_STATUS.SUCCESS}},
-                                        {returnNewDocument: true}
+                                        {returnNewDocument: true},
                                     );
                                     if (transaction) await SerialModel.findOneAndUpdate({_id: transaction.serial_id._id}, {transfered: consts.TRANSFERED.TRANSFERED});
                                     // // let tokenId = web3.utils.hexToNumber(result[i].topics[3]);
@@ -211,8 +266,7 @@ async function getLastEvents(toBlock) {
                                     //     );
                                     // }
                                 }
-                            }
-                            else if (result[i].topics[0] == '0x000000') {
+                            } else if (result[i].topics[0] == '0x000000') {
                                 // approve chưa biết mã topic nên chưa xong
                             }
                         }
@@ -230,25 +284,35 @@ async function getLastEvents(toBlock) {
 }
 
 async function getMarketEvents(toBlock) {
-    const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
-    await marketContract.getPastEvents('allEvents', {fromBlock: lastBlock, toBlock: toBlock})
-        .then(async function (events) {
+    await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
+        .then(async function(events) {
             let coinPrice;
             if (events.length > 0) {
                 coinPrice = await getCoinPrice();
             }
-            for (let i = 0; events.length > i; i++ ) {
+            for (let i = 0; events.length > i; i++) {
                 try {
-                    if (events[i].event === 'Trade'){
+                    if (events[i].event === 'Trade') {
                         console.log(events[i].transactionHash, 'Trade event handle start.');
                         const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
                         console.log(events[i].returnValues);
-                        let serials = await SerialModel.find({contract_address: events[i].returnValues.nft.toLowerCase(), token_id: tokenIdHex, buyer: events[i].returnValues.buyer, status: consts.SERIAL_STATUS.BUYING});
+                        let serials = await SerialModel.find({
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            token_id: tokenIdHex,
+                            buyer: events[i].returnValues.buyer,
+                            status: consts.SERIAL_STATUS.BUYING,
+                        });
                         const serialIds = serials.map((doc) => doc._id);
-                        console.log('=====>', serialIds);
                         const result = await SerialModel.updateMany(
                             {_id: {$in: serialIds}},
-                            {$set: {status: consts.SERIAL_STATUS.ACTIVE, owner_id: events[i].returnValues.buyer, seller: null, buyer: null}}
+                            {
+                                $set: {
+                                    status: consts.SERIAL_STATUS.ACTIVE,
+                                    owner_id: events[i].returnValues.buyer,
+                                    seller: null,
+                                    buyer: null,
+                                },
+                            },
                         );
                         if (serialIds.length === 0) continue;
                         const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
@@ -268,7 +332,7 @@ async function getMarketEvents(toBlock) {
                             fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
                             quote: nft.quote,
                             collection_id: nft.collection_id,
-                            trade_date: new Date(block.timestamp * 1000)
+                            trade_date: new Date(block.timestamp * 1000),
                         });
                         // update hour trade statistics
                         let hourIndex = Math.floor(block.timestamp / 3600);
@@ -278,14 +342,75 @@ async function getMarketEvents(toBlock) {
                         let dayID = Math.floor(block.timestamp / 86400);
                         let dayStartUnix = dayID * 86400;
                         await tradeRepository.updateDayData(trade.collection_id, dayStartUnix, trade.price, trade.quote, coinPrice);
+
+                        const history = {
+                            token_id: events[i].returnValues.tokenId,
+                            tx_id: events[i].transactionHash,
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            nft_id: nft._id,
+                            from: marketAddress,
+                            to: events[i].returnValues.buyer,
+                            quantity: events[i].returnValues.quantity,
+                            price: trade.price,
+                            quote: trade.quote,
+                            block_number: events[i].blockNumber,
+                            block_date: new Date(block.timestamp * 1000),
+                            type: consts.LISTENER_TYPE.BUY,
+                        };
+                        await ListenerModel.create(history);
                         console.log(events[i].transactionHash, 'Trade create success.');
-                    }
-                    else if (events[i].event === 'CancelSellToken'){
+                    } else if (events[i].event === 'CancelSellToken') {
                         // console.log(events[i]);
-                    }
-                    else if (events[i].event !== 'Ask') {
+                        console.log('=====>Cancel', events[i]);
+                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                        let serials = await SerialModel.find({
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            token_id: tokenIdHex,
+                        });
+                        if (serials.length === 0) continue;
+                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+                        const history = {
+                            token_id: events[i].returnValues.tokenId,
+                            tx_id: events[i].transactionHash,
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            nft_id: serials[0].nft_id._id,
+                            from: marketAddress,
+                            to: events[i].returnValues.seller,
+                            quantity: events[i].returnValues.quantity,
+                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                            quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                            block_number: events[i].blockNumber,
+                            block_date: new Date(block.timestamp * 1000),
+                            type: consts.LISTENER_TYPE.CANCEL,
+                        };
+                        await ListenerModel.create(history);
+                    } else if (events[i].event === 'Ask') {
                         // what mean Ask event??
-                        console.log(events[i]);
+                        console.log('=====>Ask', events[i]);
+                        // console.log(events[i]);
+                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                        let serials = await SerialModel.find({
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            token_id: tokenIdHex,
+                        });
+                        if (serials.length === 0) continue;
+                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+
+                        const history = {
+                            token_id: events[i].returnValues.tokenId,
+                            tx_id: events[i].transactionHash,
+                            contract_address: events[i].returnValues.nft.toLowerCase(),
+                            nft_id: serials[0].nft_id._id,
+                            from: events[i].returnValues.seller,
+                            to: marketAddress,
+                            quantity: events[i].returnValues.quantity,
+                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                            quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                            block_number: events[i].blockNumber,
+                            block_date: new Date(block.timestamp * 1000),
+                            type: consts.LISTENER_TYPE.SELL,
+                        };
+                        await ListenerModel.create(history);
                     }
                 } catch (e) {
                     console.log(e);
@@ -303,10 +428,10 @@ if (useCrawler === 'true') {
     loadConf();
 
     // set timer to get events every 2 seconds
-    setInterval(async function () {
+    setInterval(async function() {
         const delay = process.env.CRAWLER_DELAY;
         let toBlock = (await web3.eth.getBlockNumber()) * 1;
-        // console.log(toBlock);
+        console.log(toBlock);
         await getMarketEvents(toBlock);
         toBlock = toBlock - delay;
         if (toBlock - lastBlock > 4000) {
