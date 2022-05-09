@@ -105,6 +105,7 @@ router.post('/market/sellNft', isAuth.validateToken, validateMarket.sellUserNft(
 router.get('/market/saleList/:nftId', validateMarket.saleList(), marketController.saleList);
 router.get('/market/select-user-serials', validateMarket.selectUserSerials(), marketController.selectUserSerials);
 router.get('/market/cancel-buy-usernft', validateMarket.cancelBuy(), marketController.cancelBuy);
+router.get('/market/nft-events/:id', validateMarket.getEvents(), marketController.getEvents);
 router.delete('/market/cancel-sale/:id', isAuth.validateToken, validateMarket.cancelSale(), marketController.cancelSale);
 
 //Serials apis

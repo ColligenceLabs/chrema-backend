@@ -41,5 +41,10 @@ module.exports = {
             param('id').not().isEmpty().withMessage('Missing sale id parameter'),
             query('seller').not().isEmpty().withMessage('Missing seller parameter'),
         ]
-    }
+    },
+    getEvents: () => {
+        return [
+            param('id').not().isEmpty().withMessage('Missing nft id parameter')
+        ]
+    },
 };

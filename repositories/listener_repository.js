@@ -3,6 +3,24 @@ const {ListenerModel} = require('../models');
 // var consts = require('../utils/consts');
 
 module.exports = {
+    findByNftId: async function (nftId, page, size) {
+        try {
+            let listener = await ListenerModel
+                .find({nft_id: nftId}, {timeout: false})
+                .skip((page-1)*size).sort({block_date: -1});
+            return listener;
+        } catch (error) {
+            return error;
+        }
+    },
+    count: async function(nftId) {
+        try {
+            const count = await ListenerModel.countDocuments({nft_id: nftId});
+            return count;
+        } catch (e) {
+            return e;
+        }
+    },
     findLastTokenId: async function () {
         try {
             let listener = await ListenerModel.find({type: 1}).limit(1).sort({token_id: -1});

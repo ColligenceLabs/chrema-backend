@@ -3,6 +3,7 @@ const collectionRepository = require('../../repositories/collection_repository')
 const nftRepository = require('../../repositories/nft_repository');
 const serialRepository = require('../../repositories/serial_repository');
 const saleRepository = require('../../repositories/sale_repository');
+const listenerRepository = require('../../repositories/listener_repository');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {addMongooseParam, getHeaders, _errorFormatter, getCollectionCateValueInEnum, checkTimeCurrent} = require('../../utils/helper');
 const logger = require('../../utils/logger');
@@ -18,6 +19,21 @@ const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'MarketController',
+    getEvents: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        const nftId = req.params.id;
+        const page = +req.query.page || 1;
+        const size = +req.query.size || 10;
+        const count = await listenerRepository.count(nftId);
+        const responseHeaders = getHeaders(count, page, size);
+
+        const events = await listenerRepository.findByNftId(nftId, page, size);
+        return handlerSuccess(req, res, {items: events, headers: responseHeaders});
+    },
     cancelSale: async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
