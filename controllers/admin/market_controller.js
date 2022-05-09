@@ -164,9 +164,14 @@ module.exports = {
             await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, quote, seller, owner_id: marketAddress});
 
             const nft = await nftRepository.findById(nftId);
-            if (nft.start_date === null)
+            if (!nft.start_date)
                 nft.start_date = moment();
-            nft.end_date = moment().add(30, 'days');
+            // end
+            if (!nft.end_date || (nft.end_date && moment(nft.end_date).isBefore(moment().add(30, 'days')))) {
+                nft.end_date = moment().add(30, 'days');
+            }
+
+            // nft.end_date = moment().add(30, 'days');
             console.log(nft.floor_price);
             if (!nft.floor_price) {
                 nft.floor_price = sale.price;
