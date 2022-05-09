@@ -137,6 +137,8 @@ async function getLastEvents(toBlock) {
                             ) {
                                 let contractAddress = result[i].address.toLowerCase();
                                 const data = web3.eth.abi.decodeParameters(['uint256', 'uint256'], result[i].data);
+                                let fromAddress = hexToAddress(result[i].topics[1]);
+                                let toAddress = hexToAddress(result[i].topics[2]);
                                 console.log('====!!!!', result[i].topics, data);
                                 let tokenIdDeciaml = parseInt(data[0]);
                                 let tokenIdHex = '0x' + tokenIdDeciaml.toString(16);
@@ -165,6 +167,8 @@ async function getLastEvents(toBlock) {
                                         token_id: tokenIdDeciaml,
                                         tx_id: transactionHash,
                                         nft_id: serial.nft_id._id,
+                                        from: fromAddress,
+                                        to: toAddress,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
@@ -188,6 +192,8 @@ async function getLastEvents(toBlock) {
                                         token_id: tokenIdDeciaml,
                                         tx_id: transactionHash,
                                         nft_id: serial.nft_id._id,
+                                        from: fromAddress,
+                                        to: toAddress,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.BURN,
                                     });
