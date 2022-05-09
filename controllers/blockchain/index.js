@@ -88,6 +88,7 @@ async function getLastEvents(toBlock) {
                                         {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
                                         {returnNewDocument: true},
                                     );
+                                    if (!serial) continue;
                                     await ListenerModel.create({
                                         token_id: tokenIdDeciaml,
                                         tx_id: transactionHash,
@@ -107,6 +108,7 @@ async function getLastEvents(toBlock) {
                                         {$set: {status: consts.SERIAL_STATUS.SUSPEND}},
                                         {returnNewDocument: true},
                                     );
+                                    if (!serial) continue;
                                     await ListenerModel.create({
                                         token_id: tokenIdDeciaml,
                                         tx_id: transactionHash,
@@ -159,6 +161,7 @@ async function getLastEvents(toBlock) {
                                         },
                                         {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
                                     );
+                                    if (!serial) continue;
                                     const serial = await SerialModel.findOne({
                                         contract_address: contractAddress,
                                         token_id: tokenIdHex,
@@ -188,6 +191,7 @@ async function getLastEvents(toBlock) {
                                         contract_address: contractAddress,
                                         token_id: tokenIdHex,
                                     });
+                                    if (!serial) continue;
                                     await ListenerModel.create({
                                         token_id: tokenIdDeciaml,
                                         tx_id: transactionHash,
