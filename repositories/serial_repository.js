@@ -40,7 +40,7 @@ module.exports = {
     },
     findAll: async function (findParams, pagination) {
         try {
-            let serials = await SerialModel.find(findParams)
+            let serials = await SerialModel.find(findParams, { timeout: false })
                 .skip((pagination.page - 1) * pagination.perPage)
                 .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
