@@ -112,10 +112,7 @@ module.exports = {
 
             const sales = await saleRepository.findByNftId(req.params.nftId, page, size);
             const coinPrices = await getCoinPrice();
-            console.log(coinPrices);
             const result = sales.map((sale) => {
-                console.log(new BigNumber(sale.price).toNumber(), new BigNumber(coinPrices[sale.quote].USD));
-                console.log((new BigNumber(sale.price)).multipliedBy(new BigNumber(coinPrices[sale.quote].USD)).toFixed(6));
                 const priceUsd = (new BigNumber(sale.price)).multipliedBy(new BigNumber(coinPrices[sale.quote].USD)).toFixed(6);
                 const newSale = {...sale._doc, priceUsd};
                 return newSale;
