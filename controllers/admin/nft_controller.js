@@ -1623,6 +1623,22 @@ module.exports = {
         }
     },
 
+    async cancelCreateNft(req, res, next) {
+        if (ObjectID.isValid(req.params.id) === false) {
+            return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+        }
+
+        const nft = await nftRepository.findById(req.params.id);
+
+        if (!nft) {
+            return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+        }
+
+        await nftRepository.cancelCreateNft(req.params.id);
+        await serialRepository.cancelCreateNft(req.params.id);
+        return handlerSuccess(req, res, 'cancel create nft.');
+    },
+
     //suspend nft
     async deleteNft(req, res, next) {
         try {

@@ -251,6 +251,14 @@ module.exports = {
             return error;
         }
     },
+    cancelCreateNft: async function (nftId) {
+        try {
+            const ret = await SerialModel.deleteMany({nft_id: nftId});
+            return ret;
+        } catch (error) {
+            return error;
+        }
+    },
     delete: async function (ownerId, tokenId, id, admin_address) {
         try {
             if (!ownerId) {

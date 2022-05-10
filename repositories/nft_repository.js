@@ -264,6 +264,15 @@ module.exports = {
             return error;
         }
     },
+    cancelCreateNft: async function (id) {
+        try {
+            const ret = await NftModel.deleteOne({_id: id, onchain: 'false'});
+            return ret;
+        } catch (error) {
+            return error;
+        }
+
+    },
 
     delete: async function (id, where) {
         try {
