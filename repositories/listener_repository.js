@@ -7,7 +7,7 @@ module.exports = {
         try {
             let listener = await ListenerModel
                 .find({nft_id: nftId}, {timeout: false})
-                .skip((page-1)*size).sort({block_date: -1});
+                .skip((page-1)*size).limit(size).sort({block_date: -1});
             return listener;
         } catch (error) {
             return error;
