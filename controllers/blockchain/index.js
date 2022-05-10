@@ -441,7 +441,6 @@ if (useCrawler === 'true') {
     setInterval(async function() {
         const delay = process.env.CRAWLER_DELAY;
         let toBlock = (await web3.eth.getBlockNumber()) * 1;
-        console.log(toBlock);
         await getMarketEvents(toBlock);
         toBlock = toBlock - delay;
         if (toBlock - lastBlock > 4000) {
