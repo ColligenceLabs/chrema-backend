@@ -28,10 +28,12 @@ module.exports = {
         const nftId = req.params.id;
         const page = +req.query.page || 1;
         const size = +req.query.size || 10;
-        const count = await listenerRepository.count(nftId);
+        const types = req.query.types;
+        console.log(types);
+        const count = await listenerRepository.count(nftId, types);
         const responseHeaders = getHeaders(count, page, size);
 
-        const events = await listenerRepository.findByNftId(nftId, page, size);
+        const events = await listenerRepository.findByNftId(nftId, types, page, size);
         return handlerSuccess(req, res, {items: events, headers: responseHeaders});
     },
     cancelSale: async (req, res, next) => {

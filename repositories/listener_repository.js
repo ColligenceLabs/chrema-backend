@@ -3,19 +3,30 @@ const {ListenerModel} = require('../models');
 // var consts = require('../utils/consts');
 
 module.exports = {
-    findByNftId: async function (nftId, page, size) {
+    findByNftId: async function (nftId, types, page, size) {
         try {
+            const where = {nft_id: nftId};
+            if (types) {
+                types = types.split(',');
+                where.type = {$in: types};
+            }
             let listener = await ListenerModel
-                .find({nft_id: nftId}, {timeout: false})
+                .find(where, {timeout: false})
                 .skip((page-1)*size).limit(size).sort({block_date: -1});
             return listener;
         } catch (error) {
             return error;
         }
     },
-    count: async function(nftId) {
+    count: async function(nftId, types) {
         try {
-            const count = await ListenerModel.countDocuments({nft_id: nftId});
+            const where = {nft_id: nftId};
+            if (types) {
+                types = types.split(',');
+                where.type = {$in: types};
+            }
+
+            const count = await ListenerModel.countDocuments(where);
             return count;
         } catch (e) {
             return e;
