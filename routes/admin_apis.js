@@ -113,6 +113,9 @@ router.post('/serial/create', isAuth.validateToken, validateSerial.createSerial(
 
 router.get('/serial/indexs', isAuth.validateToken, serialController.indexSerials);
 
+router.get('/serial/sales-count/:id', isAuth.validateToken, serialController.salesCount);
+
+
 router.get('/serial/detail/:id', isAuth.validateToken, serialController.getDetailSerial);
 
 router.put('/serial/update/:id', isAuth.validateToken, serialController.updateSerial);

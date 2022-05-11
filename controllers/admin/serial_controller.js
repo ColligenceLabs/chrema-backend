@@ -99,6 +99,27 @@ module.exports = {
         }
     },
 
+    async salesCount(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            const owner = req.query.account;
+            const findParams = {nft_id: req.params.id, status: 'active', owner_id: {$in: [owner, null]}};
+
+            const count = await serialRepository.count(findParams);
+            const serial = await serialRepository.findOneSerial(findParams);
+
+            return handlerSuccess(req, res, {
+                count: count, tokenId: serial.token_id
+            });
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async indexSerials(req, res, next) {
         try {
             validateRouter(req, res);
