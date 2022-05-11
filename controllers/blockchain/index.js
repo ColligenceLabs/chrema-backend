@@ -50,7 +50,6 @@ function hexToAddress(hexVal) {
 // get events
 async function getLastEvents(toBlock) {
     const contracts = await collectionRepository.getContracts();
-
     // console.log('Contracts : ', contracts);
     web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
@@ -78,6 +77,26 @@ async function getLastEvents(toBlock) {
                                 console.log(`tokenIdDeciaml: ${tokenIdDeciaml} hash: ${transactionHash}`);
 
                                 if (fromAddress == '0x0000000000000000000000000000000000000000') {// mint
+                                    let nftIds = await SerialModel.aggregate([
+                                        {$match: {contract_address: contractAddress, token_id: tokenIdHex}},
+                                        {$group: {_id: '$nft_id'}}
+                                    ]);
+                                    if (nftIds.length > 1) {
+                                        const nfts = await NftModel.find({_id: {$in: nftIds}});
+                                        for (let i = 0; i < nfts.length; i++) {
+                                            if (nfts[i].onchain === 'false') {
+                                                // serials 삭제
+                                                console.log('duplicate token id onchain false nft id : ', nfts[i]._id);
+                                                try {
+                                                    const ret1 = await SerialModel.deleteMany({nft_id: nfts[i]._id});
+                                                    const ret2 = await NftModel.deleteOne({_id: nfts[i]._id});
+                                                    console.log('removed', ret1, ret2);
+                                                } catch (e) {
+                                                    console.log(e);
+                                                }
+                                            }
+                                        }
+                                    }
                                     let serial = await SerialModel.findOneAndUpdate(
                                         {
                                             contract_address: contractAddress,
@@ -87,7 +106,7 @@ async function getLastEvents(toBlock) {
                                         },
                                         {$set: {status: consts.SERIAL_STATUS.ACTIVE}},
                                         {returnNewDocument: true},
-                                    );
+                                    ).sort({createdAt: -1});
                                     if (!serial) continue;
                                     await ListenerModel.create({
                                         token_id: tokenIdDeciaml,
@@ -151,6 +170,26 @@ async function getLastEvents(toBlock) {
                                     result[i].topics[2] ==
                                     '0x0000000000000000000000000000000000000000000000000000000000000000'
                                 ) {
+                                    let nftIds = await SerialModel.aggregate([
+                                        {$match: {contract_address: contractAddress, token_id: tokenIdHex}},
+                                        {$group: {_id: '$nft_id'}}
+                                    ]);
+                                    if (nftIds.length > 1) {
+                                        const nfts = await NftModel.find({_id: {$in: nftIds}});
+                                        for (let i = 0; i < nfts.length; i++) {
+                                            if (nfts[i].onchain === 'false') {
+                                                // serials 삭제
+                                                console.log('duplicate token id onchain false nft id : ', nfts[i]._id);
+                                                try {
+                                                    const ret1 = await SerialModel.deleteMany({nft_id: nfts[i]._id});
+                                                    const ret2 = await NftModel.deleteOne({_id: nfts[i]._id});
+                                                    console.log('removed. ', ret1, ret2);
+                                                } catch (e) {
+                                                    console.log(e);
+                                                }
+                                            }
+                                        }
+                                    }
                                     // mint
                                     let result = await SerialModel.updateMany(
                                         {
@@ -164,7 +203,7 @@ async function getLastEvents(toBlock) {
                                     const serial = await SerialModel.findOne({
                                         contract_address: contractAddress,
                                         token_id: tokenIdHex,
-                                    });
+                                    }).sort({createdAt: -1});
                                     if (!serial) continue;
                                     await ListenerModel.create({
                                         token_id: tokenIdDeciaml,
