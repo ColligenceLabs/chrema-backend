@@ -2,12 +2,13 @@ const adminRepository = require('../../repositories/admin_repository');
 const {validationResult} = require('express-validator');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const auth = require('../../utils/validate_token');
-const {validateRouter, addMongooseParam, getHeaders} = require('../../utils/helper');
+const {validateRouter, addMongooseParam, getHeaders, imageMove} = require('../../utils/helper');
 const logger = require('../../utils/logger');
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const bcrypt = require('bcryptjs');
 const {ADMIN_STATUS, ALT_URL} = require('../../utils/consts');
 const creatorUploadRepository = require('../../repositories/creator_upload_repository');
+const consts = require('../../utils/consts');
 let SALT_WORK_FACTOR = 10;
 
 var ObjectID = require('mongodb').ObjectID;
@@ -35,20 +36,22 @@ module.exports = {
             let my_file = req.file;
             let imgName = my_file.filename.split('.');
             // let renameOutput = req.body.name + '.' + imgName[imgName.length -1];
-            let renameOutput = email + '.' + imgName[imgName.length -1];
+            let renameOutput = Date.now() + '-' + req.body.full_name + '.' + imgName[imgName.length -1];
             // let renameOutput = 'peter.png';  <- Test
             //
             //rename
             // TODO : need to fix error
             // await imageRename(consts.UPLOAD_PATH + "creator/" + my_file.filename, consts.UPLOAD_PATH + "creator/" + renameOutput);
             // await imageRename(my_file.path, consts.UPLOAD_PATH + renameOutput);
+            await imageMove(`./uploads/creators/${my_file.filename}`, `./uploads/creators/${renameOutput}`)
 
             let newAccountAdmin = {
                 full_name: req.body.full_name,
                 email: req.body.email,
                 password: req.body.password,
                 level: req.body.level,
-                image: ALT_URL + `creators/${my_file.filename}`,
+                // image: ALT_URL + `creators/${my_file.filename}`,
+                image: ALT_URL + `creators/${renameOutput}`,
                 description: req.body.description,
                 solana_address: req.body.solana_address,
                 status: req.body.level === 'user' ? ADMIN_STATUS.ACTIVE : ADMIN_STATUS.INACTIVE
