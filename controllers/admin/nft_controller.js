@@ -1540,6 +1540,9 @@ module.exports = {
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
+            if (nft.status === 'inactive' || nft.onchain === 'false') {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_ACTIVE);
+            }
             const useKas = req.body.use_kas;
             let current_time = new Date();
             let input = {};
