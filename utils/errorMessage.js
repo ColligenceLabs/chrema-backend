@@ -52,6 +52,7 @@ exports.ErrorMessage = {
     START_DATE_IS_INVALID: 'Start date is invalid!',
     END_DATE_IS_INVALID: 'End date is invalid!',
     SELLING_STATUS_DOES_NOT_MATCH_WITH_CONDITION: 'Selling status does not match with condition!',
+    NFT_IS_NOT_ACTIVE: 'Nft is not active!',
     //serial error
     CREATE_SERIAL_IS_NOT_SUCCESS: 'Create serial is not success!',
     SERIAL_IS_NOT_FOUND: 'Serial is not found!',
