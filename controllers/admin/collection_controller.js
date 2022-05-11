@@ -91,17 +91,17 @@ module.exports = {
                 return handlerError(req, res, 'No smart contract address');
             }
 
-            if (req.body.typed_contract === 'true') {
+            // if (req.body.typed_contract === 'true') {
                 // 이미 등록된 contractAddress 인지 확인 필요.
                 // const contractAddress = '0xb9eda5c4bd2dfe83b9ea3b57e62fdadec2c18598';  // 이미 등록된 contractAddress
                 // const contractAddress = '0x464b60257a0e6c77b1cc2515c86593daa83e665e';     // 등록되지 않은 kaikas를 통해 생성된 contractAddress
                 const contractAddress = req.body.contract_address;
                 // collection 에서 해당 contract_address 로 조회 중복 체크
-                const collection = await collectionRepository.findByContractAddress(contractAddress);
-                if (collection) {
+                const col = await collectionRepository.findByContractAddress(contractAddress);
+                if (col) {
                     return handlerError(req, res, ErrorMessage.COLLECTION_ALREADY_EXIST);
                 }
-            }
+            // }
             //upload file
             // await collectionUploadRepository(req, res);
 
