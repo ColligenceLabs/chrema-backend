@@ -565,6 +565,9 @@ module.exports = {
                     sleep.sleep(3);
                     i = i - 1;
                     continue;
+                } else if (mintResult.status !== 200) {
+                    const errMsg = mintResult.error._message + ' : ' +  newTokenId;
+                    return handlerError(req, res, errMsg);
                 } else if (mintResult.status === 200) {
                     txHashs.push(mintResult.result.transactionHash);
                 }
