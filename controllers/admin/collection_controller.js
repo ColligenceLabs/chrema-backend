@@ -128,8 +128,8 @@ module.exports = {
                 creator_id: req.body.creator_id,
                 contract_address: req.body.contract_address,
                 contract_type: req.body.contract_type,
-                // path: '/talkenNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
-                path: process.env.API_PREFIX + '/talkenNft/uploads/collections/' + imgInput,
+                // path: '/taalNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
+                path: process.env.API_PREFIX + '/taalNft/uploads/collections/' + imgInput,
                 image_link: ALT_URL + 'collections/' + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
@@ -139,7 +139,7 @@ module.exports = {
                 description: req.body.description ?? '',
                 directory: req.body.directory ?? ''
             };
-            // string: http://localhost:4000/talkenNft///{id}.json
+            // string: http://localhost:4000/taalNft///{id}.json
             // let nft_id = JSON.parse(req.body.nft_id);
             //
             // if (nft_id.length > 4) {

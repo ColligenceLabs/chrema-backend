@@ -312,8 +312,8 @@ module.exports = {
                 creator_id: req.body.creator_id,
                 contract_address: req.body.contract_address,
                 contract_type: req.body.contract_type,
-                // path: '/talkenNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
-                path: '/talkenNft/uploads/collections/' + imgInput,
+                // path: '/taalNft/' + consts.NFT_CONTRACT_ADDR + '/cover/'  + imgInput,
+                path: '/taalNft/uploads/collections/' + imgInput,
                 // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 // category: JSON.parse(req.body.category)
                 ...(req.body?.category && {category: req.body.category}),

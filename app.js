@@ -67,8 +67,8 @@ app.use('/nft-api', apisBlockchainRouter);
 
 // serve static files
 app.use('/images', express.static('images'));
-app.use(`${process.env.API_PREFIX}/talkenNft`, express.static('uploads'));
-// app.use('/talkenNft', express.static('uploads'));
+app.use(`${process.env.API_PREFIX}/taalNft`, express.static('uploads'));
+// app.use('/taalNft', express.static('uploads'));
 
 app.use('/health', function (req, res, next) {
     // next(createError(404));
