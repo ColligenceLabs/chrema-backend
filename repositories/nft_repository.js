@@ -217,6 +217,7 @@ module.exports = {
                 nft_id: nft._id,
                 ...inputSerial,
             };
+            const newSerials = [];
             for (let i = 0; i < nft.quantity; i++) {
                 newSerial.index = i + 1;
                 newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
@@ -224,8 +225,10 @@ module.exports = {
                 newSerial.quote = nft.quote;
                 newSerial.token_id = type === 'KIP17' ? tokenIds[i] : tokenIds[0];
                 newSerial.ipfs_link = type === 'KIP17' ? ipfs_links[i] : ipfs_links[0];
-                await SerialModel.create(newSerial);
+                // await SerialModel.create(newSerial);
+                newSerials.push(newSerial);
             }
+            await SerialModel.insertMany(newSerials);
 
             return nft;
         } catch (error) {
