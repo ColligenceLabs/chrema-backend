@@ -401,7 +401,7 @@ async function getMarketEvents(toBlock) {
                             tx_id: events[i].transactionHash,
                             contract_address: events[i].returnValues.nft.toLowerCase(),
                             nft_id: nft._id,
-                            from: marketAddress,
+                            from: events[i].returnValues.seller,
                             to: events[i].returnValues.buyer,
                             chain_id: process.env.KLAYTN_CHAIN_ID,
                             quantity: events[i].returnValues.quantity,
