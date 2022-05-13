@@ -71,6 +71,16 @@ const CollectionSchema = new Schema(
             required: false,
             default: 0
         },
+        fee_percentage: {
+            type: Number,
+            required: false,
+            default: 0
+        },
+        fee_payout: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         status: {
             type: String,
             enum: getValueInEnum(COLLECTION_STATUS),
