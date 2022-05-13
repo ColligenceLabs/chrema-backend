@@ -1946,8 +1946,8 @@ module.exports = {
         const nftId = req.query.nft_id;
         const buyer = req.query.buyer;
         const amount = parseInt(req.query.amount);
-        if (amount === 0) {
-            return handlerError(req, res, ErrorMessage.SELL_AMOUNT_IS_ZERO);
+        if (amount <= 0) {
+            return handlerError(req, res, ErrorMessage.BUY_AMOUNT_IS_ZERO);
         }
         const serials = await serialRepository.findByNftIdAndUpdate(nftId, buyer, amount);
         console.log('=====', serials);
