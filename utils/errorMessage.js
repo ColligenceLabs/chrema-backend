@@ -56,6 +56,7 @@ exports.ErrorMessage = {
     //serial error
     CREATE_SERIAL_IS_NOT_SUCCESS: 'Create serial is not success!',
     SERIAL_IS_NOT_FOUND: 'Serial is not found!',
+    SELL_AMOUNT_IS_ZERO: 'Sell amount is zero!',
     SERIAL_ID_IS_INVALID: 'Serial id is invalid!',
     UPDATE_SERIAL_IS_NOT_SUCCESS: 'Update serial is not success!',
     DELETE_SERIAL_IS_NOT_SUCCESS: 'Delete serial is not success!',
