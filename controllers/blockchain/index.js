@@ -9,7 +9,7 @@ const collectionRepository = require('../../repositories/collection_repository')
 const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
 // const marketAbi = require('../../config/abi/market.json');
-const marketAbi = require('../../config/abi/marketV4.json');
+const marketAbi = require('../../config/abi/marketV5.json');
 let lastBlock = 0;
 let lastMarketBlock = 0;
 
