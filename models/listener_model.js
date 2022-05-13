@@ -52,6 +52,10 @@ const ListenerSchema = new Schema(
             type: Date,
             required: false
         },
+        chain_id: {
+            type: String,
+            default: 0,
+        },
         createdAt: {
             type: Date,
             default: Date.now,

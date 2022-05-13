@@ -114,6 +114,7 @@ async function getLastEvents(toBlock) {
                                         from: fromAddress,
                                         to: toAddress,
                                         nft_id: serial.nft_id._id,
+                                        chain_id: process.env.KLAYTN_CHAIN_ID,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
@@ -134,6 +135,7 @@ async function getLastEvents(toBlock) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
+                                        chain_id: process.env.KLAYTN_CHAIN_ID,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.BURN,
                                     });
@@ -211,6 +213,7 @@ async function getLastEvents(toBlock) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
+                                        chain_id: process.env.KLAYTN_CHAIN_ID,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
@@ -237,6 +240,7 @@ async function getLastEvents(toBlock) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
+                                        chain_id: process.env.KLAYTN_CHAIN_ID,
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.BURN,
                                     });
@@ -399,6 +403,7 @@ async function getMarketEvents(toBlock) {
                             nft_id: nft._id,
                             from: marketAddress,
                             to: events[i].returnValues.buyer,
+                            chain_id: process.env.KLAYTN_CHAIN_ID,
                             quantity: events[i].returnValues.quantity,
                             price: trade.price,
                             quote: trade.quote,
@@ -425,6 +430,7 @@ async function getMarketEvents(toBlock) {
                             nft_id: serials[0].nft_id._id,
                             from: marketAddress,
                             to: events[i].returnValues.seller,
+                            chain_id: process.env.KLAYTN_CHAIN_ID,
                             quantity: events[i].returnValues.quantity,
                             price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
                             quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
@@ -452,6 +458,7 @@ async function getMarketEvents(toBlock) {
                             nft_id: serials[0].nft_id._id,
                             from: events[i].returnValues.seller,
                             to: marketAddress,
+                            chain_id: process.env.KLAYTN_CHAIN_ID,
                             quantity: events[i].returnValues.quantity,
                             price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
                             quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
