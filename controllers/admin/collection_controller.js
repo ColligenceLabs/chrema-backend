@@ -138,8 +138,8 @@ module.exports = {
                 maximum_supply: req.body.maximum_supply ?? 0,
                 description: req.body.description ?? '',
                 directory: req.body.directory ?? '',
-                fee_percentage: req.body.description ?? 0,
-                fee_payout: req.body.description ?? ''
+                fee_percentage: req.body.fee_percentage ?? 0,
+                fee_payout: req.body.fee_payout ?? ''
             };
             // string: http://localhost:4000/taalNft///{id}.json
             // let nft_id = JSON.parse(req.body.nft_id);
