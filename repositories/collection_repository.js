@@ -108,20 +108,7 @@ module.exports = {
         if (!collection) {
             return null;
         }
-        return {
-            _id: collection.id,
-            name: collection.name,
-            cover_image: collection.cover_image,
-            description: collection.description,
-            company_id: collection.company_id,
-            creator_id: collection.creator_id,
-            contract_address: collection.contract_address,
-            category: collection.category,
-            nft_id: collection.nft_id,
-            status: collection.status,
-            createdAt: collection.createdAt,
-            updatedAt: collection.updatedAt,
-        };
+        return collection;
     },
 
     updateById: async function (id, where) {
