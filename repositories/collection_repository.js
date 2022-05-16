@@ -5,9 +5,8 @@ const {addMongooseParam} = require('../utils/helper');
 module.exports = {
     findById: async function (id) {
         let collection = await CollectionModel.findOne({_id: id}).populate({
-            // path: 'creator_id',
-            // select: ['full_name', 'image'],
-            path: 'creator_id'
+            path: 'creator_id',
+            select: ['full_name', 'image'],
         });
         if (!collection) {
             return null;
