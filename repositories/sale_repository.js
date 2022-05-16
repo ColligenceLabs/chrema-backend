@@ -3,7 +3,7 @@ const {SaleModel} = require('../models');
 module.exports = {
     findByNftId: async function(nftId, page, size) {
         try {
-            const sales = await SaleModel.find({nft_id: nftId, sold: 0}).skip((page-1)*size).sort({price: 1}).limit(size);
+            const sales = await SaleModel.find({nft_id: nftId, sold: 0}).skip((page-1)*size).sort({price: 1, quantity: 1}).limit(size);
             return sales;
         } catch (e) {
             console.log(e);
