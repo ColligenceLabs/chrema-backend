@@ -81,6 +81,11 @@ const CollectionSchema = new Schema(
             required: false,
             trim: true,
         },
+        symbol: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         status: {
             type: String,
             enum: getValueInEnum(COLLECTION_STATUS),

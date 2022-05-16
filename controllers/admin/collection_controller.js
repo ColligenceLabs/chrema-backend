@@ -138,6 +138,7 @@ module.exports = {
                 maximum_supply: req.body.maximum_supply ?? 0,
                 description: req.body.description ?? '',
                 directory: req.body.directory ?? '',
+                symbol: req.body.symbol ?? '',
                 fee_percentage: req.body.fee_percentage ?? 0,
                 fee_payout: req.body.fee_payout ?? ''
             };
