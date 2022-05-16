@@ -50,7 +50,7 @@ router.get('/admin/indexs', isAuth.validateToken, adminController.indexAdmins);
 
 router.get('/admin/detail/:id', isAuth.validateToken, adminController.getDetailAdmin);
 
-router.put('/admin/update/:id', isAuth.validateToken, adminController.updateAdmin);
+router.put('/admin/update/:id', uploadAdmin, isAuth.validateToken, adminController.updateAdmin);
 
 router.put('/admin/update-status/:id', isAuth.validateToken, adminController.updateAdminAll);
 

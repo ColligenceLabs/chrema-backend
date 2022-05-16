@@ -185,6 +185,22 @@ module.exports = {
                 return handlerError(req, res, data.errors.join(', '));
             }
 
+            if (req.file) {
+                let my_file = req.file;
+                let imgName = my_file.filename.split('.');
+                // let renameOutput = req.body.name + '.' + imgName[imgName.length -1];
+                let renameOutput = Date.now() + '-' + req.body.full_name + '.' + imgName[imgName.length - 1];
+                // let renameOutput = 'peter.png';  <- Test
+                //
+                //rename
+                // TODO : need to fix error
+                // await imageRename(consts.UPLOAD_PATH + "creator/" + my_file.filename, consts.UPLOAD_PATH + "creator/" + renameOutput);
+                // await imageRename(my_file.path, consts.UPLOAD_PATH + renameOutput);
+                await imageMove(`./uploads/creators/${my_file.filename}`, `./uploads/creators/${renameOutput}`)
+
+                data.updateBodys.image = ALT_URL + `creators/${renameOutput}`;
+            }
+
             if (data.updateBodys.password) {
                 let comparePassword;
 
