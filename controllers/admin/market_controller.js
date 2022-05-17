@@ -175,8 +175,6 @@ module.exports = {
             if (!sale) {
                 return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
             }
-            // nft의 user_selling_quantity, end_date, floor_price, floor_quote 업데이트
-            await nftRepository.updateUserQuantitySelling(nftId, quantity);
 
             // serialIds
             await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, quote, seller, owner_id: marketAddress});
@@ -194,7 +192,7 @@ module.exports = {
             if (!nft.floor_price) {
                 nft.floor_price = sale.price;
                 nft.floor_quote = sale.quote;
-            } else if (sale.price < nft.floor_price){
+            } else if (sale.price < nft.floor_price || (nft.user_quantity_selling === 0 && nft.quantity_selling === 0)){
                 // 사용자가 quote 를 변경할 수 없다는 가정.
                 nft.floor_price = sale.price;
                 // 사용자가 quote 를 변경할 수 있게 되면 아래 로직으로 계산해야함.
@@ -206,8 +204,9 @@ module.exports = {
                 // nft.floor_price = newPrice.floorPrice;
                 // nft.floor_quote = newPrice._id;
             }
-
             await nft.save();
+            // nft의 user_selling_quantity, end_date, floor_price, floor_quote 업데이트
+            await nftRepository.updateUserQuantitySelling(nftId, quantity);
 
             return handlerSuccess(req, res, sale);
         } catch (e) {

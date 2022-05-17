@@ -119,7 +119,6 @@ async function getLastEvents(toBlock) {
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
                                     if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {
-                                        $inc: {quantity_selling: 1},
                                         status: consts.NFT_STATUS.ACTIVE,
                                     });
                                 } else if (toAddress == '0x0000000000000000000000000000000000000000') {// burn
@@ -412,6 +411,8 @@ async function getMarketEvents(toBlock) {
                             type: consts.LISTENER_TYPE.BUY,
                         };
                         await ListenerModel.create(history);
+                        // nft last price 저장
+                        await NftModel.updateOne({_id: nft._id}, { $set: {last_price: trade.price, last_quote: trade.quote}});
                         console.log(events[i].transactionHash, 'Trade create success.');
                     } else if (events[i].event === 'CancelSellToken') {
                         // console.log(events[i]);
