@@ -412,7 +412,7 @@ async function getMarketEvents(toBlock) {
                         };
                         await ListenerModel.create(history);
                         // nft last price 저장
-                        await NftModel.updateOne({_id: nft._id}, { $set: {last_price: trade.price, last_quote: trade.quote}});
+                        await NftModel.updateOne({_id: nft._id}, { $set: {last_price: serials[0].price, last_quote: trade.quote}});
                         console.log(events[i].transactionHash, 'Trade create success.');
                     } else if (events[i].event === 'CancelSellToken') {
                         // console.log(events[i]);
