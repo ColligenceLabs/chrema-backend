@@ -914,6 +914,7 @@ module.exports = {
                 onchain: "false",
                 ...(req.body?.price && {price: req.body.price}),
                 ...(req.body?.quote && {quote: req.body.quote}),
+                ...(req.body?.floor_quote && {quote: req.body.floor_quote}),
                 ...(req.body?.quantity && {quantity: req.body.quantity}),
                 ...(req.body?.quantity && {quantity_selling: 0}),
                 ...(req.body?.start_date && {start_date: req.body.start_date}),
@@ -1342,7 +1343,7 @@ module.exports = {
 
             const flCreatedAt = req.query.createdAt;
             const flPrice = req.query.price;
-            const flTokenId = req.query.toeknId;
+            const flTokenId = req.query.tokenId;
 
             const nfts = await nftRepository.findAllExt(findParams, {page, perPage}, flCreatedAt, flPrice, flTokenId);
             if (!nfts) {
