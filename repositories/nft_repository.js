@@ -40,23 +40,25 @@ module.exports = {
     },
     findAllExt: async function (findParams, pagination = null, flCreatedAt, flPrice, flTokenId) {
         try {
+            let nfts;
             if (pagination) {
                 if (flPrice !== 0) {
-                    var nfts = await NftModel.find(findParams)
+                    nfts = await NftModel.find(findParams)
                         .skip((pagination.page - 1) * pagination.perPage)
                         .limit(pagination.perPage)
                         .sort({price: flPrice})
+                        .collation({locale:"en_US", numericOrdering:true})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});
                 } else if (flCreatedAt != 0) {
-                    var nfts = await NftModel.find(findParams)
+                    nfts = await NftModel.find(findParams)
                         .skip((pagination.page - 1) * pagination.perPage)
                         .limit(pagination.perPage)
                         .sort({createdAt: flCreatedAt})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});
-                } else else if (flTokenId != 0) {
-                    var nfts = await NftModel.find(findParams)
+                } else if (flTokenId != 0) {
+                    nfts = await NftModel.find(findParams)
                         .skip((pagination.page - 1) * pagination.perPage)
                         .limit(pagination.perPage)
                         .sort({'metadata.tokenId': flTokenId})
@@ -66,17 +68,18 @@ module.exports = {
                 }
             } else {
                 if (flPrice !== 0) {
-                    var nfts = await NftModel.find(findParams)
+                    nfts = await NftModel.find(findParams)
                         .sort({price: flPrice})
+                        .collation({locale:"en_US", numericOrdering:true})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});
                 } else if (flCreatedAt != 0) {
-                    var nfts = await NftModel.find(findParams)
+                    nfts = await NftModel.find(findParams)
                         .sort({createdAt: flCreatedAt})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});
                 } else if (flTokenId != 0) {
-                    var nfts = await NftModel.find(findParams)
+                    nfts = await NftModel.find(findParams)
                         .sort({'metadata.tokenId': flTokenId})
                         .collation({locale:"en_US", numericOrdering:true})
                         .populate({path: 'collection_id'})
@@ -85,6 +88,7 @@ module.exports = {
             }
             return nfts;
         } catch (error) {
+            console.log(error);
             return error;
         }
     },
