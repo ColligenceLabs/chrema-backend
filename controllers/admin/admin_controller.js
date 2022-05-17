@@ -435,5 +435,9 @@ async function getUpdateBodys(updates) {
         updateBodys.status = updates.status;
     }
 
+    if (updates.description) {
+        updateBodys.description = updates.description;
+    }
+
     return {updateBodys: updateBodys, errors: errors};
 }
