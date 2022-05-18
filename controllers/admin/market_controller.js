@@ -183,7 +183,11 @@ module.exports = {
             if (!nft.start_date)
                 nft.start_date = moment();
             // end
-            if (!nft.end_date || (nft.end_date && moment(nft.end_date).isBefore(moment().add(30, 'days')))) {
+            if (
+                !nft.end_date
+                || (nft.end_date && moment(nft.end_date).isBefore(moment().add(30, 'days')))
+                || (nft.quantity_selling === 0 && nft.user_quantity_selling === 0)
+            ) {
                 nft.end_date = moment().add(30, 'days');
             }
 
