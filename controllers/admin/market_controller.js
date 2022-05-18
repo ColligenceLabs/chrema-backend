@@ -29,7 +29,6 @@ module.exports = {
         const page = +req.query.page || 1;
         const size = +req.query.size || 10;
         const types = req.query.types;
-        console.log(types);
         const count = await listenerRepository.count(nftId, types);
         const responseHeaders = getHeaders(count, page, size);
 
@@ -101,13 +100,13 @@ module.exports = {
         const saleId = req.query.sale_id;
         // sale 컬렉션에서 판매숫자 차감처리
         const result = await saleRepository.findOneAndUpdate({_id: saleId, sold: 0}, {buyer, sold: amount});
-        console.log(result);
+        // console.log(result);
         if (result.nModified === 0) {
             return handlerError(req, res, ErrorMessage.ALREADY_BUYING);
         }
         // serials에서 판매중 처리
         const serials = await serialRepository.findUserNftAndUpdate(nftId, buyer, seller, amount);
-        console.log('=====', serials);
+        // console.log('=====', serials);
         if (serials.length > 0) {
             const nft = await nftRepository.updateUserQuantitySelling(nftId, -serials.length);
             return handlerSuccess(req, res, serials);
@@ -192,7 +191,6 @@ module.exports = {
             }
 
             // nft.end_date = moment().add(30, 'days');
-            console.log(nft.floor_price);
             if (!nft.floor_price) {
                 nft.floor_price = sale.price;
                 nft.floor_quote = sale.quote;
@@ -207,6 +205,11 @@ module.exports = {
                 // const newPrice = getFloorPrice([floorPrice, {_id: sale.quote, floorPrice: sale.price}], coinPrices);
                 // nft.floor_price = newPrice.floorPrice;
                 // nft.floor_quote = newPrice._id;
+            }
+
+            if (nft.floor_price === sale.price) {
+                const coinPrice = await getCoinPrice();
+                nft.sort_price = (new BigNumber(sale.price)).multipliedBy(coinPrice[sale.quote].USD).toNumber();
             }
             await nft.save();
             // nft의 user_selling_quantity, end_date, floor_price, floor_quote 업데이트
@@ -402,7 +405,6 @@ module.exports = {
             const start = (+req.query.page - 1) * +req.query.perPage;
             let end = +start + +req.query.perPage;
             if (end > collectionsResp.length) end = collectionsResp.length;
-            console.log('===>', start, end)
             return handlerSuccess(req, res, {
                 items: collectionsResp.slice(start, end),
                 selling: [],

@@ -46,7 +46,7 @@ module.exports = {
                     nfts = await NftModel.find(findParams)
                         .skip((pagination.page - 1) * pagination.perPage)
                         .limit(pagination.perPage)
-                        .sort({price: flPrice})
+                        .sort({sort_price: flPrice})
                         .collation({locale:"en_US", numericOrdering:true})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});
@@ -69,7 +69,7 @@ module.exports = {
             } else {
                 if (flPrice !== 0) {
                     nfts = await NftModel.find(findParams)
-                        .sort({price: flPrice})
+                        .sort({sort_price: flPrice})
                         .collation({locale:"en_US", numericOrdering:true})
                         .populate({path: 'collection_id'})
                         .populate({path: 'creator_id'});

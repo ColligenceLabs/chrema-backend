@@ -5,6 +5,7 @@ const consts = require('../../utils/consts');
 const logger = require('../../utils/logger');
 const {getCoinPrice} = require('../../utils/helper');
 const ObjectID = require('mongodb').ObjectID;
+const BigNumber = require('bignumber.js');
 const collectionRepository = require('../../repositories/collection_repository');
 const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
@@ -412,7 +413,8 @@ async function getMarketEvents(toBlock) {
                         };
                         await ListenerModel.create(history);
                         // nft last price 저장
-                        await NftModel.updateOne({_id: nft._id}, { $set: {last_price: serials[0].price, last_quote: trade.quote}});
+                        const salePriceUSD = (new BigNumber(trade.price)).dividedBy(events[i].returnValues.quantity).multipliedBy(coinPrice[trade.quote].USD).toNumber();
+                        await NftModel.updateOne({_id: nft._id}, { $set: {sort_sale_price: salePriceUSD, last_price: serials[0].price, last_quote: trade.quote}});
                         console.log(events[i].transactionHash, 'Trade create success.');
                     } else if (events[i].event === 'CancelSellToken') {
                         // console.log(events[i]);

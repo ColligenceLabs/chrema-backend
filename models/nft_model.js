@@ -65,6 +65,14 @@ const NftSchema = new Schema(
             required: false,
             default: 'talk'
         },
+        sort_price: {
+            type: Number,
+            default: 0,
+        },
+        sort_sale_price: {
+            type: Number,
+            default: 0,
+        },
         name: {
             type: String,
         },

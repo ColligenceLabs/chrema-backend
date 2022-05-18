@@ -17,6 +17,7 @@ const creatorRepository = require('../../repositories/creator_repository');
 const consts = require('../../utils/consts');
 const quoteTokens = require('../../utils/quoteTokens');
 const fs = require('fs');
+const BigNumber = require('bignumber.js');
 
 const {
     _errorFormatter,
@@ -26,6 +27,7 @@ const {
     isEmptyObject,
     checkTimeCurrent,
     convertTimezone,
+    getCoinPrice,
     imageResize,
     imageRename,
     writeJson, imageMove,
@@ -927,6 +929,9 @@ module.exports = {
                 // contract_id: contractId,
                 transfered: 0
             };
+
+            const coinPrice = await getCoinPrice();
+            newNft.sort_price = (new BigNumber(newNft.price)).multipliedBy(coinPrice[newNft.quote].USD).toNumber();
 
             let metadata_ipfs = newNft.metadata;
             if (req.body.category) {
