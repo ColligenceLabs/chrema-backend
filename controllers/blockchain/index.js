@@ -336,14 +336,14 @@ async function getLastEvents(toBlock) {
 }
 
 async function getMarketEvents(toBlock) {
-    await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
-        .then(async function(events) {
-            let coinPrice;
-            if (events.length > 0) {
-                coinPrice = await getCoinPrice();
-            }
-            for (let i = 0; events.length > i; i++) {
-                try {
+    try {
+        await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
+            .then(async function(events) {
+                let coinPrice;
+                if (events.length > 0) {
+                    coinPrice = await getCoinPrice();
+                }
+                for (let i = 0; events.length > i; i++) {
                     if (events[i].event === 'Trade') {
                         console.log(events[i].transactionHash, 'Trade event handle start.');
                         const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
@@ -469,15 +469,15 @@ async function getMarketEvents(toBlock) {
                         };
                         await ListenerModel.create(history);
                     }
-                } catch (e) {
-                    console.log(e);
                 }
-            }
-            lastMarketBlock = toBlock + 1;
-            saveMarketConf();
-        }).catch((e) => {
-            console.log('market contract getEvents', e);
-        });
+                lastMarketBlock = toBlock + 1;
+                saveMarketConf();
+            }).catch((e) => {
+                console.log('market contract getEvents', e);
+            });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 if (useCrawler === 'true') {
