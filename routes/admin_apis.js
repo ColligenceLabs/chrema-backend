@@ -76,7 +76,7 @@ router.get(
     collectionController.getDetailCollection,
 );
 
-router.put('/collection/update/:id', isAuth.validateToken, collectionController.updateCollection);
+router.put('/collection/update/:id', uploadCollection, isAuth.validateToken, collectionController.updateCollection);
 
 router.put('/collection/update-status/:id', isAuth.validateToken, collectionController.updateCollectionStatus);
 

@@ -322,6 +322,7 @@ module.exports = {
 
             var inputBody = {
                 name: req.body.name,
+                description: req.body.description,
                 ...(req.body?.category && {category: JSON.parse(req.body.category)}),
                 ...(req.body?.nft_id && {nft_id: JSON.parse(req.body.nft_id)}),
             };
@@ -329,6 +330,24 @@ module.exports = {
             const data = getUpdateBodys(inputBody);
             if (isEmptyObject(data)) {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            }
+
+            if (req.body.file) {
+                let my_file = req.file;
+
+                //resize
+                let imgName = my_file.filename.split('.');
+                let imgInput = my_file.filename;
+                // do not resize cover
+                // let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
+                // await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
+
+                // TODO : Collection의 Thumbnail로 변경
+                let cover_image = await nftRepository.addFileToIPFS(my_file);
+
+                data.cover_image = IPFS_URL + cover_image.Hash;
+                data.path = process.env.API_PREFIX + '/taalNft/uploads/collections/' + imgInput;
+                data.image_link = ALT_URL + 'collections/' + imgInput;
             }
 
             if (data.nft_id) {
@@ -660,6 +679,10 @@ function getUpdateBodys(updates) {
 
     if (updates.status) {
         updateBodys.status = updates.status;
+    }
+
+    if (updates.description) {
+        updateBodys.description = updates.description;
     }
 
     if (!isEmptyObject(updateBodys)) {
