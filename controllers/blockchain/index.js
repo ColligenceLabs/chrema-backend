@@ -404,7 +404,7 @@ async function getMarketEvents(toBlock) {
                             from: events[i].returnValues.seller,
                             to: events[i].returnValues.buyer,
                             chain_id: process.env.KLAYTN_CHAIN_ID,
-                            quantity: events[i].returnValues.quantity,
+                            quantity: events[i].returnValues.amount,
                             price: trade.price,
                             quote: trade.quote,
                             block_number: events[i].blockNumber,
@@ -413,8 +413,9 @@ async function getMarketEvents(toBlock) {
                         };
                         await ListenerModel.create(history);
                         // nft last price 저장
-                        const salePriceUSD = (new BigNumber(trade.price)).dividedBy(events[i].returnValues.quantity).multipliedBy(coinPrice[trade.quote].USD).toNumber();
-                        await NftModel.updateOne({_id: nft._id}, { $set: {sort_sale_price: salePriceUSD, last_price: serials[0].price, last_quote: trade.quote}});
+                        const lastPrice = (new BigNumber(trade.price)).div(events[i].returnValues.amount).toNumber();
+                        const salePriceUSD = (new BigNumber(trade.price)).div(events[i].returnValues.amount).multipliedBy(coinPrice[trade.quote].USD).toNumber();
+                        await NftModel.updateOne({_id: nft._id}, { $set: {sort_sale_price: salePriceUSD, last_price: lastPrice, last_quote: trade.quote}});
                         console.log(events[i].transactionHash, 'Trade create success.');
                     } else if (events[i].event === 'CancelSellToken') {
                         // console.log(events[i]);
