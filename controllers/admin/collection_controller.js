@@ -323,8 +323,9 @@ module.exports = {
             var inputBody = {
                 name: req.body.name,
                 description: req.body.description,
-                ...(req.body?.category && {category: JSON.parse(req.body.category)}),
-                ...(req.body?.nft_id && {nft_id: JSON.parse(req.body.nft_id)}),
+                category: req.body.category,
+                // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
+                // ...(req.body?.nft_id && {nft_id: JSON.parse(req.body.nft_id)}),
             };
 
             const data = getUpdateBodys(inputBody);
@@ -350,6 +351,7 @@ module.exports = {
                 data.image_link = ALT_URL + 'collections/' + imgInput;
             }
 
+            // 여기는 왜 있지 ?
             if (data.nft_id) {
                 if (data.nft_id.length > 4) {
                     return handlerError(req, res, ErrorMessage.COLLECTION_IS_OVERSIZE);
