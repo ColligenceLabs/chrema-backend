@@ -333,7 +333,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
 
-            if (req.body.file) {
+            if (req.file) {
                 let my_file = req.file;
 
                 //resize
