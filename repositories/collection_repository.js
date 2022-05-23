@@ -1,5 +1,5 @@
 const {CollectionModel, AdminModel, CompanyModel} = require('../models');
-const {COLLECTION_STATUS} = require('../../utils/consts');
+const {COLLECTION_STATUS} = require('../utils/consts');
 const {addMongooseParam} = require('../utils/helper');
 
 module.exports = {
@@ -153,7 +153,7 @@ module.exports = {
                 { contract_address: contractAddress },
                 { contract_address: contractAddress.toLowerCase() }
             ],
-            $ne: {status: COLLECTION_STATUS.SUSPEND}
+            status: {$ne: COLLECTION_STATUS.SUSPEND}
         });
         if (!collection) { return null; }
         return collection;
