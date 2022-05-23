@@ -1,0 +1,114 @@
+const {validationResult} = require('express-validator');
+const profileRepository = require('../../repositories/profile_repository');
+const walletRepository = require('../../repositories/wallet_repository');
+const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
+const auth = require('../../utils/validate_token');
+const {
+    validateRouter,
+    isEmptyObject,
+    addMongooseParam,
+    getHeaders,
+    checkExistedDocument,
+} = require('../../utils/helper');
+const logger = require('../../utils/logger');
+const {USER_STATUS} = require('../../utils/consts');
+const ObjectID = require('mongodb').ObjectID;
+const {handlerSuccess, handlerError} = require('../../utils/handler_response');
+const tokenList = [];
+
+module.exports = {
+    classname: 'ProfileController',
+    login: async (req, res, next) => {
+        try {
+            const validate = validateRouter(req, res);
+            if (validate) {
+                return handlerError(req, res, validate);
+            }
+            // wallet collection 에서 조회
+            let wallet = await walletRepository.find(req.params.id, req.query.chainId);
+            console.log(wallet);
+            let profile;
+            if (!wallet) {
+                console.log('not exist.');
+                // create default profile and create wallet
+                profile = await profileRepository.createProfile();
+                wallet = await walletRepository.createWallet(profile._id, req.params.id, req.query.chainId);
+            } else {
+                profile = wallet.profile_id;
+            }
+            console.log(profile, wallet);
+            const profileInfo = {
+                id: profile._id,
+                full_name: profile.name,
+                email: profile.email,
+                level: profile.is_creator ? 'Creator' : 'User',
+                image: profile.image,
+                banner: profile.banner,
+                description: profile.desc
+            };
+            let accessToken = auth.generateAccessToken(profileInfo);
+            let refreshToken = auth.generateRefreshToken({id: profile._id});
+            tokenList[profile._id] = refreshToken;
+
+            return handlerSuccess(req, res, {
+                infor: profileInfo,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+            });
+        } catch (e) {
+            console.log(e);
+            return handlerError(req, res, e);
+        }
+    },
+    profileUpdate: async (req, res, next) => {
+        // 이미지 처리 필요, image, banner
+        try {
+            // const validate = validateRouter(req, res);
+            // if (validate) {
+            //     return handlerError(req, res, validate);
+            // }
+            //
+            // const data = getUpdateBodys(req.body);
+            // if (isEmptyObject(data)) {
+            //     return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            // }
+            //
+            // const profile = await profileRepository.findById(req.body.id);
+            // if (!profile) {
+            //     return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
+            // }
+            // // image 처리
+            //
+            // const updateProfile = await profileRepository.update(req.params.id, data);
+            // if (!updateProfile) {
+            //     return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
+            // }
+
+            // return handlerSuccess(req, res, updateProfile);
+            return handlerSuccess(req, res, 'test');
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
+    findProfile: async (req, res, next) => {
+        // 지갑주소, 체인아이디로 wallet 에서 조회
+
+    },
+};
+
+function getUpdateBodys(updates) {
+    let updateBodys = {};
+
+    if (updates?.name) {
+        updateBodys.name = updates.name;
+    }
+    if (updates?.email) {
+        updateBodys.email = updates.email;
+    }
+    if (updates?.desc) {
+        updateBodys.desc = updates.desc;
+    }
+    return updateBodys;
+}

@@ -22,6 +22,9 @@ exports.ErrorMessage = {
     USER_DOES_NOT_OWN_ANY_NFT: 'user does not own any nft',
     USER_IS_EXISTED: 'User is existed!',
 
+    // profile error
+    PROFILE_IS_NOT_FOUND: 'Profile is not found!',
+
     //admin error
     ACCOUNT_IS_NOT_FOUND: 'Account is not found!',
     YOUR_ACCOUNT_IS_NOT_PERMISSION_TO_UPDATE: 'Your account is not permission to update!',

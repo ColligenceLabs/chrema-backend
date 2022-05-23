@@ -16,4 +16,6 @@ module.exports = {
     HourTradeModel: require('./hour_trade_model'),
     DayTradeModel: require('./day_trade_model'),
     SaleModel: require('./sale_model'),
+    WalletModel: require('./wallet_model'),
+    ProfileModel: require('./profile_model'),
 };

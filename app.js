@@ -13,6 +13,7 @@ const env = process.env.NODE_ENV || 'development';
 var cron = require('node-cron');
 
 var indexRouter = require('./routes/index');
+var marketRouter = require('./routes/market_apis');
 var apisRouter = require('./routes/webview_apis');
 var apisAdminRouter = require('./routes/admin_apis');
 var apisBlockchainRouter = require('./routes/blockchain_apis'); // for testing
@@ -54,6 +55,7 @@ i18n.configure({
 });
 
 app.use('/admp', indexRouter);
+app.use('/market', marketRouter);
 app.use('/user-api', apisRouter);
 app.use(`${process.env.API_PREFIX}/admin-api`, apisAdminRouter);
 // app.use('/admin-api', apisAdminRouter);
@@ -94,8 +96,8 @@ app.use(function (err, req, res, next) {
 
 //‘0 0 * * *’  0h0’ daily
 // Run at 15:15 UTC daily, 00:15 in KR-JP
-// cron.schedule('15 15 * * *', async function() {
-cron.schedule('*/1 * * * *', async function() {
+cron.schedule('15 15 * * *', async function() {
+// cron.schedule('*/1 * * * *', async function() {
     //call statistic function
     statisticsService.statistics();
 });
