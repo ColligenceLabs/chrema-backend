@@ -24,6 +24,7 @@ exports.ErrorMessage = {
 
     // profile error
     PROFILE_IS_NOT_FOUND: 'Profile is not found!',
+    UPDATE_PROFILE_IS_NOT_SUCCESS: 'Update profile is not success!',
 
     //admin error
     ACCOUNT_IS_NOT_FOUND: 'Account is not found!',

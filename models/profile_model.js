@@ -25,9 +25,9 @@ const ProfileSchema = new Schema(
             type: String,
             default: null,
         },
-        desc: {
-            type: Number,
-            default: 0,
+        description: {
+            type: String,
+            default: null,
         },
         createdAt: {
             type: Date,

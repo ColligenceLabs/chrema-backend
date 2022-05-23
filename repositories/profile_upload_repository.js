@@ -1,29 +1,20 @@
-const util = require('util');
 const multer = require('multer');
-const consts = require('../utils/consts')
+const fs = require('fs');
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // cb(null, process.cwd() + '/uploads/collections');
-        cb(null, 'uploads/profiles');
+        const path = 'uploads/profiles';
+        fs.mkdirSync(path, { recursive: true });
+        cb(null, path);
     },
     filename: (req, file, cb) => {
-        var uniqueSuffix = Date.now() + '-';
+        const uniqueSuffix = Date.now() + '-';
         cb(null, uniqueSuffix + file.originalname);
     },
 });
 
-// // let uploadFile = multer({
-// //     storage: storage,
-// // }).single('file');
-// let uploadFile = multer({
-//     storage: storage,
-// }).fields([{name: 'file'}, {name: 'thumbnail'}]);
 let uploadFile = multer({
     storage: storage,
-}).single('image');
+}).fields([{name: 'image'}, {name: 'banner'}]);
 
-let uploadFileMiddleware = util.promisify(uploadFile);
-
-// module.exports = uploadFileMiddleware;
 module.exports = uploadFile;

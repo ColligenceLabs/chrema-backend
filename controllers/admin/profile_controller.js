@@ -6,13 +6,8 @@ const auth = require('../../utils/validate_token');
 const {
     validateRouter,
     isEmptyObject,
-    addMongooseParam,
-    getHeaders,
-    checkExistedDocument,
 } = require('../../utils/helper');
 const logger = require('../../utils/logger');
-const {USER_STATUS} = require('../../utils/consts');
-const ObjectID = require('mongodb').ObjectID;
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const tokenList = [];
 
@@ -44,7 +39,7 @@ module.exports = {
                 level: profile.is_creator ? 'Creator' : 'User',
                 image: profile.image,
                 banner: profile.banner,
-                description: profile.desc
+                description: profile.description
             };
             let accessToken = auth.generateAccessToken(profileInfo);
             let refreshToken = auth.generateRefreshToken({id: profile._id});
@@ -62,33 +57,40 @@ module.exports = {
     },
     profileUpdate: async (req, res, next) => {
         // 이미지 처리 필요, image, banner
+        // signmessage 로 지갑주소 인증 처리 필요.
         try {
-            // const validate = validateRouter(req, res);
-            // if (validate) {
-            //     return handlerError(req, res, validate);
-            // }
-            //
-            // const data = getUpdateBodys(req.body);
-            // if (isEmptyObject(data)) {
-            //     return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
-            // }
-            //
-            // const profile = await profileRepository.findById(req.body.id);
-            // if (!profile) {
-            //     return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
-            // }
-            // // image 처리
-            //
-            // const updateProfile = await profileRepository.update(req.params.id, data);
-            // if (!updateProfile) {
-            //     return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
-            // }
+            const validate = validateRouter(req, res);
+            if (validate) {
+                return handlerError(req, res, validate);
+            }
 
-            // return handlerSuccess(req, res, updateProfile);
-            return handlerSuccess(req, res, 'test');
+            const data = getUpdateBodys(req.body);
+            if (isEmptyObject(data)) {
+                return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            }
+
+            const profile = await profileRepository.findById(req.body.id);
+            if (!profile) {
+                return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
+            }
+            // image 처리
+            if (req.files.image) {
+                data.image = process.env.ALT_URL + 'profiles/' + req.files.image[0].filename;
+            }
+
+            if (req.files.banner) {
+                data.banner = process.env.ALT_URL + 'profiles/' + req.files.banner[0].filename;
+            }
+            const updateProfile = await profileRepository.update(req.body.id, data);
+            if (!updateProfile) {
+                return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateProfile);
         } catch (error) {
             logger.error(new Error(error));
-            next(error);
+            console.log(error);
+            return handlerError(req, res, error);
         }
     },
 
@@ -107,8 +109,8 @@ function getUpdateBodys(updates) {
     if (updates?.email) {
         updateBodys.email = updates.email;
     }
-    if (updates?.desc) {
-        updateBodys.desc = updates.desc;
+    if (updates?.description) {
+        updateBodys.description = updates.description;
     }
     return updateBodys;
 }

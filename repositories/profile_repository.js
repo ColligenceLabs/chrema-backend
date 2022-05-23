@@ -1,7 +1,4 @@
 const {ProfileModel, WalletModel} = require('../models');
-const {USER_FIELD, SERIAL_STATUS} = require('../utils/consts');
-const {addMongooseParam} = require('../utils/helper');
-const mongoose = require('mongoose');
 
 module.exports = {
     createProfile: async function () {
@@ -14,17 +11,13 @@ module.exports = {
         }
     },
 
-    update: async function (address, chainId, profile) {
+    update: async function (id, data) {
         try {
-            // wallet model에서 profile id 찾기
-            const wallet = await WalletModel.findOne({wallet_address: address, chain_id: chainId});
-            if (!wallet) {
-                return;
-            }
             // profile id 로 profile 업데이트
-            const profile = await ProfileModel.findOneAndUpdate({_id: wallet.profile_id}, {$set: profile});
+            const profile = await ProfileModel.findOneAndUpdate({_id: id}, {$set: data}, {returnDocument: "after"});
             return profile;
         } catch (error) {
+            console.log(error);
             return error;
         }
     },
