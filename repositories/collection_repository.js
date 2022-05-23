@@ -1,5 +1,5 @@
-const {CollectionModel, AdminModel, CompanyModel, NftModel, ContractModel} = require('../models');
-const nftRepository = require('./nft_repository');
+const {CollectionModel, AdminModel, CompanyModel} = require('../models');
+const {COLLECTION_STATUS} = require('../../utils/consts');
 const {addMongooseParam} = require('../utils/helper');
 
 module.exports = {
@@ -152,7 +152,8 @@ module.exports = {
             $or: [
                 { contract_address: contractAddress },
                 { contract_address: contractAddress.toLowerCase() }
-            ]
+            ],
+            $ne: {status: COLLECTION_STATUS.SUSPEND}
         });
         if (!collection) { return null; }
         return collection;

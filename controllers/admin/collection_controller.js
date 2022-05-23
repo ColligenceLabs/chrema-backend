@@ -214,7 +214,7 @@ module.exports = {
                         // console.log(i, tokenMeta.data);
                         // nft 생성
                         // const newNFT = getNewNFT(tokenMeta, new ObjectID(collection._id), req.body.creator_id);
-                        const newNFT = getNewNFT(tokenMeta.data, collection._id, req.body.creator_id);
+                        const newNFT = getNewNFT(tokenMeta.data, collection._id, req.body.creator_id, collection.category);
                         console.log(newNFT);
                         nft = await nftRepository.createWithoutSerial(newNFT);
                         console.log(nft);
@@ -694,7 +694,7 @@ function getUpdateBodys(updates) {
     return updateBodys;
 }
 
-function getNewNFT(tokenMeta, collection_id, creator) {
+function getNewNFT(tokenMeta, collection_id, creator, category) {
     let newNft = {
         metadata: tokenMeta,
         // company_id: req.body.company_id,
@@ -710,7 +710,7 @@ function getNewNFT(tokenMeta, collection_id, creator) {
         status: NFT_STATUS.ACTIVE,
         // ...(req.body?.category && {category: JSON.parse(req.body.category)}),
         // ...(req.body?.category && {category: req.body.category}),
-        category: tokenMeta.category,
+        category: category,
         description: tokenMeta.description,
         imported: 'true',
         transfered: 0
