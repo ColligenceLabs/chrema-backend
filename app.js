@@ -55,7 +55,7 @@ i18n.configure({
 });
 
 app.use('/admp', indexRouter);
-app.use('/market', marketRouter);
+app.use(`${process.env.API_PREFIX}/market`, marketRouter);
 app.use('/user-api', apisRouter);
 app.use(`${process.env.API_PREFIX}/admin-api`, apisAdminRouter);
 // app.use('/admin-api', apisAdminRouter);
