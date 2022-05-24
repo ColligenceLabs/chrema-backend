@@ -170,7 +170,7 @@ router.get('/nft/user-serials', validateNft.userSerials(), isAuth.validateMarket
 
 router.get('/nft/batch-sell', isAuth.validateToken, nftController.sellNFTs);
 
-router.get('/nft/select-serials', isAuth.validateToken, nftController.selectSerials);
+router.get('/nft/select-serials', isAuth.validateMarketToken, nftController.selectSerials);
 router.get('/nft/cancel-buy', isAuth.validateMarketToken, nftController.cancelBuy);
 
 router.put(
