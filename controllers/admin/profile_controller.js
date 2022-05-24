@@ -1,6 +1,7 @@
 const {validationResult} = require('express-validator');
 const profileRepository = require('../../repositories/profile_repository');
 const walletRepository = require('../../repositories/wallet_repository');
+const {verifyMessage} = require('@ethersproject/wallet');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const auth = require('../../utils/validate_token');
 const {
@@ -19,9 +20,12 @@ module.exports = {
             if (validate) {
                 return handlerError(req, res, validate);
             }
+            if (req.params.id === 'undefined' || req.query.chainId === 'undefined') {
+                console.log('????뭐고!!');
+                return handlerError(req, res, ErrorMessage.WALLET_ADDRESS_IS_UNDEFINED);
+            }
             // wallet collection 에서 조회
             let wallet = await walletRepository.find(req.params.id, req.query.chainId);
-            console.log(wallet);
             let profile;
             if (!wallet) {
                 console.log('not exist.');
@@ -68,10 +72,14 @@ module.exports = {
             if (isEmptyObject(data)) {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
-
+            const message = 'Welcome to Taal NFT Marketplace!';
+            const account = verifyMessage(message, req.body.signedMessage);
+            const wallets = walletRepository.findByProfileId(req.body.id);
+            const exist = wallets.find(wallet => wallet.address === account);
+            console.log(exist);
             const profile = await profileRepository.findById(req.body.id);
-            if (!profile) {
-                return handlerError(req, res, ErrorMessage.USER_IS_NOT_FOUND);
+            if (!profile || !exist) {
+                return handlerError(req, res, ErrorMessage.PROFILE_IS_NOT_FOUND);
             }
             // image 처리
             if (req.files.image) {

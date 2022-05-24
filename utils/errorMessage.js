@@ -23,6 +23,7 @@ exports.ErrorMessage = {
     USER_IS_EXISTED: 'User is existed!',
 
     // profile error
+    WALLET_ADDRESS_IS_UNDEFINED: 'address is undefined.',
     PROFILE_IS_NOT_FOUND: 'Profile is not found!',
     UPDATE_PROFILE_IS_NOT_SUCCESS: 'Update profile is not success!',
 

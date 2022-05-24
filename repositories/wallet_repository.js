@@ -3,7 +3,7 @@ const {WalletModel} = require('../models');
 module.exports = {
     createWallet: async function (profileId, address, chainId) {
         try {
-            const wallet = await WalletModel.create({profile_id: profileId, wallet_address: address, chain_id: chainId});
+            const wallet = await WalletModel.create({profile_id: profileId, address: address, chain_id: chainId});
             return wallet;
         } catch (error) {
             return error;
@@ -20,7 +20,7 @@ module.exports = {
 
     find: async function (address, chain_id) {
         try {
-            const wallets = await WalletModel.findOne({wallet_address: address, chain_id}).populate('profile_id');
+            const wallets = await WalletModel.findOne({address: address, chain_id}).populate('profile_id');
             return wallets;
         } catch (error) {
             return null;

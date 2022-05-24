@@ -8,7 +8,7 @@ const WalletSchema = new Schema(
             ref: 'Profile',
             required: true,
         },
-        wallet_address: {
+        address: {
             type: String,
             required: true
         },
