@@ -74,7 +74,8 @@ module.exports = {
             }
             const message = 'Welcome to Taal NFT Marketplace!';
             const account = verifyMessage(message, req.body.signedMessage);
-            const wallets = walletRepository.findByProfileId(req.body.id);
+            const wallets = await walletRepository.findByProfileId(req.body.id);
+            console.log(wallets);
             const exist = wallets.find(wallet => wallet.address === account);
             console.log(exist);
             const profile = await profileRepository.findById(req.body.id);
