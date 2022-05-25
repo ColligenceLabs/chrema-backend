@@ -2005,7 +2005,19 @@ async function sellNFTs(nftId) {
             quote: nft.quote,
             status: consts.TRANSACTION_STATUS.PROCESSING,
         });
-        const quoteToken = quoteTokens[nft.quote][process.env.KLAYTN_CHAIN_ID];
+        let quoteToken;
+        switch(nft.quote) {
+            case 'klay':
+                quoteToken = quoteTokens[nft.quote][process.env.KLAYTN_CHAIN_ID];
+                break;
+            case 'bnb':
+                quoteToken = quoteTokens[nft.quote][process.env.BINANCE_CHAIN_ID];
+                break;
+            case 'eth':
+                quoteToken = quoteTokens[nft.quote][process.env.ETH_CHAIN_ID];
+            default:
+                break;
+        }
         console.log(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
         const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
         if (transferResult.status === 200) {
