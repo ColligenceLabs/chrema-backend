@@ -1911,7 +1911,7 @@ module.exports = {
         const ownerId = req.query.owner_id;
         const nftId = req.query.nft_id;
         const serials = await serialRepository.findByOwnerIdAndNftId(ownerId, nftId);
-        console.log(serials);
+        // console.log(serials);
         if (serials.length > 0)
             return handlerSuccess(req, res, serials);
         else
