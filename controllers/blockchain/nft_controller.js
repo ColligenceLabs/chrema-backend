@@ -24,7 +24,7 @@ const contractAddress = process.env.NFT_CONTRACT_ADDR;
 const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
 
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
-const constants = require('../../config/constants');
+const {getMarketAddress} = require('../../utils/getMarketAddress');
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -265,20 +265,7 @@ module.exports = {
         const accounts = await caver.kas.wallet.getAccountList();
         const kasAddr = accounts.items[0].address;
 
-        const network = collection.network;
-        let marketAddress;
-        switch(network) {
-            case 'klaytn':
-                marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID, 10)];
-                break;
-            case 'binance':
-                marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID, 10)];
-                break;
-            case 'ethereum':
-                marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID, 10)];
-            default:
-                break;
-        }
+        const marketAddress = getMarketAddress(collection.network);
 
         for (let i=0; i < serials.length; i++) {
             try {

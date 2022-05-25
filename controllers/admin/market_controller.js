@@ -14,8 +14,8 @@ const BigNumber = require('bignumber.js');
 const consts = require('../../utils/consts');
 const moment = require('moment');
 const fs = require('fs');
+const {getMarketAddress} = require('../../utils/getMarketAddress');
 var ObjectID = require('mongodb').ObjectID;
-const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'MarketController',
@@ -174,6 +174,9 @@ module.exports = {
             if (!sale) {
                 return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
             }
+
+            const collection = await collectionRepository.findById(collectionId);
+            const marketAddress = getMarketAddress(collection.network);
 
             // serialIds
             await serialRepository.updateByIds(serialIds, {status: SERIAL_STATUS.SELLING, price, quote, seller, owner_id: marketAddress});
