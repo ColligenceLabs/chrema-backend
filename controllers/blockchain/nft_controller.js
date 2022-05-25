@@ -11,7 +11,7 @@ const chainId = process.env.KLAYTN_CHAIN_ID | 0;
 const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
-// const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
+
 // 테스트필요
 // const option = {
 //     headers: [

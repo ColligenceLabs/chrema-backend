@@ -11,12 +11,25 @@ const tradeRepository = require('../../repositories/trade_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
 // const marketAbi = require('../../config/abi/market.json');
 const marketAbi = require('../../config/abi/marketV5.json');
+const { market } = require('../../config/constants');
 let lastBlock = 0;
 let lastMarketBlock = 0;
 
-const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const useCrawler = process.env.USE_CRAWLER;
-const marketContract = new web3.eth.Contract(marketAbi, marketAddress);
+const marketAddress = [
+    market[parseInt(process.env.ETH_CHAIN_ID ?? '0', 10)],
+    market[parseInt(process.env.KLAYTN_CHAIN_ID ?? '0', 10)],
+    market[parseInt(process.env.BINANCE_CHAIN_ID ?? '0', 10)]
+];
+
+const marketContract = [];
+for (let i = 0; i < 3; i++) {
+    if (marketAddress[i] !== '' && marketAddress[i] !== undefined) {
+        marketContract.push(new web3.eth.Contract(marketAbi, marketAddress[i]));
+    } else {
+        marketContract.push(null);
+    }
+}
 
 // load last checked block from file
 function loadConf() {
@@ -338,146 +351,156 @@ async function getLastEvents(toBlock) {
 
 async function getMarketEvents(toBlock) {
     try {
-        await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
-            .then(async function(events) {
-                let coinPrice;
-                if (events.length > 0) {
-                    coinPrice = await getCoinPrice();
-                }
-                for (let i = 0; events.length > i; i++) {
-                    if (events[i].event === 'Trade') {
-                        console.log(events[i].transactionHash, 'Trade event handle start.');
-                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
-                        console.log(events[i].returnValues);
-                        let serials = await SerialModel.find({
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            token_id: tokenIdHex,
-                            buyer: events[i].returnValues.buyer,
-                            status: consts.SERIAL_STATUS.BUYING,
-                        });
-                        const serialIds = serials.map((doc) => doc._id);
-                        const result = await SerialModel.updateMany(
-                            {_id: {$in: serialIds}},
-                            {
-                                $set: {
-                                    status: consts.SERIAL_STATUS.ACTIVE,
-                                    owner_id: events[i].returnValues.buyer,
-                                    seller: null,
-                                    buyer: null,
-                                },
-                            },
-                        );
-                        if (serialIds.length === 0) continue;
-                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
-                        console.log(block.timestamp, serials[0].nft_id._id);
-                        const nft = await NftModel.findOne({_id: serials[0].nft_id._id});
-                        //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
-                        console.log(web3.utils.fromWei(events[i].returnValues.price, 'ether'), web3.utils.fromWei(events[i].returnValues.fee, 'ether'));
-                        const trade = await TradeModel.create({
-                            tx_hash: events[i].transactionHash,
-                            block_number: events[i].blockNumber,
-                            chain_id: process.env.KLAYTN_CHAIN_ID,
-                            seller: events[i].returnValues.seller,
-                            buyer: events[i].returnValues.buyer,
-                            contract_address: events[i].returnValues.nft,
-                            token_id: tokenIdHex,
-                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
-                            fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
-                            quote: nft.quote,
-                            collection_id: nft.collection_id,
-                            trade_date: new Date(block.timestamp * 1000),
-                        });
-                        // update hour trade statistics
-                        let hourIndex = Math.floor(block.timestamp / 3600);
-                        let hourStartUnix = hourIndex * 3600;
-                        await tradeRepository.updateHourData(trade.collection_id, hourStartUnix, trade.price, trade.quote, coinPrice);
-                        // update day trade statistics
-                        let dayID = Math.floor(block.timestamp / 86400);
-                        let dayStartUnix = dayID * 86400;
-                        await tradeRepository.updateDayData(trade.collection_id, dayStartUnix, trade.price, trade.quote, coinPrice);
+        for (let i = 0; i < 3; i++) {
+            if (marketContract[i] !== null) {
+                await marketContract[i].getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
+                    .then(async function(events) {
+                        let coinPrice;
+                        if (events.length > 0) {
+                            coinPrice = await getCoinPrice();
+                        }
+                        for (let i = 0; events.length > i; i++) {
+                            if (events[i].event === 'Trade') {
+                                console.log(events[i].transactionHash, 'Trade event handle start.');
+                                const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                                console.log(events[i].returnValues);
+                                let serials = await SerialModel.find({
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    token_id: tokenIdHex,
+                                    buyer: events[i].returnValues.buyer,
+                                    status: consts.SERIAL_STATUS.BUYING,
+                                });
+                                const serialIds = serials.map((doc) => doc._id);
+                                const result = await SerialModel.updateMany(
+                                    {_id: {$in: serialIds}},
+                                    {
+                                        $set: {
+                                            status: consts.SERIAL_STATUS.ACTIVE,
+                                            owner_id: events[i].returnValues.buyer,
+                                            seller: null,
+                                            buyer: null,
+                                        },
+                                    },
+                                );
+                                if (serialIds.length === 0) continue;
+                                const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+                                console.log(block.timestamp, serials[0].nft_id._id);
+                                const nft = await NftModel.findOne({_id: serials[0].nft_id._id});
+                                //     {$inc: {quantity_selling: -1}}, {returnNewDocument: true});
+                                console.log(web3.utils.fromWei(events[i].returnValues.price, 'ether'), web3.utils.fromWei(events[i].returnValues.fee, 'ether'));
+                                const trade = await TradeModel.create({
+                                    tx_hash: events[i].transactionHash,
+                                    block_number: events[i].blockNumber,
+                                    chain_id: process.env.KLAYTN_CHAIN_ID,
+                                    seller: events[i].returnValues.seller,
+                                    buyer: events[i].returnValues.buyer,
+                                    contract_address: events[i].returnValues.nft,
+                                    token_id: tokenIdHex,
+                                    price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                                    fee: web3.utils.fromWei(events[i].returnValues.fee, 'ether'),
+                                    quote: nft.quote,
+                                    collection_id: nft.collection_id,
+                                    trade_date: new Date(block.timestamp * 1000),
+                                });
+                                // update hour trade statistics
+                                let hourIndex = Math.floor(block.timestamp / 3600);
+                                let hourStartUnix = hourIndex * 3600;
+                                await tradeRepository.updateHourData(trade.collection_id, hourStartUnix, trade.price, trade.quote, coinPrice);
+                                // update day trade statistics
+                                let dayID = Math.floor(block.timestamp / 86400);
+                                let dayStartUnix = dayID * 86400;
+                                await tradeRepository.updateDayData(trade.collection_id, dayStartUnix, trade.price, trade.quote, coinPrice);
 
-                        const history = {
-                            token_id: events[i].returnValues.tokenId,
-                            tx_id: events[i].transactionHash,
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            nft_id: nft._id,
-                            from: events[i].returnValues.seller,
-                            to: events[i].returnValues.buyer,
-                            chain_id: process.env.KLAYTN_CHAIN_ID,
-                            quantity: events[i].returnValues.amount,
-                            price: trade.price,
-                            quote: trade.quote,
-                            block_number: events[i].blockNumber,
-                            block_date: new Date(block.timestamp * 1000),
-                            type: consts.LISTENER_TYPE.BUY,
-                        };
-                        await ListenerModel.create(history);
-                        // nft last price 저장
-                        const lastPrice = (new BigNumber(trade.price)).div(events[i].returnValues.amount).toNumber();
-                        const salePriceUSD = (new BigNumber(trade.price)).div(events[i].returnValues.amount).multipliedBy(coinPrice[trade.quote].USD).toNumber();
-                        await NftModel.updateOne({_id: nft._id}, { $set: {sort_sale_price: salePriceUSD, last_price: lastPrice, last_quote: trade.quote}});
-                        console.log(events[i].transactionHash, 'Trade create success.');
-                    } else if (events[i].event === 'CancelSellToken') {
-                        // console.log(events[i]);
-                        console.log('=====>Cancel', events[i]);
-                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
-                        let serials = await SerialModel.find({
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            token_id: tokenIdHex,
-                        });
-                        if (serials.length === 0) continue;
-                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
-                        const history = {
-                            token_id: events[i].returnValues.tokenId,
-                            tx_id: events[i].transactionHash,
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            nft_id: serials[0].nft_id._id,
-                            from: marketAddress,
-                            to: events[i].returnValues.seller,
-                            chain_id: process.env.KLAYTN_CHAIN_ID,
-                            quantity: events[i].returnValues.quantity,
-                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
-                            quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
-                            block_number: events[i].blockNumber,
-                            block_date: new Date(block.timestamp * 1000),
-                            type: consts.LISTENER_TYPE.CANCEL,
-                        };
-                        await ListenerModel.create(history);
-                    } else if (events[i].event === 'Ask') {
-                        // what mean Ask event??
-                        console.log('=====>Ask', events[i]);
-                        // console.log(events[i]);
-                        const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
-                        let serials = await SerialModel.find({
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            token_id: tokenIdHex,
-                        });
-                        if (serials.length === 0) continue;
-                        const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+                                const history = {
+                                    token_id: events[i].returnValues.tokenId,
+                                    tx_id: events[i].transactionHash,
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    nft_id: nft._id,
+                                    from: events[i].returnValues.seller,
+                                    to: events[i].returnValues.buyer,
+                                    chain_id: process.env.KLAYTN_CHAIN_ID,
+                                    quantity: events[i].returnValues.amount,
+                                    price: trade.price,
+                                    quote: trade.quote,
+                                    block_number: events[i].blockNumber,
+                                    block_date: new Date(block.timestamp * 1000),
+                                    type: consts.LISTENER_TYPE.BUY,
+                                };
+                                await ListenerModel.create(history);
+                                // nft last price 저장
+                                const lastPrice = (new BigNumber(trade.price)).div(events[i].returnValues.amount).toNumber();
+                                const salePriceUSD = (new BigNumber(trade.price)).div(events[i].returnValues.amount).multipliedBy(coinPrice[trade.quote].USD).toNumber();
+                                await NftModel.updateOne({_id: nft._id}, {
+                                    $set: {
+                                        sort_sale_price: salePriceUSD,
+                                        last_price: lastPrice,
+                                        last_quote: trade.quote
+                                    }
+                                });
+                                console.log(events[i].transactionHash, 'Trade create success.');
+                            } else if (events[i].event === 'CancelSellToken') {
+                                // console.log(events[i]);
+                                console.log('=====>Cancel', events[i]);
+                                const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                                let serials = await SerialModel.find({
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    token_id: tokenIdHex,
+                                });
+                                if (serials.length === 0) continue;
+                                const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+                                const history = {
+                                    token_id: events[i].returnValues.tokenId,
+                                    tx_id: events[i].transactionHash,
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    nft_id: serials[0].nft_id._id,
+                                    from: marketAddress[i],
+                                    to: events[i].returnValues.seller,
+                                    chain_id: process.env.KLAYTN_CHAIN_ID,
+                                    quantity: events[i].returnValues.quantity,
+                                    price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                                    quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                                    block_number: events[i].blockNumber,
+                                    block_date: new Date(block.timestamp * 1000),
+                                    type: consts.LISTENER_TYPE.CANCEL,
+                                };
+                                await ListenerModel.create(history);
+                            } else if (events[i].event === 'Ask') {
+                                // what mean Ask event??
+                                console.log('=====>Ask', events[i]);
+                                // console.log(events[i]);
+                                const tokenIdHex = '0x' + parseInt(events[i].returnValues.tokenId, 10).toString(16);
+                                let serials = await SerialModel.find({
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    token_id: tokenIdHex,
+                                });
+                                if (serials.length === 0) continue;
+                                const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
 
-                        const history = {
-                            token_id: events[i].returnValues.tokenId,
-                            tx_id: events[i].transactionHash,
-                            contract_address: events[i].returnValues.nft.toLowerCase(),
-                            nft_id: serials[0].nft_id._id,
-                            from: events[i].returnValues.seller,
-                            to: marketAddress,
-                            chain_id: process.env.KLAYTN_CHAIN_ID,
-                            quantity: events[i].returnValues.quantity,
-                            price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
-                            quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
-                            block_number: events[i].blockNumber,
-                            block_date: new Date(block.timestamp * 1000),
-                            type: consts.LISTENER_TYPE.SELL,
-                        };
-                        await ListenerModel.create(history);
-                    }
-                }
-                lastMarketBlock = toBlock + 1;
-                saveMarketConf();
-            }).catch((e) => {
-                console.log('market contract getEvents', e);
-            });
+                                const history = {
+                                    token_id: events[i].returnValues.tokenId,
+                                    tx_id: events[i].transactionHash,
+                                    contract_address: events[i].returnValues.nft.toLowerCase(),
+                                    nft_id: serials[0].nft_id._id,
+                                    from: events[i].returnValues.seller,
+                                    to: marketAddress[i],
+                                    chain_id: process.env.KLAYTN_CHAIN_ID,
+                                    quantity: events[i].returnValues.quantity,
+                                    price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
+                                    quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                                    block_number: events[i].blockNumber,
+                                    block_date: new Date(block.timestamp * 1000),
+                                    type: consts.LISTENER_TYPE.SELL,
+                                };
+                                await ListenerModel.create(history);
+                            }
+                        }
+                        lastMarketBlock = toBlock + 1;
+                        saveMarketConf();
+                    }).catch((e) => {
+                        console.log('market contract getEvents', e);
+                    });
+            }
+        }
     } catch (e) {
         console.log(e);
     }

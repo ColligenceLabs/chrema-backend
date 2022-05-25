@@ -5,13 +5,13 @@ exports.getMarketAddress = (network) => {
 
     switch (network) {
         case 'klaytn':
-            marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID, 10)];
+            marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID ?? '0', 10)];
             break;
         case 'binance':
-            marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID, 10)];
+            marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID ?? '0', 10)];
             break;
         case 'ethereum':
-            marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID, 10)];
+            marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID ?? '0', 10)];
         default:
             break;
     }
