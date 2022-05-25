@@ -18,4 +18,5 @@ module.exports = {
     SaleModel: require('./sale_model'),
     WalletModel: require('./wallet_model'),
     ProfileModel: require('./profile_model'),
+    LastblockModel: require('./lastblock_model'),
 };

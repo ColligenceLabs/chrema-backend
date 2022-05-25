@@ -8,6 +8,7 @@ const ObjectID = require('mongodb').ObjectID;
 const BigNumber = require('bignumber.js');
 const collectionRepository = require('../../repositories/collection_repository');
 const tradeRepository = require('../../repositories/trade_repository');
+const lastblockRepository = require('../../repositories/lastblock_repository');
 const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = require('../../models');
 // const marketAbi = require('../../config/abi/market.json');
 const marketAbi = require('../../config/abi/marketV5.json');
@@ -47,6 +48,43 @@ function loadConf() {
     }
 }
 
+// load last checked block from file
+async function loadConfFromDB() {
+    // 설정된 chain id 별로 lastblock 조회 없을 경우 create
+    // event crawler
+    // ethereum
+    const ethEventLastBlock = await lastblockRepository.find(process.env.ETH_CHAIN_ID, 'event');
+    if (!ethEventLastBlock) {
+        await lastblockRepository.create(process.env.ETH_CHAIN_ID, 'event', );
+    }
+    // klaytn
+    const klaytnEventLastBlock = await lastblockRepository.find(process.env.KLAYTN_CHAIN_ID, 'event');
+    if (!klaytnEventLastBlock) {
+        await lastblockRepository.create(process.env.KLAYTN_CHAIN_ID, 'event', );
+    }
+    // binance
+    const binanceEventLastBlock = await lastblockRepository.find(process.env.BINANCE_CHAIN_ID, 'event');
+    if (!klaytnEventLastBlock) {
+        await lastblockRepository.create(process.env.BINANCE_CHAIN_ID, 'event', );
+    }
+
+    // market event crawler
+    const ethMarketLastBlock = await lastblockRepository.find(process.env.ETH_CHAIN_ID, 'market');
+    if (!ethEventLastBlock) {
+        await lastblockRepository.create(process.env.ETH_CHAIN_ID, 'market', );
+    }
+    // klaytn
+    const klaytnMarketLastBlock = await lastblockRepository.find(process.env.KLAYTN_CHAIN_ID, 'market');
+    if (!klaytnMarketLastBlock) {
+        await lastblockRepository.create(process.env.KLAYTN_CHAIN_ID, 'market', );
+    }
+    // binance
+    const binanceMarketLastBlock = await lastblockRepository.find(process.env.BINANCE_CHAIN_ID, 'market');
+    if (!binanceMarketLastBlock) {
+        await lastblockRepository.create(process.env.BINANCE_CHAIN_ID, 'market', );
+    }
+}
+
 // save last event's block to file - incase reload service
 function saveConf() {
     fs.writeFileSync('lastcheckedblock.conf', lastBlock + '');
@@ -64,6 +102,8 @@ function hexToAddress(hexVal) {
 // get events
 async function getLastEvents(toBlock) {
     const contracts = await collectionRepository.getContracts();
+    if (contracts.length === 0)
+        return;
     // console.log('Contracts : ', contracts);
     web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
@@ -165,7 +205,7 @@ async function getLastEvents(toBlock) {
                                     if (transaction) await SerialModel.findOneAndUpdate({_id: transaction.serial_id._id}, {transfered: consts.TRANSFERED.TRANSFERED});
                                 }
                             }
-                                // keccak hash : TransferSingle(address,address,address,uint256,uint256)
+                            // keccak hash : TransferSingle(address,address,address,uint256,uint256)
                             // https://baobab.scope.klaytn.com/tx/0xa376776f1fd040e1e78499c9d15db374b64ccb27d994c2bcd31f7c4a4d9a06a5?tabId=eventLog
                             else if (
                                 result[i].topics[0] ==
@@ -506,21 +546,27 @@ async function getMarketEvents(toBlock) {
     }
 }
 
-if (useCrawler === 'true') {
-    // init
-    loadConf();
+async function exec() {
+    if (useCrawler === 'true') {
+        // init
+        loadConf();
 
-    // set timer to get events every 2 seconds
-    setInterval(async function() {
-        const delay = process.env.CRAWLER_DELAY;
-        let toBlock = (await web3.eth.getBlockNumber()) * 1;
-        await getMarketEvents(toBlock);
-        toBlock = toBlock - delay;
-        if (toBlock - lastBlock > 4000) {
-            toBlock = lastBlock * 1 + 4000 - delay;
-        }
-        getLastEvents(toBlock);
-    }, 2000);
+        await loadConfFromDB();
+
+        // set timer to get events every 2 seconds
+        setInterval(async function() {
+            console.log('test22');
+            const delay = process.env.CRAWLER_DELAY;
+            let toBlock = (await web3.eth.getBlockNumber()) * 1;
+            if (process.env.USE_MARKET === 'true')
+                await getMarketEvents(toBlock);
+            toBlock = toBlock - delay;
+            if (toBlock - lastBlock > 4000) {
+                toBlock = lastBlock * 1 + 4000 - delay;
+            }
+            getLastEvents(toBlock);
+        }, 2000);
+    }
 }
 
-
+exec();
