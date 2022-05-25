@@ -1551,7 +1551,7 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_ACTIVE);
             }
             const network = nft.collection_id.network;
-            lconst marketAddress = getMarketAddress(network);
+            const marketAddress = getMarketAddress(network);
 
             const useKas = req.body.use_kas;
             let current_time = new Date();
