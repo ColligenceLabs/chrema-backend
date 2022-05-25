@@ -154,11 +154,14 @@ exports.getCoinPrice = async () => {
     const url = 'https://bcn-api.talken.io/coinmarketcap/cmcQuotes?cmcIds=4256,11552';
     try {
         const response = await axios(url);
+        // console.log(response.data);
         const klayUsd = response.data.data[4256].quote.USD.price;
         const klayKrw = response.data.data[4256].quote.KRW.price;
         const talkUsd = response.data.data[11552].quote.USD.price;
         const talkKrw = response.data.data[11552].quote.KRW.price;
-        const result = {klay: {USD: klayUsd, KRW: klayKrw},talk: {USD: talkUsd, KRW: talkKrw}};
+        const bnbUsd = response.data.data[1839].quote.USD.price;
+        const bnbKrw = response.data.data[1839].quote.KRW.price;
+        const result = {klay: {USD: klayUsd, KRW: klayKrw},talk: {USD: talkUsd, KRW: talkKrw},bnb: {USD: bnbUsd, KRW: bnbKrw}};
 
         return result;
     } catch (error) {
