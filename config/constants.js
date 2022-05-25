@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     market: {
         1: '',
         3: '',
