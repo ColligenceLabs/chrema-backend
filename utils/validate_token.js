@@ -54,8 +54,9 @@ module.exports = {
             try {
                 result = jwt.verify(token, process.env.JWT_SECRET);
                 req.decoded = result;
+                const user = await adminRepository.findById(result.id);
                 const profile = await profileRepository.findById(result.id);
-                if (!profile) {
+                if (!profile && !user) {
                     throw {message: 'Profile is not existed!'};
                 }
                 next();
