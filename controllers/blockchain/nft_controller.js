@@ -11,7 +11,7 @@ const chainId = process.env.KLAYTN_CHAIN_ID | 0;
 const accessKeyId = process.env.ACCESS_KEY_ID;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 const contractAddress = process.env.NFT_CONTRACT_ADDR;
-const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
+// const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 // 테스트필요
 // const option = {
 //     headers: [
@@ -24,6 +24,7 @@ const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
 
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
+const {getMarketAddress} = require('../../utils/getMarketAddress');
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -264,6 +265,8 @@ module.exports = {
         const accounts = await caver.kas.wallet.getAccountList();
         const kasAddr = accounts.items[0].address;
 
+        const marketAddress = getMarketAddress(collection.network);
+
         for (let i=0; i < serials.length; i++) {
             try {
                 await caver.kas.kip17.approve(collection.contract_address, kasAddr, marketAddress, serials[i].token_id);
@@ -275,30 +278,34 @@ module.exports = {
         await sleep(2000);
         return {status: 200, result: 1};
     },
-    _sellNFT: async (collectionAddress, tokenId, price, quote) => {
+    _sellNFT: async (network, collectionAddress, tokenId, price, quote, marketAddress) => {
         console.log()
-        const gasPrice = await caver.klay.getGasPrice();
-        const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
-        const accounts = await caver.kas.wallet.getAccountList();
-        const kasAddr = accounts.items[0].address;
         let receipt;
-        try {
-            const marketContract = new caver.contract(marketAbi, marketAddress);
-            const gasLimit = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote)
-                .estimateGas({
-                    from: kasAddr
-                });
+        if (network === 'klaytn') {
+            const gasPrice = await caver.klay.getGasPrice();
+            const parsedPrice = caver.utils.convertToPeb(price, 'KLAY');
+            const accounts = await caver.kas.wallet.getAccountList();
+            const kasAddr = accounts.items[0].address;
+            try {
+                const marketContract = new caver.contract(marketAbi, marketAddress);
+                const gasLimit = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote)
+                    .estimateGas({
+                        from: kasAddr
+                    });
 
-            receipt = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote).send({
-                from: kasAddr,
-                gasPrice,
-                gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
-            });
-            // console.log('success readyToSellToken', receipt);
-        } catch (e) {
-            console.log(e);
-            logger.error(new Error(e));
-            return {status: 500, error: e}
+                receipt = await marketContract.methods.readyToSellToken(collectionAddress, tokenId, parsedPrice, quote).send({
+                    from: kasAddr,
+                    gasPrice,
+                    gasLimit: calculateGasMargin(caver.utils.toBN(gasLimit)).toString(),
+                });
+                // console.log('success readyToSellToken', receipt);
+            } catch (e) {
+                console.log(e);
+                logger.error(new Error(e));
+                return {status: 500, error: e}
+            }
+        } else {
+            // TODO : for Ethereum & Binance ... need to use multicall
         }
 
         return {status: 200, result: receipt.transactionHash};
