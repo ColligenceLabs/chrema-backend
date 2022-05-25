@@ -18,6 +18,7 @@ const consts = require('../../utils/consts');
 const quoteTokens = require('../../utils/quoteTokens');
 const fs = require('fs');
 const BigNumber = require('bignumber.js');
+const constants = require('../../config/constants');
 
 const {
     _errorFormatter,
@@ -45,7 +46,7 @@ const {
 const {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const historyRepository = require('../../repositories/history_repository');
 const txRepository = require('../../repositories/transaction_repository');
-const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
+// const marketAddress = process.env.MARKET_CONTRACT_ADDRESS;
 
 module.exports = {
     classname: 'NftController',
@@ -1550,6 +1551,20 @@ module.exports = {
             if (nft.status === 'inactive' || nft.onchain === 'false') {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_ACTIVE);
             }
+            const network = nft.collection_id.network;
+            let marketAddress;
+            switch(network) {
+                case 'klaytn':
+                    marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID, 10)];
+                    break;
+                case 'binance':
+                    marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID, 10)];
+                    break;
+                case 'ethereum':
+                    marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID, 10)];
+                default:
+                    break;
+            }
             const useKas = req.body.use_kas;
             let current_time = new Date();
             let input = {};
@@ -1617,6 +1632,21 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
             const useKas = req.body.use_kas;
+
+            const network = nft.collection_id.network;
+            let marketAddress;
+            switch(network) {
+                case 'klaytn':
+                    marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID, 10)];
+                    break;
+                case 'binance':
+                    marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID, 10)];
+                    break;
+                case 'ethereum':
+                    marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID, 10)];
+                default:
+                    break;
+            }
 
             if (useKas === 'true') {
                 // TODO : market contract 에 cancelSellToken 호출
@@ -1985,6 +2015,21 @@ async function sellNFTs(nftId) {
     const collection = await collectionRepository.findById(nft.collection_id);
     if (!collection) {
         return {status: 500, error: ErrorMessage.COLLECTION_IS_NOT_FOUND};
+    }
+
+    const network = collection.network;
+    let marketAddress;
+    switch(network) {
+        case 'klaytn':
+            marketAddress = constants.market[parseInt(process.env.KLAYTN_CHAIN_ID, 10)];
+            break;
+        case 'binance':
+            marketAddress = constants.market[parseInt(process.env.BINANCE_CHAIN_ID, 10)];
+            break;
+        case 'ethereum':
+            marketAddress = constants.market[parseInt(process.env.ETH_CHAIN_ID, 10)];
+        default:
+            break;
     }
 
     const serials = await serialRepository.findByNftIdNotTRransfered(nftId);
