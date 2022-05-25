@@ -555,7 +555,6 @@ async function exec() {
 
         // set timer to get events every 2 seconds
         setInterval(async function() {
-            console.log('test22');
             const delay = process.env.CRAWLER_DELAY;
             let toBlock = (await web3.eth.getBlockNumber()) * 1;
             if (process.env.USE_MARKET === 'true')
