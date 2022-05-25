@@ -2064,7 +2064,7 @@ async function sellNFTs(nftId) {
                 break;
         }
         console.log(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
-        const transferResult = await nftBlockchain._sellNFT(collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken);
+        const transferResult = await nftBlockchain._sellNFT(network, collection.contract_address, serials[i].token_id, nft.price.toString(), quoteToken, marketAddress);
         if (transferResult.status === 200) {
             tx.tx_id = transferResult.result;
             tx.date = Date.now();
