@@ -158,5 +158,6 @@ module.exports = {
         NFT_AIRDROP: 'NFT Airdrop',
         WALLET_TRANSFER: 'Wallet Transfer',
         TRANSFER_ERROR: 'Transfer Error',
-    }
+    },
+    CHAIN_NAMES: ['eth', 'klaytn', 'binance']
 };

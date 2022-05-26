@@ -11,11 +11,11 @@ module.exports = {
     },
 
     find: async function (chainId, type) {
-        const lastblock = await LastblockModel.findOne({chain_id: chainId, type});
+        const lastblock = await LastblockModel.findOne({chain_id: chainId, type}).select('block_number');
         if (!lastblock) {
             return null;
         }
-        return lastblock;
+        return lastblock.block_number;
     },
 
     update: async function (chainId, type, lastblock) {

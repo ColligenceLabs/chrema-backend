@@ -129,9 +129,9 @@ module.exports = {
         }
     },
 
-    getContracts: async function () {
+    getContracts: async function (chainName) {
         try {
-            let collections = await CollectionModel.find();
+            let collections = await CollectionModel.find({status: COLLECTION_STATUS.ACTIVE, network: chainName}).select('contract_address');
             const contracts = [];
 
             collections.map((item) => {

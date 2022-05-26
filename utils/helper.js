@@ -1,13 +1,19 @@
 const mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
+const Web3 = require('web3');
+const ObjectId = mongoose.Types.ObjectId;
 const {validationResult} = require('express-validator');
 const moment = require('moment-timezone');
-var consts = require('./consts');
-var sharp = require('sharp');
+const { provider, market } = require('../config/constants');
+const consts = require('./consts');
+const sharp = require('sharp');
 const axios = require('axios');
 const BigNumber = require('bignumber.js');
-var fs = require('fs');
-var fsx = require('fs-extra')
+const fs = require('fs');
+const fsx = require('fs-extra')
+const marketAbi = require('../config/abi/marketV5.json');
+
+const marketContracts = {};
+const web3s = {};
 
 const TIMEZONE = process.env.TIMEZONE;
 exports._errorFormatter = (errors) => {
@@ -204,3 +210,91 @@ exports.getFloorPrice = (filteredPrices, coinPrices) => {
     }
     return floorPrice;
 };
+
+exports.getWeb3ByChainName = (chainName) => {
+    let web3;
+    try {
+        if (chainName === 'eth' && provider[parseInt(process.env.ETH_CHAIN_ID)] !== '') {
+            if (!web3s.eth){
+                web3 = new Web3(provider[parseInt(process.env.ETH_CHAIN_ID)]);
+                web3s.eth = web3;
+            } else
+                web3 = web3s.eth;
+        } else if (chainName === 'klaytn' && provider[parseInt(process.env.KLAYTN_CHAIN_ID)] !== '') {
+            if (!web3s.klaytn){
+                web3 = new Web3(provider[parseInt(process.env.KLAYTN_CHAIN_ID)]);
+                web3s.klaytn = web3;
+            } else
+                web3 = web3s.klaytn;
+        } else if (chainName === 'binance' && provider[parseInt(process.env.BINANCE_CHAIN_ID)] !== '') {
+            if (!web3s.binance){
+                web3 = new Web3(provider[parseInt(process.env.BINANCE_CHAIN_ID)]);
+                web3s.binance = web3;
+            } else
+                web3 = web3s.binance;
+        }
+    } catch (e) {
+        console.log(e);
+    }
+    return web3;
+}
+
+exports.getMarketContract = (chainName) => {
+    let contract;
+    try {
+        const web3 = this.getWeb3ByChainName(chainName);
+        if (!marketContracts[chainName]) {
+            marketContracts[chainName] = new web3.eth.Contract(marketAbi, this.getMarketAddress(chainName));
+        }
+        return marketContracts[chainName];
+        // if (web3 && chainName === 'eth') {
+        //     if (marketContracts.eth){
+        //         contract = new web3.eth.Contract(marketAbi, this.getMarketAddress(chainName));
+        //         marketContracts.eth = contract;
+        //     } else
+        //         contract = marketContracts.eth;
+        // } else if (web3 && chainName === 'klaytn') {
+        //     if (marketContracts.klaytn){
+        //         contract = new web3.eth.Contract(marketAbi, this.getMarketAddress(chainName));
+        //         marketContracts.klaytn = contract;
+        //     } else
+        //         contract = marketContracts.klaytn;
+        // } else if (web3 && chainName === 'binance') {
+        //     if (marketContracts.binance){
+        //         contract = new web3.eth.Contract(marketAbi, this.getMarketAddress(chainName));
+        //         marketContracts.binance = contract;
+        //     } else
+        //         contract = marketContracts.binance;
+        // }
+    } catch (e) {
+        console.log(e);
+    }
+    return contract;
+}
+
+exports.getMarketAddress = (chainName) => {
+    let address;
+    if (chainName === 'eth') {
+        address = market[parseInt(process.env.ETH_CHAIN_ID)];
+    } else if (chainName === 'klaytn') {
+        address = market[parseInt(process.env.KLAYTN_CHAIN_ID)];
+    } else if (chainName === 'binance') {
+        address = market[parseInt(process.env.BINANCE_CHAIN_ID)];
+    }
+    if (!address) return null;
+    return address;
+}
+
+exports.getChainId = (chainName) => {
+    let chainId;
+    if (chainName === 'eth') {
+        chainId = parseInt(process.env.ETH_CHAIN_ID);
+    } else if (chainName === 'klaytn') {
+        chainId = parseInt(process.env.KLAYTN_CHAIN_ID);
+    } else if (chainName === 'binance') {
+        chainId = parseInt(process.env.BINANCE_CHAIN_ID);
+    }
+    if (!chainId) return null;
+    return chainId;
+}
+
