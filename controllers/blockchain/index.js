@@ -1,48 +1,9 @@
-const Web3 = require('web3');
-const web3 = new Web3(process.env.PROVIDER_URL);
-const fs = require('fs');
 const consts = require('../../utils/consts');
 const {getWeb3ByChainName} = require('../../utils/helper');
 const lastblockRepository = require('../../repositories/lastblock_repository');
 const {getLastEvents, getMarketEvents} = require('./crawler');
 
-// const marketAbi = require('../../config/abi/market.json');
-const marketAbi = require('../../config/abi/marketV5.json');
-const { market } = require('../../config/constants');
-let lastBlock = 0;
-let lastMarketBlock = 0;
-
 const useCrawler = process.env.USE_CRAWLER;
-const marketAddress = [
-    market[parseInt(process.env.ETH_CHAIN_ID ?? '0', 10)],
-    market[parseInt(process.env.KLAYTN_CHAIN_ID ?? '0', 10)],
-    market[parseInt(process.env.BINANCE_CHAIN_ID ?? '0', 10)]
-];
-
-const marketContract = [];
-for (let i = 0; i < 3; i++) {
-    if (marketAddress[i] !== '' && marketAddress[i] !== undefined) {
-        marketContract.push(new web3.eth.Contract(marketAbi, marketAddress[i]));
-    } else {
-        marketContract.push(null);
-    }
-}
-
-// load last checked block from file
-function loadConf() {
-    if (fs.existsSync('lastcheckedblock.conf')) {
-        let rawdata = fs.readFileSync('lastcheckedblock.conf');
-        lastBlock = parseInt(rawdata);
-    } else {
-        lastBlock = 68397139;
-    }
-    if (fs.existsSync('lastmarketblock.conf')) {
-        let rawdata = fs.readFileSync('lastmarketblock.conf');
-        lastMarketBlock = parseInt(rawdata);
-    } else {
-        lastMarketBlock = 68397139;
-    }
-}
 
 // load last checked block from file
 async function loadConfFromDB() {
@@ -122,17 +83,6 @@ async function loadConfFromDB() {
     return lastBlocks;
 }
 
-// save last event's block to file - incase reload service
-function saveConf() {
-    fs.writeFileSync('lastcheckedblock.conf', lastBlock + '');
-}
-
-function saveMarketConf() {
-    fs.writeFileSync('lastmarketblock.conf', lastMarketBlock + '');
-}
-
-
-
 async function getChainEvents(chainName, lastBlocks) {
     if (lastBlocks.event[chainName] && lastBlocks.market[chainName]) {
         const useMarket = process.env.USE_MARKET === 'true' ? true : false;
@@ -183,10 +133,8 @@ async function getChainEvents(chainName, lastBlocks) {
 async function main() {
     if (useCrawler === 'true') {
         // init
-        loadConf();
-
         const lastBlocks = await loadConfFromDB();
-        console.log('lastBlocks', lastBlocks);
+        // console.log('lastBlocks', lastBlocks);
         for (let i = 0; i < consts.CHAIN_NAMES.length; i++) {
             console.log(consts.CHAIN_NAMES[i]);
             await getChainEvents(consts.CHAIN_NAMES[i], lastBlocks);
@@ -194,15 +142,6 @@ async function main() {
 
         // set timer to get events every 2 seconds
         setInterval(async function() {
-            // const delay = process.env.CRAWLER_DELAY;
-            // let toBlock = (await web3.eth.getBlockNumber()) * 1;
-            // if (process.env.USE_MARKET === 'true')
-            //     await getMarketEvents(toBlock);
-            // toBlock = toBlock - delay;
-            // if (toBlock - lastBlock > 4000) {
-            //     toBlock = lastBlock * 1 + 4000 - delay;
-            // }
-            // getLastEvents(toBlock);
             for (let i = 0; i < consts.CHAIN_NAMES.length; i++) {
                 console.log(consts.CHAIN_NAMES[i]);
                 await getChainEvents(consts.CHAIN_NAMES[i], lastBlocks);
