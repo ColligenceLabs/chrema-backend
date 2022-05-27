@@ -61,7 +61,7 @@ module.exports = {
             nft.floor_quote = null;
         } else {
             const prices = await serialRepository.findNftFloorPrice(sale.nft_id, sale.token_id);
-            const filteredPrices = prices.filter(price => price._id === 'talk' || price._id === 'klay');
+            const filteredPrices = prices.filter(price => price._id === 'talk' || price._id === 'klay' || price._id === 'bnb' || price._id === 'eth');
             const coinPrices = await getCoinPrice();
             const floorPrice = getFloorPrice(filteredPrices, coinPrices);
             nft.floor_price = floorPrice.floorPrice;
