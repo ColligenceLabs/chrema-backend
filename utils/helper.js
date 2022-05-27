@@ -285,6 +285,20 @@ exports.getMarketAddress = (chainName) => {
     return address;
 }
 
+exports.getQuote = (quote, chainName) => {
+    if (quote === '0x0000000000000000000000000000000000000000') {
+        if (chainName === 'eth')
+            return 'eth';
+        else if (chainName === 'binance')
+            return 'bnb';
+        else if (chainName === 'klaytn')
+            return 'klay';
+    } else {
+        // todo quoteToken 추가되면 변경 필요.
+        return 'talk';
+    }
+}
+
 exports.getChainId = (chainName) => {
     let chainId;
     if (chainName === 'eth') {

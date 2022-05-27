@@ -5,7 +5,7 @@ const {NftModel, SerialModel, TransactionModel, ListenerModel, TradeModel} = req
 const BigNumber = require('bignumber.js');
 const consts = require('../../utils/consts');
 
-const {getCoinPrice, getWeb3ByChainName, getChainId, getMarketAddress, getMarketContract} = require('../../utils/helper');
+const {getCoinPrice, getWeb3ByChainName, getChainId, getMarketAddress, getMarketContract, getQuote} = require('../../utils/helper');
 
 // convert hex result to address
 function hexToAddress(hexVal) {
@@ -20,7 +20,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
     let lastBlock = await lastblockRepository.find(getChainId(chainName), 'event');
     const web3 = getWeb3ByChainName(chainName);
     if (!web3) return;
-    console.log('getLastEvents', lastBlock, toBlock, chainName);
+    // console.log('getLastEvents', lastBlock, toBlock, chainName);
     await web3.eth.getPastLogs(
         // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
         {fromBlock: lastBlock, toBlock: toBlock, address: contracts},
@@ -241,7 +241,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
     ).catch((e) => {
         console.log('collection contract getEvents', e);
     });
-    console.log('getlastevent end');
+    // console.log('getlastevent end');
 }
 
 exports.getMarketEvents = async function (toBlock, chainName) {
@@ -250,7 +250,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
         const web3 = getWeb3ByChainName(chainName);
         if (!web3) return;
         const marketContract = getMarketContract(chainName);
-        console.log('getMarketEvents', lastMarketBlock, toBlock, chainName);
+        // console.log('getMarketEvents', lastMarketBlock, toBlock, chainName);
         if (marketContract !== null) {
             await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
                 .then(async function(events) {
@@ -347,6 +347,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
                             });
                             if (serials.length === 0) continue;
                             const block = await web3.eth.getBlock(events[i].blockNumber).catch(e => console.log('getBlock fail', e));
+
                             const history = {
                                 token_id: events[i].returnValues.tokenId,
                                 tx_id: events[i].transactionHash,
@@ -357,7 +358,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
                                 chain_id: process.env.KLAYTN_CHAIN_ID,
                                 quantity: events[i].returnValues.quantity,
                                 price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
-                                quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                                quote: getQuote(events[i].returnValues.quote, chainName),
                                 block_number: events[i].blockNumber,
                                 block_date: new Date(block.timestamp * 1000),
                                 type: consts.LISTENER_TYPE.CANCEL,
@@ -385,7 +386,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
                                 chain_id: process.env.KLAYTN_CHAIN_ID,
                                 quantity: events[i].returnValues.quantity,
                                 price: web3.utils.fromWei(events[i].returnValues.price, 'ether'),
-                                quote: events[i].returnValues.quote === '0x0000000000000000000000000000000000000000' ? 'klay' : 'talk',
+                                quote: getQuote(events[i].returnValues.quote, chainName),
                                 block_number: events[i].blockNumber,
                                 block_date: new Date(block.timestamp * 1000),
                                 type: consts.LISTENER_TYPE.SELL,

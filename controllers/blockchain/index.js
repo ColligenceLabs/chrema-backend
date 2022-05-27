@@ -92,7 +92,7 @@ async function getChainEvents(chainName, lastBlocks) {
 
         if (useMarket && lastBlocks.market[chainName]) {
             const lastBlockNumber = lastBlocks.market[chainName];
-            console.log('market', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
+            // console.log('market', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
             if (chainName === 'binance' || chainName === 'eth') {
                 if (toBlock <= lastBlockNumber) return;
             }
@@ -110,12 +110,15 @@ async function getChainEvents(chainName, lastBlocks) {
 
         if (lastBlocks.event[chainName]) {
             const lastBlockNumber = lastBlocks.event[chainName];
-            const delay = process.env.CRAWLER_DELAY;
-            toBlock = toBlock - delay;
+            if (chainName === 'klaytn' && process.env.USE_KAS !== 'false') {
+                const delay = process.env.CRAWLER_DELAY;
+                toBlock = toBlock - delay;
+            }
+
             if (chainName === 'binance' || chainName === 'eth') {
                 if (toBlock <= lastBlockNumber) return;
             }
-            console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
+            // console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
             if (toBlock - lastBlockNumber > 3000) {
                 for (let to = lastBlockNumber + 3000; to <= toBlock; to += 3000) {
                     await getLastEvents(to, chainName);
@@ -143,7 +146,7 @@ async function main() {
         // set timer to get events every 2 seconds
         setInterval(async function() {
             for (let i = 0; i < consts.CHAIN_NAMES.length; i++) {
-                console.log(consts.CHAIN_NAMES[i]);
+                // console.log(consts.CHAIN_NAMES[i]);
                 await getChainEvents(consts.CHAIN_NAMES[i], lastBlocks);
             }
         }, 2000);
