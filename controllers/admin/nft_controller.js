@@ -933,8 +933,8 @@ module.exports = {
             if (newNft.quote !== 'krw')
                 newNft.sort_price = (new BigNumber(newNft.price)).multipliedBy(coinPrice[newNft.quote].USD).toNumber();
             else {
-                const usd = getExchange();
-                newNft.sort_price = (new BigNumber(newNft.price)).dividedBy(usd.basePrice).toNumber();
+                const usd = await getExchange();
+                newNft.sort_price = (new BigNumber(newNft.price)).dividedBy(new BigNumber(usd.data[0].basePrice)).toNumber();
             }
 
             let metadata_ipfs = newNft.metadata;
