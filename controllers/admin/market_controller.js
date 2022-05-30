@@ -99,7 +99,7 @@ module.exports = {
         const amount = parseInt(req.query.amount);
         const saleId = req.query.sale_id;
         // sale 컬렉션에서 판매숫자 차감처리
-        const result = await saleRepository.findOneAndUpdate({_id: saleId, sold: 0}, {buyer, sold: amount});
+        const result = await saleRepository.findOneAndUpdate({_id: saleId, sold: 0}, {$set: {buyer, sold: amount}});
         // console.log(result);
         if (result.nModified === 0) {
             return handlerError(req, res, ErrorMessage.ALREADY_BUYING);

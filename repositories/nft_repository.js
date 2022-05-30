@@ -265,6 +265,7 @@ module.exports = {
             let nft = await NftModel.updateOne({_id: id}, {$set: where});
             return nft;
         } catch (error) {
+            console.log(error);
             return error;
         }
     },

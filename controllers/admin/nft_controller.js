@@ -1599,7 +1599,7 @@ module.exports = {
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
                 const result = await serialRepository.update(
                     {nft_id: nft._id, owner_id: {$in: [req.body.seller, null]}}
-                    , {owner_id: marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
+                    , {owner_id: nft.quote === 'krw' ? req.body.seller : marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
                 );
                 await nftRepository.updateSellingData(nft._id, result.nModified);
                 if (nft.quote === 'krw') {
@@ -1868,14 +1868,34 @@ module.exports = {
                 await historyRepository.createTx(hs);
 
                 // update db
-                const newAmount = parseInt(nft.transfered, 10) + parseInt(amount, 10);
-                await nftRepository.update(nft._id, {transfered: newAmount});
+                const transfered = parseInt(nft.transfered, 10) + parseInt(amount, 10);
+                const quantitySelling = parseInt(nft.quantity_selling, 10) - parseInt(amount, 10);
+                await nftRepository.update(nft._id, {transfered, quantity_selling: quantitySelling});
                 // await serialRepository.updateById(serial._id, {owner_id: tx.buyer});
                 let ids = [];
                 for (let i = 0; i < amount; i++) {
                     ids.push(serials[i]._id)
                 }
-                await serialRepository.updateByIds(ids, {owner_id: tx.buyer});
+                await serialRepository.updateByIds(ids, {owner_id: tx.buyer, status: consts.SERIAL_STATUS.ACTIVE});
+                if (nft.quote === 'krw') {
+                    // history 생성
+                    const history = {
+                        token_id: nft.metadata.tokenId,
+                        tx_id: tx.tx_id,
+                        contract_address: collection.contract_address,
+                        nft_id: nft._id,
+                        from: serial.owner_id,
+                        to: tx.buyer,
+                        chain_id: getChainId(collection.network),
+                        quantity: nft.quantity,
+                        price: nft.price,
+                        quote: nft.quote,
+                        block_number: 0,
+                        block_date: new Date(),
+                        type: consts.LISTENER_TYPE.BUY,
+                    };
+                    await listenerRepository.create(history);
+                }
                 // 크롤러가 처리하는 듯...
                 // await serialRepository.updateById(serial._id, {transfered: TRANSFERED.TRANSFERED});
 

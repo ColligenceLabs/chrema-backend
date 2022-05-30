@@ -112,6 +112,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         status: consts.NFT_STATUS.SUSPEND,
                                     });
                                 } else {// other transfer(buy, airdrop)
+                                    console.log('17 transfer event', result[i]);
                                     let transaction = await TransactionModel.findOneAndUpdate(
                                         {tx_id: transactionHash},
                                         {$set: {status: consts.TRANSACTION_STATUS.SUCCESS}},
@@ -129,7 +130,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                 let contractAddress = result[i].address.toLowerCase();
                                 const data = web3.eth.abi.decodeParameters(['uint256', 'uint256'], result[i].data);
                                 let fromAddress = hexToAddress(result[i].topics[1]);
-                                let toAddress = hexToAddress(result[i].topics[2]);
+                                let toAddress = hexToAddress(result[i].topics[3]);
                                 console.log('====!!!!', result[i].topics, data);
                                 let tokenIdDeciaml = parseInt(data[0]);
                                 let tokenIdHex = '0x' + tokenIdDeciaml.toString(16);
@@ -217,6 +218,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         status: consts.NFT_STATUS.SUSPEND,
                                     });
                                 } else {
+                                    let amount = data[1];
                                     // buy or airdrop nft
                                     // TODO 여러개가 한번에 팔리는 경우에 대한 처리 필요(여러개의 serial 을 suspend 처리해야함?)
                                     let transaction = await TransactionModel.findOneAndUpdate(
@@ -224,7 +226,13 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         {$set: {status: consts.TRANSACTION_STATUS.SUCCESS}},
                                         {returnDocument: 'after'},
                                     );
-                                    if (transaction) await SerialModel.findOneAndUpdate({_id: transaction.serial_id._id}, {transfered: consts.TRANSFERED.TRANSFERED});
+                                    const serials = await SerialModel.find({
+                                        owner_id: {$regex: toAddress, $options: 'i'},
+                                        contract_address: {$regex: contractAddress, $options: 'i'},
+                                        transfered: consts.TRANSFERED.NOT_TRANSFER})
+                                        .select('_id');
+                                    const serialIds = serials.map((doc) => doc._id);
+                                    if (transaction) await SerialModel.updateMany({_id: {$in: serialIds}}, {$set: {transfered: consts.TRANSFERED.TRANSFERED}});
                                 }
                             } else if (result[i].topics[0] == '0x000000') {
                                 // approve chưa biết mã topic nên chưa xong

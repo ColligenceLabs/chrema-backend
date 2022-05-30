@@ -110,8 +110,12 @@ async function getChainEvents(chainName, lastBlocks) {
 
         if (lastBlocks.event[chainName]) {
             const lastBlockNumber = lastBlocks.event[chainName];
-            if (chainName === 'klaytn' && process.env.USE_KAS !== 'false') {
-                const delay = process.env.CRAWLER_DELAY;
+            if (process.env.USE_KAS !== 'true') {
+                let delay = process.env.CRAWLER_DELAY;
+                if (chainName === 'binance')
+                    delay = 7;
+                else if (chainName === 'eth')
+                    delay = 4;
                 toBlock = toBlock - delay;
             }
 
