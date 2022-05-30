@@ -96,8 +96,8 @@ async function getChainEvents(chainName, lastBlocks) {
             if (chainName === 'binance' || chainName === 'eth') {
                 if (toBlock <= lastBlockNumber) return;
             }
-            if (toBlock - lastBlocks.market[chainName] > 3000) {
-                for (let to = lastBlockNumber + 3000; to <= toBlock; to += 3000) {
+            if (toBlock - lastBlocks.market[chainName] > 1000) {
+                for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
                     await getMarketEvents(to, chainName);
                     // console.log(lastBlocks.event[chainName], to);
                     lastBlocks.market[chainName] = to + 1;
@@ -119,8 +119,8 @@ async function getChainEvents(chainName, lastBlocks) {
                 if (toBlock <= lastBlockNumber) return;
             }
             // console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
-            if (toBlock - lastBlockNumber > 3000) {
-                for (let to = lastBlockNumber + 3000; to <= toBlock; to += 3000) {
+            if (toBlock - lastBlockNumber > 1000) {
+                for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
                     await getLastEvents(to, chainName);
                     // console.log(lastBlocks.event[chainName], to);
                     lastBlocks.event[chainName] = to + 1;

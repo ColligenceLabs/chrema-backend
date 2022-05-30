@@ -176,6 +176,18 @@ exports.getCoinPrice = async () => {
     }
 }
 
+exports.getExchange = async () => {
+    const url = 'https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD';
+    try {
+        return await axios(url);
+        // console.log(response.data);
+    } catch (error) {
+        console.log(new Error(error));
+        return error;
+    }
+}
+
+
 exports.imageMove = async (imgInput, renameOutput) => {
     fsx.move(imgInput, renameOutput, { overwrite: true }, (err) => {
 

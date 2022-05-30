@@ -8,12 +8,8 @@ const nftRepository = require('../../repositories/nft_repository');
 const adminRepository = require('../../repositories/admin_repository');
 const serialRepository = require('../../repositories/serial_repository');
 const nftBlockchain = require('../blockchain/nft_controller');
-const companyRepository = require('../../repositories/company_repository');
-const uploadRepository = require('../../repositories/upload_repository');
 const listenerRepository = require('../../repositories/listener_repository');
-const contractRepository = require('../../repositories/contract_repository');
 const collectionRepository = require('../../repositories/collection_repository');
-const creatorRepository = require('../../repositories/creator_repository');
 const consts = require('../../utils/consts');
 const quoteTokens = require('../../utils/quoteTokens');
 const fs = require('fs');
@@ -28,9 +24,11 @@ const {
     checkTimeCurrent,
     convertTimezone,
     getCoinPrice,
-    imageResize,
-    imageRename,
-    writeJson, imageMove,
+    getExchange,
+    getChainId,
+    getQuote,
+    writeJson,
+    imageMove,
 } = require('../../utils/helper');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
 const {
@@ -932,7 +930,12 @@ module.exports = {
             };
 
             const coinPrice = await getCoinPrice();
-            newNft.sort_price = (new BigNumber(newNft.price)).multipliedBy(coinPrice[newNft.quote].USD).toNumber();
+            if (newNft.quote !== 'krw')
+                newNft.sort_price = (new BigNumber(newNft.price)).multipliedBy(coinPrice[newNft.quote].USD).toNumber();
+            else {
+                const usd = getExchange();
+                newNft.sort_price = (new BigNumber(newNft.price)).dividedBy(usd.basePrice).toNumber();
+            }
 
             let metadata_ipfs = newNft.metadata;
             if (req.body.category) {
@@ -1599,6 +1602,25 @@ module.exports = {
                     , {owner_id: marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
                 );
                 await nftRepository.updateSellingData(nft._id, result.nModified);
+                if (nft.quote === 'krw') {
+                    // history 생성
+                    const history = {
+                        token_id: nft.metadata.tokenId,
+                        tx_id: '',
+                        contract_address: nft.collection_id.contract_address,
+                        nft_id: nft._id,
+                        from: req.body.seller,
+                        to: getMarketAddress(network),
+                        chain_id: getChainId(network),
+                        quantity: nft.quantity,
+                        price: nft.price,
+                        quote: getQuote(nft.quote, network),
+                        block_number: 0,
+                        block_date: new Date(),
+                        type: consts.LISTENER_TYPE.SELL,
+                    };
+                    await listenerRepository.create(history);
+                }
 
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
@@ -1607,6 +1629,7 @@ module.exports = {
 
             return handlerSuccess(req, res, 'Update Nfts successed!');
         } catch (error) {
+            console.log(error);
             logger.error(new Error(error));
             next(error);
         }

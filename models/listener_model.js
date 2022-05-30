@@ -13,7 +13,7 @@ const ListenerSchema = new Schema(
         },
         tx_id: {
             type: String,
-            required: true,
+            required: false,
         },
         contract_address: {
             type: String,

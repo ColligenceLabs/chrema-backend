@@ -54,6 +54,7 @@ module.exports = {
             let listener = await ListenerModel.create(inputData);
             return listener;
         } catch (error) {
+            console.log(error);
             return error;
         }
     },
