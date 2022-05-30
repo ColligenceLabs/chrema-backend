@@ -83,7 +83,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         from: fromAddress,
                                         to: toAddress,
                                         nft_id: serial.nft_id._id,
-                                        chain_id: process.env.KLAYTN_CHAIN_ID,
+                                        chain_id: getChainId(chainName),
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
@@ -103,7 +103,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
-                                        chain_id: process.env.KLAYTN_CHAIN_ID,
+                                        chain_id: getChainId(chainName),
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.BURN,
                                     });
@@ -182,7 +182,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
-                                        chain_id: process.env.KLAYTN_CHAIN_ID,
+                                        chain_id: getChainId(chainName),
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.MINT,
                                     });
@@ -209,7 +209,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                         nft_id: serial.nft_id._id,
                                         from: fromAddress,
                                         to: toAddress,
-                                        chain_id: process.env.KLAYTN_CHAIN_ID,
+                                        chain_id: getChainId(chainName),
                                         contract_address: contractAddress,
                                         type: consts.LISTENER_TYPE.BURN,
                                     });
