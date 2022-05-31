@@ -1887,7 +1887,7 @@ module.exports = {
                         from: serial.owner_id,
                         to: tx.buyer,
                         chain_id: getChainId(collection.network),
-                        quantity: nft.quantity,
+                        quantity: amount,
                         price: nft.price,
                         quote: nft.quote,
                         block_number: 0,
