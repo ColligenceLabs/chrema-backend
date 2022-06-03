@@ -112,7 +112,7 @@ module.exports = {
             const serial = await serialRepository.findOneSerial(findParams);
 
             return handlerSuccess(req, res, {
-                count: count, tokenId: serial.token_id
+                count: count, tokenId: serial?.token_id
             });
         } catch (error) {
             logger.error(new Error(error));

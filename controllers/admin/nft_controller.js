@@ -1578,7 +1578,7 @@ module.exports = {
             let current_time = new Date();
             let input = {};
             // selling status = 0 vs time > now > time
-            if (nft.selling_status === consts.SELLING_STATUS.SELL) {
+            if (nft.selling_status === consts.SELLING_STATUS.SELL && nft.quantity_selling !== 0) {
                 if (checkTimeCurrent(nft.start_date, current_time, nft.end_date))
                     return handlerError(
                         req,
