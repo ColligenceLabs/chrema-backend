@@ -1,4 +1,4 @@
-var {body, query} = require('express-validator');
+const {body, query, param} = require('express-validator');
 
 module.exports = {
     classname: 'ValidateNft',
@@ -22,6 +22,13 @@ module.exports = {
         return [
             query('address').not().isEmpty().withMessage('Missing address parameter'),
             query('size').not().isEmpty().withMessage('Missing size parameter'),
+        ]
+    },
+
+    mintNFT: () => {
+        return [
+            param('id').not().isEmpty().withMessage('Missing nft id parameter'),
+            query('amount').not().isEmpty().withMessage('Missing amount parameter'),
         ]
     },
 

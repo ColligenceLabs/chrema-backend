@@ -794,10 +794,27 @@ module.exports = {
         }
     },
 
+    mintNft: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+        let nft = await nftRepository.findById(req.params.id);
+        if (!nft) {
+            return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+        }
+        // nft quantity 업데이트 후 serials 에 인서트
+        if (parseInt(req.query.amount) === 0)
+            return handlerError(req, res, ErrorMessage.MINT_AMOUNT_IS_ZERO);
+        nft = await nftRepository.mintNFT(nft, req.query.amount);
+        return handlerSuccess(req, res, nft);
+    },
+
     // Minting NFTs via frontend Metamask
     createNft: async (req, res, next) => {
         try {
-            var errors = validationResult(req);
+            let errors = validationResult(req);
             if (!errors.isEmpty()) {
                 let errorMsg = _errorFormatter(errors.array());
                 return handlerError(req, res, errorMsg);

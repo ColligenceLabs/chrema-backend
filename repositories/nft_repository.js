@@ -227,17 +227,50 @@ module.exports = {
             return error;
         }
     },
+    mintNFT: async function (nft, amount) {
+        try {
+            const newNft = await NftModel.findOneAndUpdate({_id: nft._id}, {$inc: {quantity: amount}}, {returnDocument: 'after'});
+            const serial = await SerialModel.findOne({nft_id: nft._id}).sort({createdAt: 1});
+            console.log(serial);
+            let newSerials = [];
+            for (let i = 0; i < amount; i++) {
+                const newSerial = {
+                    nft_id: nft._id,
+                    type: nft.type,
+                    status: consts.SERIAL_STATUS.INACTIVE
+                };
+                newSerial.index = nft.quantity + i + 1;
+                newSerial.contract_address = serial.contract_address;
+                newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
+                newSerial.price = nft.price;
+                newSerial.quote = nft.quote;
+                newSerial.token_id = serial.token_id;
+                newSerial.ipfs_link = nft.metadata.image;
+                // await SerialModel.create(newSerial);
+                newSerials.push(newSerial);
+                if (i !== 0 && i % 100000 === 0) {
+                    await SerialModel.insertMany(newSerials);
+                    newSerials = [];
+                }
+            }
+            if (newSerials.length > 0) {
+                await SerialModel.insertMany(newSerials);
+            }
+            return newNft;
+        } catch (e) {
+            return error;
+        }
+    },
     createByWallet: async function (newNft, inputSerial, tokenIds, ipfs_links, type) {
         try {
             let nft = await NftModel.create(newNft);
-            console.log(nft);
-            let newSerial = {
-                nft_id: nft._id,
-                ...inputSerial,
-            };
 
             let newSerials = [];
             for (let i = 0; i < nft.quantity; i++) {
+                const newSerial = {
+                    nft_id: nft._id,
+                    ...inputSerial,
+                };
                 newSerial.index = i + 1;
                 newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
                 newSerial.price = nft.price;
