@@ -1044,7 +1044,23 @@ module.exports = {
             }
 
             // let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
-            let nft = await nftRepository.createByWallet(newNft, newSerial, tokenIds, ipfs_links, collection.contract_type);
+            let nft;
+            let ret = {nftIds: [], tokenIds: [], quantities: [], tokenUris: []};
+            if (req.body.batch === '' || req.body.batch === undefined) {
+                nft = await nftRepository.createByWallet(newNft, newSerial, tokenIds[0], ipfs_links, collection.contract_type);
+            } else {
+                const cnt = parseInt(req.body.batch);
+                let tokenId;
+                for (let i = 0; i < cnt; i++) {
+                    tokenId = '0x' + (newTokenId + i).toString(16);
+                    newNft.metadata.tokenId = (newTokenId + i).toString();
+                    nft = await nftRepository.createByWallet(newNft, newSerial, tokenId, ipfs_links, collection.contract_type);
+                    ret.nftIds.push(nft._id);
+                    ret.tokenIds.push(newTokenId + i);
+                    ret.quantities.push(nft.quantity);
+                    ret.tokenUris.push(nft.ipfs_link);
+                }
+            }
 
             if (!nft) {
                 return handlerError(req, res, ErrorMessage.CREATE_NFT_IS_NOT_SUCCESS);
@@ -1058,7 +1074,7 @@ module.exports = {
                 if (collection.contract_type === 'KIP17') {
                     mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 } else if (collection.contract_type === 'KIP37') {
-                    mintResult = await nftBlockchain._mint37(collection.contract_address, to, newTokenId, req.body.quality);
+                    mintResult = await nftBlockchain._mint37(collection.contract_address, to, newTokenId, req.body.quantity);
                 }
                 // update db
                 if (mintResult.status !== 200) {
@@ -1067,7 +1083,7 @@ module.exports = {
                 await nftRepository.update(nft.id, {onchain: "true"})
             }
 
-            return handlerSuccess(req, res, nft);
+            return handlerSuccess(req, res, (req.body.batch === '' || req.body.batch === undefined) ? nft : ret);
         } catch (error) {
             logger.error(new Error(error));
             next(error);
@@ -1460,6 +1476,25 @@ module.exports = {
         }
     },
 
+    async updateNftOnchains(req, res, next) {
+        try {
+            console.log('111', req.body.nftIds);
+            const updateNfts = await nftRepository.updateSchedule(req.body.nftIds, {
+                onchain: req.body.onchain,
+            });
+            console.log('222', updateNfts);
+            if (!updateNfts) {
+                return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateNfts);
+        } catch (error) {
+            console.log('333', error);
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async updateNftOnchain(req, res, next) {
         try {
             if (ObjectID.isValid(req.params.id) === false) {
@@ -1677,7 +1712,20 @@ module.exports = {
             return handlerSuccess(req, res, 'Stop selling successed!');
         } catch (error) {
             logger.error(new Error(error));
-            next(error);
+            return handlerError(req, res, error.message);
+        }
+    },
+
+    async cancelCreateNfts(req, res, next) {
+        try {
+            console.log('111', req.body.nftIds);
+            await nftRepository.cancelCreateNfts(req.body.nftIds);
+            await serialRepository.cancelCreateNfts(req.body.nftIds);
+            return handlerSuccess(req, res, 'cancel create nfts.');
+        } catch (error) {
+            console.log('222', error);
+            logger.error(new Error(error));
+            return handlerError(req, res, error.message);
         }
     },
 

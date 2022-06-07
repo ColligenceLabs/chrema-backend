@@ -261,7 +261,7 @@ module.exports = {
             return error;
         }
     },
-    createByWallet: async function (newNft, inputSerial, tokenIds, ipfs_links, type) {
+    createByWallet: async function (newNft, inputSerial, tokenId, ipfs_links, type) {
         try {
             let nft = await NftModel.create(newNft);
 
@@ -275,8 +275,8 @@ module.exports = {
                 newSerial.transfered = consts.TRANSFERED.NOT_TRANSFER;
                 newSerial.price = nft.price;
                 newSerial.quote = nft.quote;
-                newSerial.token_id = type === 'KIP17' ? tokenIds[i] : tokenIds[0];
-                newSerial.ipfs_link = type === 'KIP17' ? ipfs_links[i] : ipfs_links[0];
+                newSerial.token_id = tokenId;
+                newSerial.ipfs_link = ipfs_links[0];
                 // await SerialModel.create(newSerial);
                 newSerials.push(newSerial);
                 if (i !== 0 && i % 100000 === 0) {
@@ -329,6 +329,16 @@ module.exports = {
     cancelCreateNft: async function (id) {
         try {
             const ret = await NftModel.deleteOne({_id: id, onchain: 'false'});
+            return ret;
+        } catch (error) {
+            return error;
+        }
+
+    },
+
+    cancelCreateNfts: async function (ids) {
+        try {
+            const ret = await NftModel.deleteMany({_id: {$in: ids}, onchain: 'false'});
             return ret;
         } catch (error) {
             return error;

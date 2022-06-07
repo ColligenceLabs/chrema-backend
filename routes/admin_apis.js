@@ -132,6 +132,7 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
 router.get('/nft/mint/:id', isAuth.validateToken, validateNft.mintNFT(), nftController.mintNft);
 router.delete('/nft/cancel-create/:id', isAuth.validateToken, nftController.cancelCreateNft);
+router.put('/nft/cancel-creates', isAuth.validateToken, nftController.cancelCreateNfts);
 router.post('/nft/batchcreate', uploadNFT, isAuth.validateTokenForKAS, nftController.createNftBatchNew);
 router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.createSolanaNft);
 
@@ -160,6 +161,8 @@ router.put('/nft/update-schedule', isAuth.validateToken, nftController.updateSch
 router.put('/nft/stop-selling', isAuth.validateToken, nftController.stopSelling);
 
 router.put('/nft/update-onchain/:id', isAuth.validateToken, nftController.updateNftOnchain);
+
+router.put('/nft/update-onchains', isAuth.validateToken, nftController.updateNftOnchains);
 
 router.put('/nft/update-transfered/:id', isAuth.validateToken, nftController.increaseTransfered);
 
