@@ -20,7 +20,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
     let lastBlock = await lastblockRepository.find(getChainId(chainName), 'event');
     const web3 = getWeb3ByChainName(chainName);
     if (!web3) return;
-    console.log('getLastEvents', lastBlock, toBlock, chainName);
+    console.log(chainName, 'getLastEvents', lastBlock, toBlock);
     try {
         await web3.eth.getPastLogs(
             // {fromBlock: lastBlock, toBlock: toBlock, address: contractAddress},
@@ -244,7 +244,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                     }
                     lastBlock = toBlock + 1;
                     await lastblockRepository.update(getChainId(chainName), 'event', lastBlock);
-                    console.log(chainName + ' event last block update complete.');
+                    console.log(chainName + ' event last block update complete.', lastBlock);
                     return true;
                 }
                 console.log(err);
@@ -264,7 +264,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
         const web3 = getWeb3ByChainName(chainName);
         if (!web3) return;
         const marketContract = getMarketContract(chainName);
-        // console.log('getMarketEvents', lastMarketBlock, toBlock, chainName);
+        console.log(chainName, 'getMarketEvents', lastMarketBlock, toBlock);
         if (marketContract !== null) {
             await marketContract.getPastEvents('allEvents', {fromBlock: lastMarketBlock, toBlock: toBlock})
                 .then(async function(events) {
@@ -410,7 +410,7 @@ exports.getMarketEvents = async function (toBlock, chainName) {
                     }
                     lastMarketBlock = toBlock + 1;
                     await lastblockRepository.update(getChainId(chainName), 'market', lastMarketBlock);
-                    console.log(chainName + ' market last block update complete.');
+                    console.log(chainName + ' market last block update complete.' + lastMarketBlock);
                 }).catch((e) => {
                     console.log('market contract getEvents', e);
                 });

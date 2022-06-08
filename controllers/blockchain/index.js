@@ -88,51 +88,55 @@ async function getChainEvents(chainName, lastBlocks) {
         const useMarket = process.env.USE_MARKET === 'true' ? true : false;
         const web3 = getWeb3ByChainName(chainName);
         if (!web3) return;
-        let toBlock = await web3.eth.getBlockNumber();
+        try {
+            let toBlock = await web3.eth.getBlockNumber();
 
-        if (useMarket && lastBlocks.market[chainName]) {
-            const lastBlockNumber = lastBlocks.market[chainName];
-            // console.log('market', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
-            if (chainName === 'binance' || chainName === 'eth') {
-                if (toBlock <= lastBlockNumber) return;
-            }
-            if (toBlock - lastBlocks.market[chainName] > 1000) {
-                for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
-                    await getMarketEvents(to, chainName);
-                    // console.log(lastBlocks.event[chainName], to);
-                    lastBlocks.market[chainName] = to + 1;
+            if (useMarket && lastBlocks.market[chainName]) {
+                const lastBlockNumber = lastBlocks.market[chainName];
+                // console.log('market', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
+                if (chainName === 'binance' || chainName === 'eth') {
+                    if (toBlock <= lastBlockNumber) return;
                 }
-            }
-            await getMarketEvents(toBlock, chainName);
-            // console.log(lastBlocks.event[chainName], toBlock);
-            lastBlocks.market[chainName] = toBlock + 1;
-        }
-
-        if (lastBlocks.event[chainName]) {
-            const lastBlockNumber = lastBlocks.event[chainName];
-            if (process.env.USE_KAS !== 'true') {
-                let delay = process.env.CRAWLER_DELAY;
-                if (chainName === 'binance')
-                    delay = 7;
-                else if (chainName === 'eth')
-                    delay = 4;
-                toBlock = toBlock - delay;
-            }
-
-            if (chainName === 'binance' || chainName === 'eth') {
-                if (toBlock <= lastBlockNumber) return;
-            }
-            // console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
-            if (toBlock - lastBlockNumber > 1000) {
-                for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
-                    await getLastEvents(to, chainName);
-                    // console.log(lastBlocks.event[chainName], to);
-                    lastBlocks.event[chainName] = to + 1;
+                if (toBlock - lastBlocks.market[chainName] > 1000) {
+                    for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
+                        await getMarketEvents(to, chainName);
+                        // console.log(lastBlocks.event[chainName], to);
+                        lastBlocks.market[chainName] = to + 1;
+                    }
                 }
+                await getMarketEvents(toBlock, chainName);
+                // console.log(lastBlocks.event[chainName], toBlock);
+                lastBlocks.market[chainName] = toBlock + 1;
             }
-            await getLastEvents(toBlock, chainName);
-            // console.log(lastBlocks.event[chainName], toBlock);
-            lastBlocks.event[chainName] = toBlock + 1;
+
+            if (lastBlocks.event[chainName]) {
+                const lastBlockNumber = lastBlocks.event[chainName];
+                if (process.env.USE_KAS !== 'true') {
+                    let delay = process.env.CRAWLER_DELAY;
+                    if (chainName === 'binance')
+                        delay = 7;
+                    else if (chainName === 'eth')
+                        delay = 4;
+                    toBlock = toBlock - delay;
+                }
+
+                if (chainName === 'binance' || chainName === 'eth') {
+                    if (toBlock <= lastBlockNumber) return;
+                }
+                // console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
+                if (toBlock - lastBlockNumber > 1000) {
+                    for (let to = lastBlockNumber + 1000; to <= toBlock; to += 1000) {
+                        await getLastEvents(to, chainName);
+                        // console.log(lastBlocks.event[chainName], to);
+                        lastBlocks.event[chainName] = to + 1;
+                    }
+                }
+                await getLastEvents(toBlock, chainName);
+                // console.log(lastBlocks.event[chainName], toBlock);
+                lastBlocks.event[chainName] = toBlock + 1;
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 }
