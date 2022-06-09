@@ -977,7 +977,9 @@ module.exports = {
             for (let i = 0; i < cnt; i++) {
                 let tId = newTokenId + i;
                 metadata_ipfs.tokenId = tId;
-                metadata_ipfs.name = req.body.name + ' #' + tId;
+                if (collection.contract_type === 'KIP17') {
+                    metadata_ipfs.name = req.body.name + ' #' + tId;
+                }
 
                 let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
                 // remove ipfs links array from metadata
