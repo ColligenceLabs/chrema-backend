@@ -954,7 +954,8 @@ module.exports = {
                 newNft.sort_price = (new BigNumber(newNft.price)).dividedBy(new BigNumber(usd.data[0].basePrice)).toNumber();
             }
 
-            let metadata_ipfs = newNft.metadata;
+            let metadata_ipfs = {...newNft.metadata};
+            delete metadata_ipfs.tokenId;
             if (req.body.category) {
                 // metadata_ipfs.category = req.body.category;
                 // newNft.metadata.category = req.body.category;
