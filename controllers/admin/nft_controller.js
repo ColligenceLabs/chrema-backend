@@ -954,8 +954,8 @@ module.exports = {
                 newNft.sort_price = (new BigNumber(newNft.price)).dividedBy(new BigNumber(usd.data[0].basePrice)).toNumber();
             }
 
-            let metadata_ipfs = {...newNft.metadata};
-            delete metadata_ipfs.tokenId;
+            let metadata_ipfs = newNft.metadata;
+
             if (req.body.category) {
                 // metadata_ipfs.category = req.body.category;
                 // newNft.metadata.category = req.body.category;
@@ -1006,11 +1006,14 @@ module.exports = {
                 newNft.quantity_selling = 0;
             }
 
+            let metadataForIpfs = {...metadata_ipfs};
+            delete metadataForIpfs.tokenId;
+
             // write json file
             if (collection.contract_type === 'KIP17') {
-                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), 1);
+                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadataForIpfs), 1);
             } else {
-                await writeJson(consts.UPLOAD_PATH + `metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) + ".json", JSON.stringify(metadata_ipfs), 1);
+                await writeJson(consts.UPLOAD_PATH + `metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) + ".json", JSON.stringify(metadataForIpfs), 1);
             }
 
             // TODO : What and why ?
