@@ -395,7 +395,7 @@ module.exports = {
 
             let collectionsResp = [];
             for (let i = 0; i < collections.length; i++) {
-                 const nfts = await nftRepository.findAllNftsByCollectionId(collections[i]._id);
+                 const nfts = await nftRepository.findAllOnSaleNftsByCollectionId(collections[i]._id);
                  if (nfts) {
                      const products = convertProductResponse(nfts);
                      const selling = products.filter((prod) => prod.selling === true);

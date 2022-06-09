@@ -149,6 +149,18 @@ module.exports = {
         }
         return nfts;
     },
+    findAllOnSaleNftsByCollectionId: async function (id) {
+        let nfts = await NftModel.find({
+            collection_id: id,
+            onchain: 'true',
+            selling_status: 0,
+            $or: [{quantity_selling: {$gt: 0 }}, {user_quantity_selling: {$gt: 0}}]
+        }).batchSize(10000);
+        if (!nfts) {
+            return null;
+        }
+        return nfts;
+    },
     findAllOnchainNftsByCollectionId: async function (id) {
         let nfts = await NftModel.find({collection_id: id, onchain: 'true'}).sort({createdAt: -1});
         if (!nfts) {
