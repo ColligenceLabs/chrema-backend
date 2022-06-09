@@ -823,6 +823,7 @@ module.exports = {
 
             let tokenIds = [];
             let ipfs_links = [];
+            let newNfts = [];
 
             //check collection
             let collection = await collectionRepository.findById(req.body.collection_id);
@@ -971,69 +972,84 @@ module.exports = {
                 metadata_ipfs.thumbnail = ALT_URL + `${collection.contract_address}/thumbnail/` + result.Hash + '_thumbnail.' + thumbName[thumbName.length -1]
             }
 
-            let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
-            // remove ipfs links array from metadata
-            // let ipfs_link_item = {
-            //     tokenId: decimalTokenIds[i],
-            //     path: IPFS_URL + metadata_ipfs_link.Hash
-            // }
-            // ipfs_links.push(ipfs_link_item);
-            // newNft.ipfs_links = ipfs_links;
-            ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
-            newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
-            if (collection.contract_type === 'KIP17') {
-                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
-            } else {
-                // ERC-1155
-                try {
-                    if (fs.existsSync(`./uploads/nfts/metadata/${collection.directory}`) === false) {
-                        console.log("Create metadata directory...");
-                        await fs.mkdir(`./uploads/nfts/metadata/${collection.directory}`, { recursive: true }, (err) => {
-                            if (err) throw err;
-                        });
+            // >>>>>>>>
+            const cnt = parseInt((req.body.batch !== undefined && req.body.batch !== '') ? req.body.batch : '1');
+            for (let i = 0; i < cnt; i++) {
+                let tId = newTokenId + i;
+                metadata_ipfs.tokenId = tId;
+                metadata_ipfs.name = req.body.name + ' #' + tId;
+
+                let metadata_ipfs_link = await nftRepository.addJsonToIPFS(metadata_ipfs);
+                // remove ipfs links array from metadata
+                // let ipfs_link_item = {
+                //     tokenId: decimalTokenIds[i],
+                //     path: IPFS_URL + metadata_ipfs_link.Hash
+                // }
+                // ipfs_links.push(ipfs_link_item);
+                // newNft.ipfs_links = ipfs_links;
+                ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
+                newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+                if (collection.contract_type === 'KIP17') {
+                    newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
+                } else {
+                    // ERC-1155
+                    try {
+                        if (fs.existsSync(`./uploads/nfts/metadata/${collection.directory}`) === false) {
+                            console.log("Create metadata directory...");
+                            await fs.mkdir(`./uploads/nfts/metadata/${collection.directory}`, {recursive: true}, (err) => {
+                                if (err) throw err;
+                            });
+                        }
+                    } catch (e) {
+                        console.log("Error accessing metadata directory...")
                     }
-                } catch(e) {
-                    console.log("Error accessing metadata directory...")
+
+                    newNft.metadata_link = ALT_URL + `/nfts/metadata/${collection.directory}` + '/0x' + tId.toString(16) + '.json';
                 }
 
-                newNft.metadata_link = ALT_URL + `/nfts/metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) +'.json';
-            }
+                if (
+                    req.body?.status === NFT_STATUS.SUSPEND ||
+                    req.body?.status === NFT_STATUS.INACTIVE
+                ) {
+                    newNft.quantity_selling = 0;
+                }
 
-            if (
-                req.body?.status === NFT_STATUS.SUSPEND ||
-                req.body?.status === NFT_STATUS.INACTIVE
-            ) {
-                newNft.quantity_selling = 0;
-            }
+                let metadataForIpfs = {...metadata_ipfs};
+                delete metadataForIpfs.tokenId;
 
-            let metadataForIpfs = {...metadata_ipfs};
-            delete metadataForIpfs.tokenId;
-
-            // write json file
-            if (collection.contract_type === 'KIP17') {
-                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadataForIpfs), 1);
-            } else {
-                await writeJson(consts.UPLOAD_PATH + `metadata/${collection.directory}` + '/0x' + newTokenId.toString(16) + ".json", JSON.stringify(metadataForIpfs), 1);
-            }
-
-            // TODO : What and why ?
-            if (newNft.start_date && newNft.end_date) {
-                let current_time = new Date();
-
-                let startDate = new Date(convertTimezone(newNft.start_date).setSeconds(0, 0));
-                if (startDate > current_time) {
-                    newNft.start_date = startDate;
+                // write json file
+                if (collection.contract_type === 'KIP17') {
+                    await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadataForIpfs), 1);
                 } else {
-                    return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
+                    await writeJson(consts.UPLOAD_PATH + `metadata/${collection.directory}` + '/0x' + tId.toString(16) + ".json", JSON.stringify(metadataForIpfs), 1);
                 }
 
-                // check end_date
-                let endDate = new Date(convertTimezone(newNft.end_date).setSeconds(0, 0));
-                if (endDate > current_time && endDate > startDate) {
-                    newNft.end_date = endDate;
-                } else {
-                    return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
+                // TODO : What and why ?
+                if (newNft.start_date && newNft.end_date) {
+                    let current_time = new Date();
+
+                    let startDate = new Date(convertTimezone(newNft.start_date).setSeconds(0, 0));
+                    if (startDate > current_time) {
+                        newNft.start_date = startDate;
+                    } else {
+                        return handlerError(req, res, ErrorMessage.START_DATE_IS_INVALID);
+                    }
+
+                    // check end_date
+                    let endDate = new Date(convertTimezone(newNft.end_date).setSeconds(0, 0));
+                    if (endDate > current_time && endDate > startDate) {
+                        newNft.end_date = endDate;
+                    } else {
+                        return handlerError(req, res, ErrorMessage.END_DATE_IS_INVALID);
+                    }
                 }
+
+                if (newNft.type === 1) {
+                    newNft.price = 0;
+                }
+
+                let tempNft = {...newNft};
+                newNfts.push(tempNft);
             }
 
             //serial default
@@ -1043,27 +1059,21 @@ module.exports = {
                 contract_address: collection.contract_address.toLowerCase()
             };
 
-            if (newNft.type === 1) {
-                newNft.price = 0;
-            }
-
             // let nft = await nftRepository.create(newNft, newSerial, tokenIds, ipfs_links);
             let nft;
             let ret = {nftIds: [], tokenIds: [], quantities: [], tokenUris: []};
-            if (req.body.batch === '' || req.body.batch === undefined) {
-                nft = await nftRepository.createByWallet(newNft, newSerial, tokenIds[0], ipfs_links, collection.contract_type);
-            } else {
-                const cnt = parseInt(req.body.batch);
-                let tokenId;
-                for (let i = 0; i < cnt; i++) {
-                    tokenId = '0x' + (newTokenId + i).toString(16);
-                    newNft.metadata.tokenId = (newTokenId + i).toString();
-                    nft = await nftRepository.createByWallet(newNft, newSerial, tokenId, ipfs_links, collection.contract_type);
-                    ret.nftIds.push(nft._id);
-                    ret.tokenIds.push(newTokenId + i);
-                    ret.quantities.push(nft.quantity);
-                    ret.tokenUris.push(nft.ipfs_link);
-                }
+
+            let tokenId;
+            for (let i = 0; i < cnt; i++) {
+                tokenId = '0x' + (newTokenId + i).toString(16);
+                newNfts[i].metadata.tokenId = (newTokenId + i).toString();
+                newNfts[i].metadata.name = req.body.name + ' #' + (newTokenId + i).toString();
+                console.log('--->', newNfts[i], newSerial, tokenId, ipfs_links[i])
+                nft = await nftRepository.createByWallet(newNfts[i], newSerial, tokenId, ipfs_links[i], collection.contract_type);
+                ret.nftIds.push(nft._id);
+                ret.tokenIds.push(newTokenId + i);
+                ret.quantities.push(nft.quantity);
+                ret.tokenUris.push(nft.ipfs_link);
             }
 
             if (!nft) {
