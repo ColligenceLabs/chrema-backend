@@ -94,7 +94,7 @@ module.exports = {
     },
     findRandom: async function (findParams) {
         try {
-            var nfts = await NftModel.find(findParams)
+            var nfts = await NftModel.find(findParams).batchSize(10000)
                 // .limit(4)
                 // .sort({createdAt: -1, start_date: -1, _id: 1})
                 .populate({path: 'collection_id'})
@@ -102,7 +102,8 @@ module.exports = {
             nfts.sort(() => Math.random() - Math.random());
             return nfts.slice(0, 4);
         } catch (error) {
-            return error;
+            console.log(error);
+            return;
         }
     },
     findIdsNftByName: async function (name) {
