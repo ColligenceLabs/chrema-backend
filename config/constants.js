@@ -5,7 +5,7 @@ module.exports = {
         4: '',
         8217: '',
         1001: '0xd5ed88ccC09a43d884618C5E3ee1935ad8a8ca93',
-        56: '',
+        56: '0x81b2Fc99c5EA3C062D7Eb147E5fd9e331aCcC72b',
         97: '0x7dcA6d76dD8f8c72229111C2e8999F6Dd7452d49'
     },
     provider: {
