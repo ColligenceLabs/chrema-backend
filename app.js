@@ -42,6 +42,7 @@ app.use('/bootstrap', express.static(path.join(__dirname, '/node_modules/bootstr
 // initialize language package
 app.use(i18n.init);
 mongoose.connect(process.env.MONGO_HOST, {
+    maxPoolSize: 20,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: false,
