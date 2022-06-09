@@ -1649,10 +1649,16 @@ module.exports = {
                     return handlerError(req, res, {fail: nft});
             } else {
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
+                if (!updateNft) {
+                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                }
                 const result = await serialRepository.update(
                     {nft_id: nft._id, owner_id: {$in: [req.body.seller, null]}}
                     , {owner_id: nft.quote === 'krw' ? req.body.seller : marketAddress, seller: req.body.seller, status: consts.SERIAL_STATUS.SELLING}
                 );
+                if (result.nModified === 0) {
+                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
+                }
                 await nftRepository.updateSellingData(nft._id, result.nModified);
                 if (nft.quote === 'krw') {
                     // history 생성
@@ -1671,10 +1677,6 @@ module.exports = {
                         type: consts.LISTENER_TYPE.SELL,
                     };
                     await listenerRepository.create(history);
-                }
-
-                if (!updateNft) {
-                    return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
             }
 
