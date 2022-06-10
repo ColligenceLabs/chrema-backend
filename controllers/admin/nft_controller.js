@@ -1630,7 +1630,10 @@ module.exports = {
                 } else
                     return handlerError(req, res, {fail: nft});
             } else {
-                console.log(data);
+                const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: req.body.seller});
+                if (!serial) {
+                    return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+                }
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
@@ -1687,6 +1690,11 @@ module.exports = {
                 // TODO : market contract 에 cancelSellToken 호출
 
             } else {
+                const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: account});
+                console.log(serial, account);
+                if (!serial) {
+                    return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+                }
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
                 if (nft.quote === 'krw') {
                     await serialRepository.update({nft_id: nft._id, owner_id: account}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
