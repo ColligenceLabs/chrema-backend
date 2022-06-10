@@ -118,25 +118,13 @@ module.exports = {
             // });
             // get last tokenId in db
             // let lastTokenId = await listenerRepository.findLastTokenId();
-            let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
-            // let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
-            // let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
-            // if (lastTokenId && lastTokenId.length !== 0) {
-            //     if (tokenId < lastTokenId[0].token_id) {
-            //         tokenId = parseInt(lastTokenId[0].token_id);
-            //     }
-            // }
+            const lastNft = await nftRepository.findLastNft(collection._id);
             let tokenId = 0;
-            if (lastTokenId.length > 0) {
-                tokenId = parseInt(lastTokenId[0].token_id);
+            if (lastNft.length > 0) {
+                tokenId = parseInt(lastNft[0].metadata.tokenId);
             }
-            console.log('=======>', lastTokenId, tokenId)
+            console.log('=======>', lastNft, tokenId);
 
-            //check company
-            // let company = await companyRepository.findById(req.body.company_id);
-            // if (!company) {
-            //     return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
-            // }
             let creator = await adminRepository.findById(collection.creator_id);
             if (!creator) {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);

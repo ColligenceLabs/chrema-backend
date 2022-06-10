@@ -464,6 +464,14 @@ module.exports = {
         getResponse = JSON.parse(getResponse);
         return getResponse;
     },
+    findLastNft: async function (collection_id) {
+        try {
+            const nft = await NftModel.find({collection_id: collection_id}).sort({createdAt: -1}).limit(1);
+            return nft;
+        } catch (error) {
+            return error;
+        }
+    },
 
     addJsonToIPFS: async function (metadata) {
         // console.log("start json upload to ipfs...")
