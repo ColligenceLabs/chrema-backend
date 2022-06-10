@@ -351,37 +351,15 @@ module.exports = {
                 await imageMove(consts.UPLOAD_PATH + thumbnailInput, targetDir + 'thumbnail/' + thumbnailOutput);
             }
 
-            // TODO : nftRepository.getItemList() - made by James - 를 알 수가 없음.
-            // //get all nft from blockchain service
-            // let itemList = await nftRepository.getItemList();
-            // //sort with value
-            // itemList.items.sort(function (a, b) {
-            //     return (
-            //         parseInt(b.tokenId.replace('0x', ''), 16) -
-            //         parseInt(a.tokenId.replace('0x', ''), 16)
-            //     );
-            // });
-            // get last tokenId in db
-            // let lastTokenId = await listenerRepository.findLastTokenId();
-            let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
-            // let tokenIdBlockchain = itemList.items.length === 0 ? "1000" : itemList.items[0].tokenId;
-            // let tokenId = parseInt(tokenIdBlockchain.replace('0x', ''), 16);
-            // if (lastTokenId && lastTokenId.length !== 0) {
-            //     if (tokenId < lastTokenId[0].token_id) {
-            //         tokenId = parseInt(lastTokenId[0].token_id);
-            //     }
-            // }
+            // 토큰 중복 문제로 인해 마지막 토큰 ID 구하는 로직 변경. (생성이 실패할 경우 tokenId 가 누락될 수 있다. - 2022.06.10)
+            // let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
+            const lastNft = await nftRepository.findLastNft(collection._id);
             let tokenId = 0;
-            if (lastTokenId.length > 0) {
-                tokenId = parseInt(lastTokenId[0].token_id);
+            if (lastNft.length > 0) {
+                tokenId = parseInt(lastNft[0].metadata.tokenId);
             }
             // console.log('=======>', lastTokenId, tokenId)
 
-            //check company
-            // let company = await companyRepository.findById(req.body.company_id);
-            // if (!company) {
-            //     return handlerError(req, res, ErrorMessage.COMPANY_IS_NOT_FOUND);
-            // }
             let creator = await adminRepository.findById(collection.creator_id);
             if (!creator) {
                 return handlerError(req, res, ErrorMessage.CREATOR_IS_NOT_FOUND);
