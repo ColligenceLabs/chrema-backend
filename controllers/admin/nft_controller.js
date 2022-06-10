@@ -1632,7 +1632,7 @@ module.exports = {
             } else {
                 const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: req.body.seller});
                 if (!serial) {
-                    return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+                    return handlerError(req, res, ErrorMessage.NOT_NFT_OWNER);
                 }
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
                 if (!updateNft) {
@@ -1693,7 +1693,7 @@ module.exports = {
                 const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: account});
                 console.log(serial, account);
                 if (!serial) {
-                    return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+                    return handlerError(req, res, ErrorMessage.NOT_NFT_OWNER);
                 }
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
                 if (nft.quote === 'krw') {
