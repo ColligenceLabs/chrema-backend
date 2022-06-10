@@ -1630,6 +1630,7 @@ module.exports = {
                 } else
                     return handlerError(req, res, {fail: nft});
             } else {
+                console.log(data);
                 const updateNft = await nftRepository.updateSchedule([nft._id], data);
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
@@ -1687,7 +1688,27 @@ module.exports = {
 
             } else {
                 const updateNft = await nftRepository.updateOneSchedule(nft._id, data);
-                await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
+                if (nft.quote === 'krw') {
+                    await serialRepository.update({nft_id: nft._id, owner_id: account}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
+                    const history = {
+                        token_id: nft.metadata.tokenId,
+                        tx_id: '',
+                        contract_address: nft.collection_id.contract_address,
+                        nft_id: nft._id,
+                        from: req.body.seller,
+                        chain_id: getChainId(nft.collection_id.network),
+                        quantity: nft.quantity,
+                        price: nft.price,
+                        quote: nft.quote,
+                        block_number: 0,
+                        block_date: new Date(),
+                        type: consts.LISTENER_TYPE.CANCEL,
+                    };
+                    await listenerRepository.create(history);
+                } else {
+                    await serialRepository.update({nft_id: nft._id, owner_id: marketAddress}, {owner_id: account, seller: null, status: consts.SERIAL_STATUS.ACTIVE});
+                }
+
                 if (!updateNft) {
                     return handlerError(req, res, ErrorMessage.UPDATE_NFT_IS_NOT_SUCCESS);
                 }
