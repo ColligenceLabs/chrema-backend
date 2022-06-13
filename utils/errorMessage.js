@@ -61,6 +61,8 @@ exports.ErrorMessage = {
     SELLING_STATUS_DOES_NOT_MATCH_WITH_CONDITION: 'Selling status does not match with condition!',
     NFT_IS_NOT_ACTIVE: 'Nft is not active!',
     FAIL_TO_GET_LAST_TOKENID: 'Fail to get last tokenId',
+    NOT_ON_CHAIN: 'NFT is not on the chain',
+    FAIL_TO_GET_TOKEN: 'Fail to get token info from the chain',
     //serial error
     CREATE_SERIAL_IS_NOT_SUCCESS: 'Create serial is not success!',
     SERIAL_IS_NOT_FOUND: 'Serial is not found!',
@@ -101,5 +103,8 @@ exports.ErrorMessage = {
 
     //market
     USER_NFT_SELL_FAIL: 'nft sell registor fail',
-    ALREADY_BUYING: 'Already in the process of purchasing nft'
+    ALREADY_BUYING: 'Already in the process of purchasing nft',
+
+    //common
+    PARAMETERS_INVALID: 'Parameters are invalid'
 };

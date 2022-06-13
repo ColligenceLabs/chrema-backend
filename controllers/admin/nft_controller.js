@@ -308,12 +308,40 @@ module.exports = {
             let tokenId = 0;
             if (lastNft.length > 0) {
                 tokenId = parseInt(lastNft[0].metadata.tokenId);
-                return tokenId;
+                return handlerSuccess(req, res, {tokenId});
+            } else {
+                return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
             }
         } catch (error) {
             logger.error(new Error(error));
             // next(error);
             return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
+        }
+    },
+
+    getTokenFromChain: async (req, res, next) => {
+        const contract = req.body.contract_address;
+        const tokenId = req.body.tokenId;
+
+        if (contract == '' || contract == undefined || contract == null) {
+            return handlerError(req, res, ErrorMessage.PARAMETERS_INVALID);
+        }
+        if (tokenId == '' || tokenId == undefined || tokenId == null) {
+            return handlerError(req, res, ErrorMessage.PARAMETERS_INVALID);
+        }
+
+        try {
+            let token = await nftBlockchain._getToken(contract, tokenId);
+            console.log('===>', token)
+            if (token) {
+                return handlerSuccess(req, res, {token});
+            } else {
+                return handlerError(req, res, ErrorMessage.NOT_ON_CHAIN);
+            }
+        } catch (error) {
+            logger.error(new Error(error));
+            // next(error);
+            return handlerError(req, res, ErrorMessage.FAIL_TO_GET_TOKEN);
         }
     },
 

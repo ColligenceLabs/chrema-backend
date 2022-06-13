@@ -424,5 +424,16 @@ module.exports = {
             }
         }
         return axios(config);
-    }
+    },
+    _getToken: async (contract, tokenId) => {
+        try {
+            const token = await caver.kas.kip17.getToken(contract, tokenId);
+
+            return {status: 200, result: token};
+        } catch (error) {
+            console.log(error);
+            logger.error(new Error(error));
+            return {status: 500, error: error};
+        }
+    },
 };
