@@ -60,6 +60,7 @@ exports.ErrorMessage = {
     END_DATE_IS_INVALID: 'End date is invalid!',
     SELLING_STATUS_DOES_NOT_MATCH_WITH_CONDITION: 'Selling status does not match with condition!',
     NFT_IS_NOT_ACTIVE: 'Nft is not active!',
+    FAIL_TO_GET_LAST_TOKENID: 'Fail to get last tokenId',
     //serial error
     CREATE_SERIAL_IS_NOT_SUCCESS: 'Create serial is not success!',
     SERIAL_IS_NOT_FOUND: 'Serial is not found!',

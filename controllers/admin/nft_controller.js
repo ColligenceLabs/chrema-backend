@@ -298,6 +298,25 @@ module.exports = {
         }
     },
 
+    getLastNftID: async (req, res, next) => {
+        if (ObjectID.isValid(req.params.id) === false) {
+            return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+        }
+
+        try {
+            const lastNft = await nftRepository.findLastNft(req.params.id);
+            let tokenId = 0;
+            if (lastNft.length > 0) {
+                tokenId = parseInt(lastNft[0].metadata.tokenId);
+                return tokenId;
+            }
+        } catch (error) {
+            logger.error(new Error(error));
+            // next(error);
+            return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
+        }
+    },
+
     // Minting NFTs via KAS API
     // Caution : Use same ipfs metadata hash link
     createNftBatchNew: async (req, res, next) => {
@@ -353,10 +372,17 @@ module.exports = {
 
             // 토큰 중복 문제로 인해 마지막 토큰 ID 구하는 로직 변경. (생성이 실패할 경우 tokenId 가 누락될 수 있다. - 2022.06.10)
             // let lastTokenId = await listenerRepository.findLastTokenOfAddress(collection.contract_address);
-            const lastNft = await nftRepository.findLastNft(collection._id);
             let tokenId = 0;
-            if (lastNft.length > 0) {
-                tokenId = parseInt(lastNft[0].metadata.tokenId);
+
+            if (req.body.tokenId) {
+                tokenId = parseInt(req.body.tokenId);
+            } else {
+                let lastNft;
+                lastNft = await nftRepository.findLastNft(collection._id);
+
+                if (lastNft.length > 0) {
+                    tokenId = parseInt(lastNft[0].metadata.tokenId);
+                }
             }
             // console.log('=======>', lastTokenId, tokenId)
 
@@ -525,14 +551,15 @@ module.exports = {
                 // let mintResult = await nftBlockchain._mint(to, newTokenId, tokenUri);
                 let mintResult = await nftBlockchain._mint17(collection.contract_address, to, newTokenId, tokenUri);
                 console.log('---- mint result ------->', mintResult)
-                if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
-                    // return handlerError(req, res, {error: mintResult.error});
-                    console.log('====>', mintResult.error);
-                    sleep.sleep(3);
-                    i = i - 1;
-                    continue;
-                } else if (mintResult.status !== 200) {
-                    const errMsg = mintResult.error._message + ' : ' +  newTokenId;
+                // if (mintResult.status !== 200 && mintResult.error._code !== 1104400) {
+                //     // return handlerError(req, res, {error: mintResult.error});
+                //     console.log('====>', mintResult.error);
+                //     sleep.sleep(3);
+                //     i = i - 1;
+                //     continue;
+                // } else
+                if (mintResult.status !== 200) {
+                    const errMsg = 'KAS Error : ' + mintResult.error._message + ' : ' +  newTokenId;
                     return handlerError(req, res, errMsg);
                 } else if (mintResult.status === 200) {
                     txHashs.push(mintResult.result.transactionHash);
