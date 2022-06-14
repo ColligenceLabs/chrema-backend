@@ -459,7 +459,12 @@ module.exports = {
             let metadata_ipfs_link;
 
             for (let i = 0; i < quantity; i++) {
-                let newTokenId = tokenId + 1 + i;
+                let newTokenId;
+                if (req.body.tokenId) {
+                    newTokenId = tokenId + i;
+                } else {
+                    newTokenId = tokenId + 1 + i;
+                }
                 tokenIds.push('0x' + newTokenId.toString(16));
                 decimalTokenIds.push(newTokenId.toString());
             }
