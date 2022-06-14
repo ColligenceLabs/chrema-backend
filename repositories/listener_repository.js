@@ -58,4 +58,15 @@ module.exports = {
             return error;
         }
     },
+    findByNftTokenId: async function (nftId, tokenId) {
+        try {
+            const where = {nft_id: nftId, token_id: tokenId};
+
+            let listener = await ListenerModel
+                .findOne(where, {timeout: false});
+            return listener;
+        } catch (error) {
+            return error;
+        }
+    },
 };
