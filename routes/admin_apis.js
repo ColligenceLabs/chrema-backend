@@ -138,6 +138,7 @@ router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.
 
 router.get('/nft/lasttokenid/:id', isAuth.validateToken, nftController.getLastNftID);
 router.get('/nft/tokeninfo', isAuth.validateToken, nftController.getTokenFromChain);
+router.get('/nft/tokendetail', isAuth.validateToken, nftController.getTokenFromDB);
 
 router.post('/nft/transfer', isAuth.validateTokenForKAS, nftController.kasTransferNft);
 

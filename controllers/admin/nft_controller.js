@@ -345,6 +345,32 @@ module.exports = {
         }
     },
 
+    async getTokenFromDB(req, res, next) {
+        const id = req.body.collection_id;
+        const tokenId = req.body.tokenId;
+
+        try {
+            if (ObjectID.isValid(id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+
+            let collection = await collectionRepository.findById(id);
+            if (!collection) {
+                return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+            }
+
+            const nft = await nftRepository.findNftByFilter({collection_id: id, 'metadata.tokenId': tokenId});
+            if (!nft) {
+                return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
+            }
+
+            return handlerSuccess(req, res, nft);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     // Minting NFTs via KAS API
     // Caution : Use same ipfs metadata hash link
     createNftBatchNew: async (req, res, next) => {

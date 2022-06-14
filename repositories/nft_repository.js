@@ -552,4 +552,15 @@ module.exports = {
         }
         return nfts;
     },
+
+    findNftByFilter: async function (where) {
+        let nft = await NftModel.findOne(where)
+            .populate({path: 'creator_id'})
+            .populate({path: 'collection_id'});
+
+        if (!nft) {
+            return null;
+        }
+        return nft;
+    },
 };
