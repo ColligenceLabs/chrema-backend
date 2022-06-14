@@ -364,7 +364,17 @@ module.exports = {
                 return handlerError(req, res, ErrorMessage.NFT_IS_NOT_FOUND);
             }
 
-            return handlerSuccess(req, res, nft);
+            const txHashs = [];
+            if (nft.onchain === 'true') {
+
+                let event = await listenerRepository.findByNftTokenId(nft._id, tokenId);
+                if (!event) {
+                    return handlerError(req, res, ErrorMessage.TX_IS_NOT_FOUND);
+                }
+                txHashs.push(event.tx_id);
+            }
+
+            return handlerSuccess(req, res, {...nft._doc, txHashs});
         } catch (error) {
             logger.error(new Error(error));
             next(error);
