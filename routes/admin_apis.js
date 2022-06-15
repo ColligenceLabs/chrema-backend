@@ -272,4 +272,7 @@ router.get('/statistics/chart', isAuth.validateToken, statisticsController.getCh
 
 router.get('/statistics/summarypie', isAuth.validateToken, statisticsController.getSummaryPie);
 
+// Home API
+router.get('/home/indexs', collectionController.indexCollections);
+
 module.exports = router;
