@@ -887,9 +887,9 @@ module.exports = {
 
         const burnResult = await nftBlockchain._burn17(collection.contract_address, req.body.owner, req.body.tokenId);
         if (burnResult.status !== 200) {
-            return handlerError(req, res, {burn: burnResult.error});
+            return handlerError(req, res, burnResult.error._message);
         } else {
-            return handlerSuccess(req, res, {burn: burnResult.result});
+            return handlerSuccess(req, res, burnResult.result);
         }
     },
 
