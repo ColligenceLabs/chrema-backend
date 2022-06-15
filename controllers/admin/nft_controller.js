@@ -873,6 +873,26 @@ module.exports = {
         return handlerSuccess(req, res, nft);
     },
 
+    burnNft17: async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            let errorMsg = _errorFormatter(errors.array());
+            return handlerError(req, res, errorMsg);
+        }
+
+        let collection = await collectionRepository.findById(req.body.collection_id);
+        if (!collection) {
+            return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
+        }
+
+        const burnResult = await nftBlockchain._burn17(collection.contract_address, req.body.owner, req.body.tokenId);
+        if (burnResult.status !== 200) {
+            return handlerError(req, res, {burn: burnResult.error});
+        } else {
+            return handlerSuccess(req, res, {burn: burnResult.result});
+        }
+    },
+
     // Minting NFTs via frontend Metamask
     createNft: async (req, res, next) => {
         try {

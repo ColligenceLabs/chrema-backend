@@ -131,6 +131,9 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 // router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
 router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
 router.get('/nft/mint/:id', isAuth.validateToken, validateNft.mintNFT(), nftController.mintNft);
+
+router.post('/nft/burn', isAuth.validateToken, nftController.burnNft17);
+
 router.delete('/nft/cancel-create/:id', isAuth.validateToken, nftController.cancelCreateNft);
 router.put('/nft/cancel-creates', isAuth.validateToken, nftController.cancelCreateNfts);
 router.post('/nft/batchcreate', uploadNFT, isAuth.validateTokenForKAS, nftController.createNftBatchNew);
