@@ -655,8 +655,9 @@ module.exports = {
             const name = req.body.name;
             const symbol = req.body.symbol;
             const alias = req.body.alias;
+            const owner = process.env.CONTRACT_OWNER;
 
-            let contract = await nftBlockchain._deploy17(name, symbol, alias);
+            let contract = await nftBlockchain._deploy17(name, symbol, alias, owner);
 
             return handlerSuccess(req, res, contract);
         } catch (error) {

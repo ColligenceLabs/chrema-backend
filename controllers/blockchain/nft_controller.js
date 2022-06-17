@@ -22,6 +22,8 @@ const contractAddress = process.env.NFT_CONTRACT_ADDR;
 // }
 
 const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
+if (process.env.USE_KASAPI_V2 === 'true')
+    caver.initKIP17API(chainId, accessKeyId, secretAccessKey, undefined, 'v2');
 
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {getMarketAddress} = require('../../utils/getMarketAddress');
@@ -70,13 +72,22 @@ module.exports = {
         }
     },
 
-    _deploy17: async (name, symbol, alias) => {
+    _deploy17: async (name, symbol, alias, owner) => {
         try {
-            let result = await caver.kas.kip17.deploy(
-                name,
-                symbol,
-                alias
-            );
+            if (process.env.USE_KASAPI_V2 === 'true') {
+                await caver.kas.kip17.deploy(
+                    name,
+                    symbol,
+                    alias,
+                    owner
+                );
+            } else {
+                await caver.kas.kip17.deploy(
+                    name,
+                    symbol,
+                    alias
+                );
+            }
 
             let newContract = '';
             do {
