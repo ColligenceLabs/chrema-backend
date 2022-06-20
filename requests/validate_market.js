@@ -47,4 +47,14 @@ module.exports = {
             param('id').not().isEmpty().withMessage('Missing nft id parameter')
         ]
     },
+    offerNft: () => {
+        return [
+            body('bidder').not().isEmpty().withMessage('Missing bidder parameter'),
+            body('quantity').not().isEmpty().withMessage('Missing quantity parameter'),
+            body('price').not().isEmpty().withMessage('Missing price parameter'),
+            body('collectionId').not().isEmpty().withMessage('Missing collectionId parameter'),
+            body('nftId').not().isEmpty().withMessage('Missing nftId parameter'),
+            body('tokenId').not().isEmpty().withMessage('Missing tokenId parameter'),
+        ];
+    },
 };

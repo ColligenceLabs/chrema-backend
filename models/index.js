@@ -19,4 +19,5 @@ module.exports = {
     WalletModel: require('./wallet_model'),
     ProfileModel: require('./profile_model'),
     LastblockModel: require('./lastblock_model'),
+    OfferModel: require('./offer_model'),
 };

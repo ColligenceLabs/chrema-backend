@@ -102,6 +102,7 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 router.get('/market/indexs', marketController.indexCollections);
 router.get('/market/indexsR', marketController.indexCollectionsR);
 router.post('/market/sellNft', isAuth.validateMarketToken, validateMarket.sellUserNft(), marketController.sellUserNft);
+router.post('/market/offerNft', isAuth.validateMarketToken, validateMarket.offerNft(), marketController.offerNft);
 router.get('/market/saleList/:nftId', validateMarket.saleList(), marketController.saleList);
 router.get('/market/select-user-serials', validateMarket.selectUserSerials(), marketController.selectUserSerials);
 router.get('/market/cancel-buy-usernft', validateMarket.cancelBuy(), marketController.cancelBuy);

@@ -15,6 +15,7 @@ const consts = require('../../utils/consts');
 const moment = require('moment');
 const fs = require('fs');
 const {getMarketAddress} = require('../../utils/getMarketAddress');
+const offerRepository = require('../../repositories/offer_repository');
 var ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
@@ -223,6 +224,45 @@ module.exports = {
             logger.error(new Error(e));
             console.log(e);
             return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
+        }
+    },
+    async offerNft(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                let errorMsg = _errorFormatter(errors.array());
+                return handlerError(req, res, errorMsg);
+            }
+            const {
+                bidder,
+                quantity,
+                price,
+                quote,
+                collectionId,
+                nftId,
+                tokenId
+            } = req.body
+            // sale collection 에 row 생성
+            const newOffer = {
+                bidder,
+                quantity,
+                price,
+                quote,
+                collection_id : collectionId,
+                nft_id: nftId,
+                token_id: tokenId,
+            }
+            const offer = await offerRepository.createOffer(newOffer);
+            // serials 판매상태로 변경
+            if (!offer) {
+                return handlerError(req, res, ErrorMessage.USER_NFT_OFFER_FAIL);
+            }
+
+            return handlerSuccess(req, res, offer);
+        } catch (e) {
+            logger.error(new Error(e));
+            console.log(e);
+            return handlerError(req, res, ErrorMessage.USER_NFT_OFFER_FAIL);
         }
     },
     async getAvailableNfts(req, res, next) {

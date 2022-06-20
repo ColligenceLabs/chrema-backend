@@ -102,8 +102,10 @@ exports.ErrorMessage = {
     LINE_NOT_FOUND: 'Line is not found!',
 
     //market
-    USER_NFT_SELL_FAIL: 'nft sell registor fail',
+    USER_NFT_SELL_FAIL: 'nft sell register fail',
     ALREADY_BUYING: 'Already in the process of purchasing nft',
+
+    USER_NFT_OFFER_FAIL: 'nft offer register fail',
 
     //common
     PARAMETERS_INVALID: 'Parameters are invalid'
