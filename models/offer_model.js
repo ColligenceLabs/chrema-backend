@@ -27,10 +27,10 @@ const OfferSchema = new Schema(
             required: false,
             default: 'talk'
         },
-        sold: {
-            type: Number,
+        picked: {
+            type: Boolean,
             required: false,
-            default: 0
+            default: false
         },
         collection_id: {
             type: Schema.Types.ObjectId,
@@ -45,6 +45,10 @@ const OfferSchema = new Schema(
         token_id: {
             type: String,
             default: '000000000',
+        },
+        expiration: {
+            type: Date,
+            default: null,
         },
         createdAt: {
             type: Date,
