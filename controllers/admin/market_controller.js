@@ -240,7 +240,8 @@ module.exports = {
                 quote,
                 collectionId,
                 nftId,
-                tokenId
+                tokenId,
+                expiration
             } = req.body
             // sale collection 에 row 생성
             const newOffer = {
@@ -251,6 +252,7 @@ module.exports = {
                 collection_id : collectionId,
                 nft_id: nftId,
                 token_id: tokenId,
+                expiration
             }
             const offer = await offerRepository.createOffer(newOffer);
             // serials 판매상태로 변경
