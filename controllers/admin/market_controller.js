@@ -226,7 +226,7 @@ module.exports = {
             return handlerError(req, res, ErrorMessage.USER_NFT_SELL_FAIL);
         }
     },
-    async offerNft(req, res, next) {
+    async offerUserNft(req, res, next) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
