@@ -310,7 +310,8 @@ module.exports = {
                 tokenId = parseInt(lastNft[0].metadata.tokenId);
                 return handlerSuccess(req, res, {tokenId});
             } else {
-                return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
+                return handlerSuccess(req, res, {tokenId});
+                // return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
             }
         } catch (error) {
             logger.error(new Error(error));
@@ -729,7 +730,13 @@ module.exports = {
             let newNfts = [];
             let newSerials = [];
             let ipfs_links = [];
-            let metadata_ipfs_link;
+            let metadata_ipfs_link = req.body.ipfsLink;     // New
+
+            const data1 = req.body.imageUrl;
+            const imageHash = data1[data1.length() - 1];
+            const data2 = metadata_ipfs_link.split('/');
+            const ipfsHash = data2[data2.length() - 1];
+
 
             for (let i = 0; i < quantity; i++) {
                 let newTokenId;
@@ -764,7 +771,7 @@ module.exports = {
                         // content_Type: imgName[imgName.length -1],
                         content_Type: "png",        // New
                         // cid: result.Hash,
-                        cid: req.body.Hash,         // New
+                        cid: imageHash,         // New
                         tokenId: decimalTokenIds[i],
                         total_minted: "",
                         external_url: req.body.external_url,
@@ -814,11 +821,12 @@ module.exports = {
                 // }
                 metadata_ipfs.thumbnail = req.body.thumbnail;       // New
                 // let metadata_ipfs_link;
-                if (i === 0) {
-                    const ipfsMetadata = _.omit(metadata_ipfs, 'tokenId');
-                    metadata_ipfs_link = await nftRepository.addJsonToIPFS(ipfsMetadata);
-                    console.log('--->', metadata_ipfs_link)
-                }
+                // if (i === 0) {
+                //     const ipfsMetadata = _.omit(metadata_ipfs, 'tokenId');
+                //     metadata_ipfs_link = await nftRepository.addJsonToIPFS(ipfsMetadata);
+                //     console.log('--->', metadata_ipfs_link)
+                // }
+
                 // remove ipfs links array from metadata
                 // let ipfs_link_item = {
                 //     tokenId: decimalTokenIds[i],
@@ -826,9 +834,12 @@ module.exports = {
                 // }
                 // ipfs_links.push(ipfs_link_item);
                 // newNft.ipfs_links = ipfs_links;
-                ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
-                newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
-                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
+                // ipfs_links.push(IPFS_URL + metadata_ipfs_link.Hash)
+                // newNft.ipfs_link = IPFS_URL + metadata_ipfs_link.Hash;
+                // newNft.metadata_link = ALT_URL + '/nfts/metadata/' + metadata_ipfs_link.Hash + '.json';
+                ipfs_links.push(IPFS_URL + ipfsHash)
+                newNft.ipfs_link = IPFS_URL + ipfsHash;
+                newNft.metadata_link = ALT_URL + '/nfts/metadata/' + ipfsHash + '.json';
                 if (
                     req.body?.status === NFT_STATUS.SUSPEND ||
                     req.body?.status === NFT_STATUS.INACTIVE
@@ -837,7 +848,7 @@ module.exports = {
                 }
 
                 // write json file
-                await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), i+1);
+                // await writeJson(consts.UPLOAD_PATH + "metadata/" + metadata_ipfs_link.Hash + ".json", JSON.stringify(metadata_ipfs), i+1);
                 if (newNft.start_date && newNft.end_date) {
                     let current_time = new Date();
 
