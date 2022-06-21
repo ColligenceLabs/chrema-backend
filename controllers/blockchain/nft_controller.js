@@ -103,6 +103,11 @@ module.exports = {
                 })
                 await sleep(3000);
             } while(newContract === '')
+
+            // change owner
+            if (process.env.USE_KASAPI_V2 === 'true') {
+                await caver.kas.kip17.transferOwnership(newContract, owner);
+            }
             return {status: 200, address: newContract};
         } catch (error) {
             logger.error(new Error(error));
