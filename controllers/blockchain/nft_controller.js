@@ -436,16 +436,14 @@ module.exports = {
             for (let i = 0; i < totalSupply; i++) {
                 try {
                     let tokenId = await nftContract.methods.tokenByIndex(i).call();
-                    // console.log('1111', tokenId);
                     let tokenUri = await nftContract.methods.tokenURI(tokenId).call();
-                    // console.log('2222', tokenUri);
                     let owner = await nftContract.methods.ownerOf(tokenId).call();
-                    // console.log('3333', owner);
+                    console.log(i, tokenId, tokenUri, owner);
                     tokenId = '0x' + parseInt(tokenId).toString(16);
                     tokens.push({tokenId, tokenUri, owner});
                     // tokenURI = tokenURI.replace('https://ipfs.io', 'https://infura-ipfs.io');
                     // const tokenInfo = await module.exports._getTokenInfo(tokenURI);
-                    console.log(i, tokenUri, tokenInfo.data, tokenOwner);
+                    // console.log(i, tokenUri, tokenInfo.data, tokenOwner);
                 } catch (e) {
                     console.log(e);
                 }

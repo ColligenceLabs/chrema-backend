@@ -209,10 +209,15 @@ module.exports = {
                 for (let i = 0; i < result.length; i++) {
                     if (beforeUri !== result[i].tokenUri) {
                         beforeUri = result[i].tokenUri;
+                        if (beforeUri.startsWith('ipfs://')) {
+                            beforeUri = beforeUri.replace('ipfs://', 'https://infura-ipfs.io/ipfs/');
+                        }
                         tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://infura-ipfs.io'));
-                        // console.log(i, tokenMeta.data);
                         // nft 생성
                         // const newNFT = getNewNFT(tokenMeta, new ObjectID(collection._id), req.body.creator_id);
+                        if (tokenMeta.data.image.startsWith('ipfs://'))
+                            tokenMeta.data.image = tokenMeta.data.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                        console.log(i, tokenMeta.data);
                         const newNFT = getNewNFT(tokenMeta.data, collection._id, req.body.creator_id, collection.category);
                         console.log(newNFT);
                         nft = await nftRepository.createWithoutSerial(newNFT);
