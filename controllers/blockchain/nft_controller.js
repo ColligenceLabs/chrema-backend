@@ -22,8 +22,10 @@ const contractAddress = process.env.NFT_CONTRACT_ADDR;
 // }
 
 const caver = new CaverExtKAS(chainId, accessKeyId, secretAccessKey);
-if (process.env.USE_KASAPI_V2 === 'true')
+if (process.env.USE_KASAPI_V2 === 'true') {
     caver.initKIP17API(chainId, accessKeyId, secretAccessKey, undefined, 2);
+    caver.initKIP37API(chainId, accessKeyId, secretAccessKey, undefined, 2);
+}
 
 var {handlerSuccess, handlerError} = require('../../utils/handler_response');
 const {getMarketAddress} = require('../../utils/getMarketAddress');
