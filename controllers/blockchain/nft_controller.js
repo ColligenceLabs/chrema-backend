@@ -445,7 +445,7 @@ module.exports = {
                     tokens.push({tokenId, tokenUri, owner});
                     // tokenURI = tokenURI.replace('https://ipfs.io', 'https://infura-ipfs.io');
                     // const tokenInfo = await module.exports._getTokenInfo(tokenURI);
-                    console.log(i, tokenURI, tokenInfo.data, tokenOwner);
+                    console.log(i, tokenUri, tokenInfo.data, tokenOwner);
                 } catch (e) {
                     console.log(e);
                 }
