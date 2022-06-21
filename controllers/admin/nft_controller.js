@@ -1432,8 +1432,8 @@ module.exports = {
                 tokenId = '0x' + (newTokenId + i).toString(16);
                 newNfts[i].metadata.tokenId = (newTokenId + i).toString();
                 newNfts[i].metadata.name = req.body.name + ' #' + (newTokenId + i).toString();
-                console.log('--->', newNfts[i], newSerial, tokenId, ipfs_links[i])
-                nft = await nftRepository.createByWallet(newNfts[i], newSerial, tokenId, ipfs_links[i], collection.contract_type);
+                console.log('--->', newNfts[i], newSerial, tokenId, ipfs_links[i], collection.creator_id.admin_address);
+                nft = await nftRepository.createByWallet(newNfts[i], newSerial, tokenId, ipfs_links[i], collection.creator_id.admin_address, collection.contract_type);
                 ret.nftIds.push(nft._id);
                 ret.tokenIds.push(newTokenId + i);
                 ret.quantities.push(nft.quantity);

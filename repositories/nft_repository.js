@@ -274,7 +274,7 @@ module.exports = {
             return error;
         }
     },
-    createByWallet: async function (newNft, inputSerial, tokenId, ipfs_link, type) {
+    createByWallet: async function (newNft, inputSerial, tokenId, ipfs_link, owner, type) {
         try {
             let nft = await NftModel.create(newNft);
 
@@ -290,6 +290,7 @@ module.exports = {
                 newSerial.quote = nft.quote;
                 newSerial.token_id = tokenId;
                 newSerial.ipfs_link = ipfs_link;
+                newSerial.owner_id = owner;
                 // await SerialModel.create(newSerial);
                 newSerials.push(newSerial);
                 if (i !== 0 && i % 100000 === 0) {

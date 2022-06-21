@@ -71,7 +71,7 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                             {
                                                 contract_address: contractAddress,
                                                 token_id: tokenIdHex,
-                                                owner: null,
+                                                // owner: null,
                                                 status: consts.SERIAL_STATUS.INACTIVE,
                                             },
                                             {$set: {status: consts.SERIAL_STATUS.ACTIVE}},

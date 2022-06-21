@@ -6,7 +6,7 @@ module.exports = {
     findById: async function (id) {
         let collection = await CollectionModel.findOne({_id: id}).populate({
             path: 'creator_id',
-            select: ['full_name', 'image'],
+            select: ['full_name', 'image', 'admin_address'],
         });
         if (!collection) {
             return null;
