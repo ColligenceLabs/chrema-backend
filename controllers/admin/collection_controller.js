@@ -188,9 +188,8 @@ module.exports = {
                     result = await _getAllTokens(contractAddress);
                 } catch (e) {
                     console.log(e);
-                    result = e;
                 }
-                if (result._code === 1100101) {
+                if (!result) {
                     console.log('kaikas 로 조회 안됨.');
                     try {
                         result = await _getAllTokensWeb3(contractAddress);
