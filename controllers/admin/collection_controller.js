@@ -259,7 +259,7 @@ module.exports = {
             const count = await collectionRepository.count(findParams);
             const responseHeaders = getHeaders(count, page, perPage);
 
-            const collections = await collectionRepository.findAll(findParams, {page, perPage});
+            const collections = await collectionRepository.findAllReverse(findParams, {page, perPage});
             if (!collections) {
                 return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
             }
