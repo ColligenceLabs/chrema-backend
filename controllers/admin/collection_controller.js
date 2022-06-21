@@ -185,14 +185,14 @@ module.exports = {
                 // 3. 조회된 nft 정보로 nft 생성하고 serials를 total supply 만큼 생성한다.
                 let result;
                 try {
-                    result = await _getAllTokens(contractAddress);
+                    result = await _getAllTokens(contractAddress, req.body.contract_type);
                 } catch (e) {
                     console.log(e);
                 }
                 if (!result) {
-                    console.log('kaikas 로 조회 안됨.');
+                    console.log('kaikas 로 조회 안됨.', req.body);
                     try {
-                        result = await _getAllTokensWeb3(contractAddress);
+                        result = await _getAllTokensWeb3(contractAddress, 'klaytn', req.body.contract_type);
                     } catch (e) {
                         console.log(e);
                         return handlerError(req, res, ErrorMessage.COLLECTION_IS_NOT_FOUND);
