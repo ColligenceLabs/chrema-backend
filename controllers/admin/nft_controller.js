@@ -310,7 +310,8 @@ module.exports = {
                 tokenId = parseInt(lastNft[0].metadata.tokenId);
                 return handlerSuccess(req, res, {tokenId});
             } else {
-                return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
+                return handlerSuccess(req, res, {tokenId});
+                // return handlerError(req, res, ErrorMessage.FAIL_TO_GET_LAST_TOKENID);
             }
         } catch (error) {
             logger.error(new Error(error));
