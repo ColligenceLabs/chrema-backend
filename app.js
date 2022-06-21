@@ -24,7 +24,7 @@ var app = express();
 
 // enabling cors
 app.use(cors({
-        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://nft.taal.fi'],
+        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://nft.taal.fi', 'https://nftdev.taal.fi'],
         credentials: true
 }));
 
