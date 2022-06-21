@@ -732,10 +732,10 @@ module.exports = {
             let ipfs_links = [];
             let metadata_ipfs_link = req.body.ipfsLink;     // New
 
-            const data1 = req.body.imageUrl;
-            const imageHash = data1[data1.length() - 1];
+            const data1 = req.body.imageUrl.split('/');
+            const imageHash = data1[data1.length - 1];
             const data2 = metadata_ipfs_link.split('/');
-            const ipfsHash = data2[data2.length() - 1];
+            const ipfsHash = data2[data2.length - 1];
 
 
             for (let i = 0; i < quantity; i++) {
