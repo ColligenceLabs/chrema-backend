@@ -102,7 +102,7 @@ router.put('/collection/deletes', isAuth.validateToken, collectionController.del
 router.get('/market/indexs', marketController.indexCollections);
 router.get('/market/indexsR', marketController.indexCollectionsR);
 router.post('/market/sellNft', isAuth.validateMarketToken, validateMarket.sellUserNft(), marketController.sellUserNft);
-router.post('/market/offerNft', isAuth.validateMarketToken, validateMarket.offerNft(), marketController.offerUserNft);
+router.post('/market/offerNft', isAuth.validateMarketToken, validateMarket.offerUserNft(), marketController.offerUserNft);
 router.get('/market/saleList/:nftId', validateMarket.saleList(), marketController.saleList);
 router.get('/market/select-user-serials', validateMarket.selectUserSerials(), marketController.selectUserSerials);
 router.get('/market/cancel-buy-usernft', validateMarket.cancelBuy(), marketController.cancelBuy);
@@ -138,6 +138,7 @@ router.post('/nft/burn', isAuth.validateToken, nftController.burnNft17);
 router.delete('/nft/cancel-create/:id', isAuth.validateToken, nftController.cancelCreateNft);
 router.put('/nft/cancel-creates', isAuth.validateToken, nftController.cancelCreateNfts);
 router.post('/nft/batchcreate', uploadNFT, isAuth.validateTokenForKAS, nftController.createNftBatchNew);
+router.post('/nft/recreatenft', isAuth.validateTokenForKAS, nftController.recreateNftBatchNew);
 router.post('/nft/solanacreate', uploadNFT, isAuth.validateToken, nftController.createSolanaNft);
 
 router.get('/nft/lasttokenid/:id', isAuth.validateToken, nftController.getLastNftID);
