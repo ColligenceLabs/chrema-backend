@@ -144,7 +144,7 @@ module.exports = {
     },
 
     findAllNftsByCollectionId: async function (id) {
-        let nfts = await NftModel.find({collection_id: id}).batchSize(100000);
+        let nfts = await NftModel.find({collection_id: id}).batchSize(500000);
         if (!nfts) {
             return null;
         }
