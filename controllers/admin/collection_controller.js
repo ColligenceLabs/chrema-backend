@@ -306,22 +306,25 @@ module.exports = {
 
             validateRouter(req, res);
             collection = await collectionRepository.findById(req.params.id);
-        } catch (error) {
-            logger.error(new Error(error));
-            next(error);
-        }
-
-        try {
-            const nfts = await nftRepository.findAllNftsByCollectionId(req.params.id);
 
             let result = JSON.parse(JSON.stringify(collection));
-            result.nft = nfts;
-
             return handlerSuccess(req, res, result);
         } catch (error) {
             logger.error(new Error(error));
             next(error);
         }
+
+        // try {
+        //     const nfts = await nftRepository.findAllNftsByCollectionId(req.params.id);
+        //
+        //     let result = JSON.parse(JSON.stringify(collection));
+        //     result.nft = nfts;
+        //
+        //     return handlerSuccess(req, res, result);
+        // } catch (error) {
+        //     logger.error(new Error(error));
+        //     next(error);
+        // }
     },
 
     async updateCollection(req, res, next) {
