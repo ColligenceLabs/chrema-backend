@@ -298,14 +298,20 @@ module.exports = {
     },
 
     async getDetailCollection(req, res, next) {
+        let collection;
         try {
             if (ObjectID.isValid(req.params.id) === false) {
                 return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
             }
 
             validateRouter(req, res);
-            let collection = await collectionRepository.findById(req.params.id);
+            collection = await collectionRepository.findById(req.params.id);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
 
+        try {
             const nfts = await nftRepository.findAllNftsByCollectionId(req.params.id);
 
             let result = JSON.parse(JSON.stringify(collection));
