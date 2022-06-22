@@ -94,7 +94,7 @@ module.exports = {
     },
     findRandom: async function (findParams) {
         try {
-            var nfts = await NftModel.find(findParams).batchSize(10000)
+            var nfts = await NftModel.find(findParams).batchSize(50000)
                 // .limit(4)
                 // .sort({createdAt: -1, start_date: -1, _id: 1})
                 .populate({path: 'collection_id'})
@@ -156,7 +156,7 @@ module.exports = {
             onchain: 'true',
             selling_status: 0,
             $or: [{quantity_selling: {$gt: 0 }}, {user_quantity_selling: {$gt: 0}}]
-        }).batchSize(10000);
+        }).batchSize(50000);
         if (!nfts) {
             return null;
         }

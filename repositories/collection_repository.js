@@ -32,7 +32,7 @@ module.exports = {
                 .limit(pagination.perPage)
                 .sort({createdAt: -1, _id: 1})
                 .populate({path: 'creator_id', select: ['full_name', 'image']})
-                .batchSize(10000);
+                .batchSize(50000);
             return collections;
         } catch (error) {
             return error;
