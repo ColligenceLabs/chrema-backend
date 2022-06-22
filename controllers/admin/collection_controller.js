@@ -202,17 +202,24 @@ module.exports = {
                     return parseInt(a.tokenId) - parseInt(b.tokenId);
                 });
                 let beforeUri;
-                let tokenMeta;
+                let tokenMeta = {};
                 let nft;
                 let count;
                 const newNFTs = [];
+                let data = [];
                 for (let i = 0; i < result.length; i++) {
                     if (beforeUri !== result[i].tokenUri) {
                         beforeUri = result[i].tokenUri;
                         if (beforeUri.startsWith('ipfs://')) {
                             beforeUri = beforeUri.replace('ipfs://', 'https://infura-ipfs.io/ipfs/');
+                        } else if (beforeUri.startsWith('data:application/json')) {
+                            data = beforeUri.split(',');
                         }
-                        tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://infura-ipfs.io'));
+                        if (data.length !== 0) {
+                            tokenMeta.data = JSON.parse(Buffer.from(data[data.length - 1], 'base64').toString());
+                        } else {
+                            tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://infura-ipfs.io'));
+                        }
                         // nft 생성
                         // const newNFT = getNewNFT(tokenMeta, new ObjectID(collection._id), req.body.creator_id);
                         if (tokenMeta.data.image.startsWith('ipfs://'))
