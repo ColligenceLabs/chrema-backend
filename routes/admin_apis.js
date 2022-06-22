@@ -48,7 +48,7 @@ router.post('/admin/login', validateAdmin.login(), adminController.adminlogin);
 
 router.get('/admin/indexs', isAuth.validateToken, adminController.indexAdmins);
 
-router.get('/admin/detail/:id', isAuth.validateToken, adminController.getDetailAdmin);
+router.get('/admin/detail/:id', adminController.getDetailAdmin);
 
 router.put('/admin/update/:id', uploadAdmin, isAuth.validateToken, adminController.updateAdmin);
 
