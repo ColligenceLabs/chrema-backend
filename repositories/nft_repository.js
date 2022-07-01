@@ -467,7 +467,10 @@ module.exports = {
     },
     findLastNft: async function (collection_id) {
         try {
-            const nft = await NftModel.find({collection_id: collection_id}).sort({createdAt: -1}).limit(1);
+            const nft = await NftModel.find({collection_id: collection_id})
+                .sort({"metadata.tokenId": -1})
+                .collation({locale:"en_US", numericOrdering:true})
+                .limit(1);
             return nft;
         } catch (error) {
             return error;
