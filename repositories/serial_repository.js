@@ -228,7 +228,7 @@ module.exports = {
     updateById: async function (id, where) {
         try {
             let serial = await SerialModel.updateOne({_id: id}, {$set: where});
-            session.endSession();
+            // session.endSession();
             return serial;
         } catch (error) {
             return error;
@@ -237,7 +237,7 @@ module.exports = {
     updateByIds: async function (ids, where) {
         try {
             let serial = await SerialModel.updateMany({_id: {$in: ids}}, {$set: where});
-            session.endSession();
+            // session.endSession();
             return serial;
         } catch (error) {
             return error;
