@@ -220,8 +220,9 @@ module.exports = {
             if (ObjectID.isValid(req.params.id) === false) {
                 return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
             }
-
+            console.log('--->', req.body)
             const data = getUpdateBodys(req.body);
+            console.log('--->', data)
             if (isEmptyObject(data)) {
                 return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
             }
@@ -464,6 +465,10 @@ function getUpdateBodys(updates) {
 
     if (updates.owner_id) {
         updateBodys.owner_id = updates.owner_id;
+    }
+
+    if (updates.transfered === 0 || updates.transfered === 1) {
+        updateBodys.transfered = updates.transfered;
     }
 
     if (!isEmptyObject(updateBodys)) {
