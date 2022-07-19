@@ -121,6 +121,8 @@ router.get('/serial/detail/:id', isAuth.validateToken, serialController.getDetai
 
 router.put('/serial/update/:id', isAuth.validateToken, serialController.updateSerial);
 
+router.put('/serial/updateOwner/:id/:tokenId', isAuth.validateToken, serialController.updateOwner);
+
 router.put('/serial/update-serials', isAuth.validateToken, serialController.updateSerials);
 
 router.delete('/serial/delete/:id', isAuth.validateToken, serialController.deleteSerial);
