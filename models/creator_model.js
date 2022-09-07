@@ -10,7 +10,7 @@ const CreatorSchema = new Schema(
             required: true,
             trim: true,
             unique: true,
-            match: [/.+@.+\..+/, 'Địa chỉ email không hợp lệ'],
+            // match: [/.+@.+\..+/, 'Địa chỉ email không hợp lệ'],
         },
         name: {
             type: String,
