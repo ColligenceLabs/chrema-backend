@@ -16,7 +16,7 @@ const AdminSchema = new Schema(
             required: true,
             trim: true,
             unique: true,
-            match: [/.+@.+\..+/, 'Địa chỉ email không hợp lệ'],
+            // match: [/.+@.+\..+/, 'Địa chỉ email không hợp lệ'],
         },
         password: {
             type: String,
