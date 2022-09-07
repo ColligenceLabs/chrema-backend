@@ -107,7 +107,7 @@ module.exports = {
 
             // 커버 이미지 하나로 변경
             // let my_file = req.files.file[0];
-            let my_file = req.file;
+            let my_file = req.files.image[0];
 
             //resize
             let imgName = my_file.filename.split('.');
@@ -123,6 +123,8 @@ module.exports = {
                 network: req.body.network,
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
+                logo_image: ALT_URL + 'collections/' + req.files.logo[0].filename,
+                url: req.body.url,
                 // cover_image: ALT_URL + my_file.path,
                 // company_id: req.body.company_id,
                 creator_id: req.body.creator_id,

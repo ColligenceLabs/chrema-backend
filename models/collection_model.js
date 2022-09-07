@@ -15,6 +15,10 @@ const CollectionSchema = new Schema(
             required: true,
             trim: true,
         },
+        logo_image: {
+            type: String,
+            required: true,
+        },
         cover_image: {
             type: String,
             required: true,
@@ -24,6 +28,10 @@ const CollectionSchema = new Schema(
             required: false,
         },
         path: {
+            type: String,
+            required: false,
+        },
+        url: {
             type: String,
             required: false,
         },

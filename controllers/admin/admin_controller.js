@@ -54,7 +54,7 @@ module.exports = {
                 // image: ALT_URL + `creators/${renameOutput}`,
                 description: req.body.description,
                 solana_address: req.body.solana_address,
-                status: req.body.level === 'user' ? ADMIN_STATUS.ACTIVE : ADMIN_STATUS.INACTIVE
+                status: req.body.level === 'user' || req.body.level === 'Creator' ? ADMIN_STATUS.ACTIVE : ADMIN_STATUS.INACTIVE
             };
 
             let createAdmin = await adminRepository.create(newAccountAdmin);
