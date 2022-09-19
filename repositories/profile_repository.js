@@ -3,7 +3,7 @@ const {ProfileModel, WalletModel} = require('../models');
 module.exports = {
     createProfile: async function () {
         try {
-            const profile = await ProfileModel.create({name: 'Unnamed'});
+            const profile = await ProfileModel.create({name: 'Unnamed', is_creator: true});
             return profile;
         } catch (error) {
             console.log(error);
