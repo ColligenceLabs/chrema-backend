@@ -10,19 +10,23 @@ module.exports = {
         let result;
         if (token) {
             try {
+                console.log(token);
                 result = jwt.verify(token, process.env.JWT_SECRET);
                 req.decoded = result;
-                const user = await adminRepository.findById(result.id);
-                if (!user) {
-                    throw {message: 'Account is not existed!'};
+                console.log(result);
+                const admin = await adminRepository.findById(result.id);
+                if (!admin) {
+                    const creator = await profileRepository.findById(result.id);
+                    if (!creator)
+                        throw {message: 'Account is not existed!'};
                 }
 
                 // set the user id to body, query for further usage
-                if (req.body && !req.body.admin_address) {
-                    req.body.admin_address = user.admin_address;
+                if (admin && req.body && !req.body.admin_address) {
+                    req.body.admin_address = admin.admin_address;
                 }
-                if (req.query && !req.query.admin_address) {
-                    req.query.admin_address = user.admin_address;
+                if (admin && req.query && !req.query.admin_address) {
+                    req.query.admin_address = admin.admin_address;
                 }
                 next();
             } catch (error) {
