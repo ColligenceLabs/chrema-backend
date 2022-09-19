@@ -1,5 +1,6 @@
 const {validationResult} = require('express-validator');
 const profileRepository = require('../../repositories/profile_repository');
+const adminRepository = require('../../repositories/admin_repository');
 const walletRepository = require('../../repositories/wallet_repository');
 const {verifyMessage} = require('@ethersproject/wallet');
 const ErrorMessage = require('../../utils/errorMessage').ErrorMessage;
@@ -21,23 +22,32 @@ module.exports = {
                 return handlerError(req, res, validate);
             }
             if (req.params.id === 'undefined' || req.query.chainId === 'undefined') {
-                console.log('????뭐고!!');
                 return handlerError(req, res, ErrorMessage.WALLET_ADDRESS_IS_UNDEFINED);
             }
             // wallet collection 에서 조회
             let wallet = await walletRepository.find(req.params.id, req.query.chainId);
             let profile;
+            let admin;
             if (!wallet) {
                 console.log('not exist.');
                 // create default profile and create wallet
-                profile = await profileRepository.createProfile();
+                const newAdmin = {
+                    email: req.params.id,
+                    full_name: 'Unnamed',
+                    admin_address: req.params.id,
+                    status: 'active',
+                    level: 'Creator',
+                    password: 'asdfjklm'
+                };
+                admin = await adminRepository.create(newAdmin);
+                profile = await profileRepository.createProfile(admin._id);
                 wallet = await walletRepository.createWallet(profile._id, req.params.id, req.query.chainId);
             } else {
                 profile = wallet.profile_id;
             }
             console.log(profile, wallet);
             const profileInfo = {
-                id: profile._id,
+                id: profile.admin_id,
                 full_name: profile.name,
                 email: profile.email,
                 level: profile.is_creator ? 'Creator' : 'User',
@@ -89,6 +99,15 @@ module.exports = {
 
             if (req.files.banner) {
                 data.banner = process.env.ALT_URL + 'profiles/' + req.files.banner[0].filename;
+            }
+            const updateAdmin = await adminRepository.update(req.body.id, {
+                email: data.email,
+                full_name: data.name,
+                image: data.image,
+                description: data.description
+            });
+            if (!updateAdmin) {
+                return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
             }
             const updateProfile = await profileRepository.update(req.body.id, data);
             if (!updateProfile) {

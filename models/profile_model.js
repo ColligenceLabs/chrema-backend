@@ -13,6 +13,11 @@ const ProfileSchema = new Schema(
             trim: true,
             default: null,
         },
+        admin_id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Admin',
+            required: true,
+        },
         is_creator: {
             type: Boolean,
             default: false,
