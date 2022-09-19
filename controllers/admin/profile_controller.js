@@ -84,14 +84,13 @@ module.exports = {
             }
             const message = 'Welcome to Taal NFT Marketplace!';
             const account = verifyMessage(message, req.body.signedMessage);
-            const wallets = await walletRepository.findByProfileId(req.body.id);
-            console.log(wallets);
+            const profile = await profileRepository.findByAdminId(req.body.id);
+            const wallets = await walletRepository.findByProfileId(profile._id);
             const exist = wallets.find(wallet => wallet.address === account);
-            console.log(exist);
-            const profile = await profileRepository.findById(req.body.id);
             if (!profile || !exist) {
                 return handlerError(req, res, ErrorMessage.PROFILE_IS_NOT_FOUND);
             }
+
             // image 처리
             if (req.files.image) {
                 data.image = process.env.ALT_URL + 'profiles/' + req.files.image[0].filename;
@@ -100,17 +99,17 @@ module.exports = {
             if (req.files.banner) {
                 data.banner = process.env.ALT_URL + 'profiles/' + req.files.banner[0].filename;
             }
-            const updateAdmin = await adminRepository.update(req.body.id, {
+            const updateProfile = await profileRepository.update(profile._id, data);
+            if (!updateProfile) {
+                return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
+            }
+            const updateAdmin = await adminRepository.update(updateProfile.admin_id, {
                 email: data.email,
                 full_name: data.name,
                 image: data.image,
                 description: data.description
             });
             if (!updateAdmin) {
-                return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
-            }
-            const updateProfile = await profileRepository.update(req.body.id, data);
-            if (!updateProfile) {
                 return handlerError(req, res, ErrorMessage.UPDATE_USER_IS_NOT_SUCCESS);
             }
 

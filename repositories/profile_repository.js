@@ -30,6 +30,14 @@ module.exports = {
         return profile;
     },
 
+    findByAdminId: async function (id) {
+        const profile = await ProfileModel.findOne({admin_id: id});
+        if (!profile) {
+            return null;
+        }
+        return profile;
+    },
+
     findProfileByWalletAddress: async function (address, chainId) {
         try {
             const wallet = await WalletModel.findOne({wallet_address: address, chain_id: chainId}).populate('profile_id');
