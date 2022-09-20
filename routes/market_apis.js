@@ -19,6 +19,6 @@ const uploadProfile = require('../repositories/profile_upload_repository');
 router.post('/profile/update', uploadProfile, validateProfile.update(), profileController.profileUpdate);
 router.get('/profile/login/:id', validateProfile.login(), profileController.login);
 // router.get('/profile/indexs', isAuth.validateToken, profileController.indexProfiles);
-// router.get('/profile/detail/:id',validateProfile.getProfileDetail() , isAuth.validateToken, profileController.getProfileDetail);
+router.get('/profile/:id', profileController.getProfileDetail);
 
 module.exports = router;
