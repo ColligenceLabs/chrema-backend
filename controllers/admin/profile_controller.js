@@ -122,7 +122,7 @@ module.exports = {
     },
     getProfileDetail: async (req, res, next) => {
         try {
-            const profile = await profileRepository.findById(req.params.id);
+            const profile = await profileRepository.findByAdminId(req.params.id);
             if (!profile) {
                 return handlerError(req, res, ErrorMessage.PROFILE_IS_NOT_FOUND);
             }
