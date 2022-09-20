@@ -151,7 +151,27 @@ module.exports = {
         VIRTUAL: {
             value: 'virtual',
             title: 'Virtual Worlds'
-        }
+        },
+        PICTURE: {
+            value: 'picture',
+            title: 'Picture'
+        },
+        PAINTING: {
+            value: 'painting',
+            title: 'Painting'
+        },
+        ILLUSTRATE: {
+            value: 'illustrate',
+            title: 'Illustrate'
+        },
+        DESIGN: {
+            value: 'design',
+            title: 'Design'
+        },
+        CHARACTER: {
+            value: 'character',
+            title: 'Character'
+        },
     },
     HISTORY_MEMO: {
         PAYMENT: 'Payment',
