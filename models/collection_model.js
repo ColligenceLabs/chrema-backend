@@ -17,7 +17,7 @@ const CollectionSchema = new Schema(
         },
         logo_image: {
             type: String,
-            required: true,
+            required: false,
         },
         cover_image: {
             type: String,

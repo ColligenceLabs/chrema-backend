@@ -115,7 +115,10 @@ module.exports = {
             // do not resize cover
             // let imgOutput = imgName[0] + '_resize.' + imgName[imgName.length - 1];
             // await imageResize('./uploads/cover/' + imgInput, './uploads/cover/' + imgOutput);
-
+            let logo_image;
+            if (req.files?.logo) {
+                logo_image = ALT_URL + 'collections/' + req.files.logo[0].filename;
+            }
             // TODO : Collection의 Thumbnail로 변경
             let cover_image = await nftRepository.addFileToIPFS(my_file);
 
@@ -123,7 +126,7 @@ module.exports = {
                 network: req.body.network,
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
-                logo_image: ALT_URL + 'collections/' + req.files.logo[0].filename,
+                logo_image: logo_image,
                 url: req.body.url,
                 // cover_image: ALT_URL + my_file.path,
                 // company_id: req.body.company_id,
