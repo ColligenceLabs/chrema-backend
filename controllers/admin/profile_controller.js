@@ -120,7 +120,19 @@ module.exports = {
             return handlerError(req, res, error);
         }
     },
-
+    getProfileDetail: async (req, res, next) => {
+        try {
+            const profile = await profileRepository.findByAdminId(req.params.id);
+            if (!profile) {
+                return handlerError(req, res, ErrorMessage.PROFILE_IS_NOT_FOUND);
+            }
+            return handlerSuccess(req, res, profile);
+        } catch (error) {
+            logger.error(new Error(error));
+            console.log(error);
+            return handlerError(req, res, error);
+        }
+    },
     findProfile: async (req, res, next) => {
         // 지갑주소, 체인아이디로 wallet 에서 조회
 
