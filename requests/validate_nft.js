@@ -37,5 +37,13 @@ module.exports = {
             query('owner_id').not().isEmpty().withMessage('Missing owner_id parameter'),
             query('nft_id').not().isEmpty().withMessage('Missing nft_id parameter'),
         ];
-    }
+    },
+
+    metadata: () => {
+        return [
+            body('name').trim().not().isEmpty().withMessage('Missing name parameter'),
+            body('description').trim().not().isEmpty().withMessage('Missing description parameter'),
+            // body('bucket_name').trim().optional().isLowercase().withMessage('Only Lower Name'),
+        ];
+    },
 };

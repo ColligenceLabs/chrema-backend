@@ -1497,9 +1497,13 @@ module.exports = {
             }
 
             // MinIO
-            const bucketName = 'test';
-            const expires = 3600 * 24 * 30; // 30 days
-            const imageUrl = await createVault(my_file, expires, bucketName);
+            const bucketName = 'nfts';
+            const expires = parseInt(req.body.expires ?? 0, 10) * 3600 * 24; // 30 days
+            const imageUrl = await createVault(
+                my_file.filename,
+                expires,
+                bucketName
+            );
 
             // IPFS
             let result = await nftRepository.addFileToIPFS(my_file);
@@ -1610,7 +1614,8 @@ module.exports = {
                 ...(req.body?.description && {description: req.body.description}),
                 // ...(req.body?.rarity && {rarity: req.body.rarity}),
                 // contract_id: contractId,
-                transfered: 0
+                transfered: 0,
+                filename: my_file.filename
             };
 
             const coinPrice = await getCoinPrice();

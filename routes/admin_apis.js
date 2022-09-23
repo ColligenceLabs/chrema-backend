@@ -14,6 +14,7 @@ const statisticsController = require('../controllers/admin/statistics_controller
 const historyController = require('../controllers/admin/history_controller');
 const creatorController = require('../controllers/admin/creator_controller');
 const marketController = require('../controllers/admin/market_controller');
+const vaultController = require('../controllers/admin/vault.ctrl');
 
 // Require request validators
 const validateAdmin = require('../requests/validate_admin');
@@ -133,6 +134,10 @@ router.delete('/serial/delete-many', isAuth.validateToken, serialController.dele
 // router.post('/nft/create', upload.array('files', 2), isAuth.validateToken, nftController.createNft);
 // router.post('/nft/batchcreate', upload.array('files', 2), isAuth.validateToken, nftController.createNftBatch);
 router.post('/nft/create', uploadNFT, isAuth.validateToken, nftController.createNft);
+
+router.post('/nft/create-rental', uploadNFT, isAuth.validateToken, nftController.createRentalNft);
+router.post('/nft/metadata-rental', validateNft.metadata(), vaultController.metadata);
+
 router.get('/nft/mint/:id', isAuth.validateToken, validateNft.mintNFT(), nftController.mintNft);
 
 router.post('/nft/burn', isAuth.validateToken, nftController.burnNft17);

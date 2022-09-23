@@ -16,6 +16,9 @@ const NftSchema = new Schema(
         metadata_link: {
             type: String,
         },
+        filename: {
+            type: String,
+        },
         // ipfs_links: {
         //     type: Schema.Types.Mixed,
         //     default: null,
