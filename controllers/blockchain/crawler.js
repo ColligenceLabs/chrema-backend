@@ -108,8 +108,9 @@ exports.getLastEvents = async function (toBlock, chainName) {
                                             contract_address: contractAddress,
                                             type: consts.LISTENER_TYPE.BURN,
                                         });
+                                        // todo do not update quantity_selling
                                         if (serial) await NftModel.findOneAndUpdate({_id: serial.nft_id._id}, {
-                                            $inc: {quantity_selling: -1},
+                                            // $inc: {quantity_selling: -1},
                                             status: consts.NFT_STATUS.SUSPEND,
                                         });
                                     } else {// other transfer(buy, airdrop)
