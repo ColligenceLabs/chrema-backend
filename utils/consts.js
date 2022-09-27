@@ -125,53 +125,29 @@ module.exports = {
         },
     },
     COLLECTION_CATE: {
-        TALKEN: {
-            value: 'talken',
-            title: 'Talken',
-        },
         ART: {
             value: 'art',
             title: 'Art',
         },
-        COLLECTIBLES: {
-            value: 'collectibles',
-            title: 'Collectibles'
+        GAMEITEM: {
+            value: 'gameItem',
+            title: 'Game Item'
         },
-        MEMBERSHIP: {
-            value: 'membership',
-            title: 'Membership'
+        MUSIC: {
+            value: 'music',
+            title: 'Music'
         },
-        PIECES: {
-            value: 'pieces',
-            title: 'Pieces'
+        CAR: {
+            value: 'car',
+            title: 'Car'
         },
-        GAMES: {
-            value: 'games',
-            title: 'Games'
+        HOUSE: {
+            value: 'house',
+            title: 'House'
         },
-        VIRTUAL: {
-            value: 'virtual',
-            title: 'Virtual Worlds'
-        },
-        PICTURE: {
-            value: 'picture',
-            title: 'Picture'
-        },
-        PAINTING: {
-            value: 'painting',
-            title: 'Painting'
-        },
-        ILLUSTRATE: {
-            value: 'illustrate',
-            title: 'Illustrate'
-        },
-        DESIGN: {
-            value: 'design',
-            title: 'Design'
-        },
-        CHARACTER: {
-            value: 'character',
-            title: 'Character'
+        NFTPROJECT: {
+            value: 'nftProject',
+            title: 'NFT Project'
         },
     },
     HISTORY_MEMO: {
