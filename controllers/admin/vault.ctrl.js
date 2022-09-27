@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator');
 const { _errorFormatter } = require('../../utils/helper');
 const { handlerError, handlerSuccess } = require('../../utils/handler_response');
 const { getPresignedUrl } = require('../../utils/steganography');
+const moment = require("moment");
 
 module.exports = {
   metadata: async (req, res) => {
@@ -26,6 +27,8 @@ module.exports = {
       metaData.description = req.body.description;
       metaData.image = imageUrl;
       metaData.external_url = req.body.external_url ?? '';
+      metaData.startDate = moment(0).unix();
+      metaData.duration = req.body.expires;
       metaData.attributes = [];
       if (req.body.attributes) metaData.attributes.push(req.body.attributes);
 
