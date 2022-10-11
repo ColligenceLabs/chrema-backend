@@ -1559,7 +1559,7 @@ module.exports = {
             }
 
             let lastNft = await nftRepository.findAllOnchainNftsByCollectionId(req.body.collection_id);
-            let newTokenId = 1;
+            let newTokenId = 0; // Start from 0
             if (lastNft.length > 0) {
                 newTokenId = parseInt(lastNft[0].metadata.tokenId) + 1;
             }
