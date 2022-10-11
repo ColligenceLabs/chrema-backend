@@ -1740,7 +1740,11 @@ module.exports = {
             for (let i = 0; i < cnt; i++) {
                 tokenId = '0x' + (newTokenId + i).toString(16);
                 newNfts[i].metadata.tokenId = (newTokenId + i).toString();
-                newNfts[i].metadata.name = req.body.name + ' #' + (newTokenId + i).toString();
+                if (collection.contract_type === 'KIP17') {
+                    newNfts[i].metadata.name = req.body.name + ' #' + (newTokenId + i).toString();
+                } else {
+                    newNfts[i].metadata.name = req.body.name;
+                }
                 console.log('--->', newNfts[i], newSerial, tokenId, ipfs_links[i], collection.creator_id.admin_address);
                 nft = await nftRepository.createByWallet(newNfts[i], newSerial, tokenId, ipfs_links[i], collection.creator_id.admin_address, collection.contract_type);
                 ret.nftIds.push(nft._id);
