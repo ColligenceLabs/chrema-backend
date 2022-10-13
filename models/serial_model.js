@@ -59,6 +59,9 @@ const SerialSchema = new Schema(
         ipfs_link: {
             type: String,
         },
+        image_link: {
+            type: String,
+        },
         index: {
             type: Number,
             default: 1,

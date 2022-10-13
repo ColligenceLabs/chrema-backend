@@ -501,6 +501,10 @@ function getUpdateBodys(updates) {
         updateBodys.ipfs_link = updates.ipfs_link;
     }
 
+    if (updates.image_link) {
+        updateBodys.image_link = updates.image_link;
+    }
+
     if (updates.transfered === 0 || updates.transfered === 1) {
         updateBodys.transfered = updates.transfered;
     }
