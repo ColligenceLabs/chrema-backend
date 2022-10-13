@@ -149,6 +149,10 @@ module.exports = {
             value: 'nftProject',
             title: 'NFT Project'
         },
+        VIRTUALLAND: {
+            value: 'virtualLand',
+            title: 'Virtual Land'
+        },
     },
     HISTORY_MEMO: {
         PAYMENT: 'Payment',
