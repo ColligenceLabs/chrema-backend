@@ -2,7 +2,7 @@ const util = require('util');
 const multer = require('multer');
 const fs = require('fs');
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         // cb(null, process.cwd() + '/uploads/collections');
         const path = 'uploads/collections';
@@ -10,7 +10,7 @@ var storage = multer.diskStorage({
         cb(null, path);
     },
     filename: (req, file, cb) => {
-        var uniqueSuffix = Date.now() + '-';
+        const uniqueSuffix = Date.now() + '-';
         cb(null, uniqueSuffix + file.originalname);
     },
 });
@@ -23,7 +23,7 @@ var storage = multer.diskStorage({
 // }).fields([{name: 'file'}, {name: 'thumbnail'}]);
 let uploadFile = multer({
     storage: storage,
-}).fields([{name: 'image'}, {name: 'logo'}]);
+}).fields([{name: 'image'}, {name: 'logo'}, {name: 'optionalImages'}]);
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 
