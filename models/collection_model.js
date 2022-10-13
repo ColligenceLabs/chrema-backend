@@ -27,6 +27,14 @@ const CollectionSchema = new Schema(
             type: String,
             required: false,
         },
+        optional_images: {
+            type: [
+                {
+                    type: String
+                }
+            ],
+            default: []
+        },
         path: {
             type: String,
             required: false,
