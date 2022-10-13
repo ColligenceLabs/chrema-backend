@@ -149,9 +149,9 @@ module.exports = {
             value: 'nftProject',
             title: 'NFT Project'
         },
-        VIRTUALLAND: {
-            value: 'virtualLand',
-            title: 'Virtual Land'
+        METAVERSE: {
+            value: 'metaVerse',
+            title: 'MetaVerse'
         },
     },
     HISTORY_MEMO: {
