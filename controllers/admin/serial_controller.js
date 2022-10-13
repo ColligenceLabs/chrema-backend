@@ -246,6 +246,36 @@ module.exports = {
         }
     },
 
+    async updateLink(req, res, next) {
+        try {
+            if (ObjectID.isValid(req.params.id) === false) {
+                return handlerError(req, res, ErrorMessage.ID_IS_INVALID);
+            }
+            console.log('--->', req.body)
+            const data = getUpdateBodys(req.body);
+            console.log('--->', data)
+            if (isEmptyObject(data)) {
+                return handlerError(req, res, ErrorMessage.FIELD_UPDATE_IS_NOT_BLANK);
+            }
+
+            const search = {_id: req.params.id};
+            const serial = await serialRepository.findOneSerial(search);
+            if (!serial) {
+                return handlerError(req, res, ErrorMessage.SERIAL_IS_NOT_FOUND);
+            }
+
+            const updateSerial = await serialRepository.updateById(serial._id, data);
+            if (!updateSerial) {
+                return handlerError(req, res, ErrorMessage.UPDATE_SERIAL_IS_NOT_SUCCESS);
+            }
+
+            return handlerSuccess(req, res, updateSerial);
+        } catch (error) {
+            logger.error(new Error(error));
+            next(error);
+        }
+    },
+
     async updateSerials(req, res, next) {
         try {
             // const data = getUpdateBodys(req.body);
@@ -465,6 +495,10 @@ function getUpdateBodys(updates) {
 
     if (updates.owner_id) {
         updateBodys.owner_id = updates.owner_id;
+    }
+
+    if (updates.ipfs_link) {
+        updateBodys.ipfs_link = updates.ipfs_link;
     }
 
     if (updates.transfered === 0 || updates.transfered === 1) {
