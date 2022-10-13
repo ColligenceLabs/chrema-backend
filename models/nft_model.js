@@ -16,6 +16,9 @@ const NftSchema = new Schema(
         metadata_link: {
             type: String,
         },
+        album_jacket: {
+            type: String,
+        },
         filename: {
             type: String,
         },

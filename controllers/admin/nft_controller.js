@@ -1532,6 +1532,16 @@ module.exports = {
                 await imageMove(consts.UPLOAD_PATH + thumbnailInput, targetDir + 'thumbnail/' + thumbnailOutput);
             }
 
+            let albumJacketUrl;
+            if (req.files.album_jacket) {
+                const albumJacket = req.files.album_jacket[0];
+                const jacketName = albumJacket.filename.split('.');
+                let albumJacketInput = albumJacket.filename;
+                let albumJacketOutput = result.Hash + '_albumJacket.' + jacketName[jacketName.length -1];
+                albumJacketUrl = ALT_URL + collection.contract_address + '/albumJacket/' + albumJacketOutput;
+                await imageMove(consts.UPLOAD_PATH + albumJacketInput, targetDir + 'albumJacket/' + albumJacketOutput);
+            }
+
             // tokenId를 순차적으로 증가 시키기 위해서 정보를 가지고 옴.
             //get all nft from blockchain service
             // let itemList = await nftRepository.getItemList();
@@ -1614,6 +1624,7 @@ module.exports = {
                 ...(req.body?.description && {description: req.body.description}),
                 // ...(req.body?.rarity && {rarity: req.body.rarity}),
                 // contract_id: contractId,
+                album_jacket: albumJacketUrl,
                 transfered: 0,
                 filename: my_file.filename
             };

@@ -20,7 +20,7 @@ var storage = multer.diskStorage({
 // }).single('file');
 let uploadFile = multer({
     storage: storage,
-}).fields([{name: 'file'}, {name: 'thumbnail'}]);
+}).fields([{name: 'file'}, {name: 'thumbnail'}, {name: 'album_jacket'}]);
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 
