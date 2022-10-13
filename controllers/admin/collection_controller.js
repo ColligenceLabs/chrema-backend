@@ -120,11 +120,18 @@ module.exports = {
                 logo_image = ALT_URL + 'collections/' + req.files.logo[0].filename;
             }
             let optionalImages;
-            if (req.files.optionalImages) {
-                optionalImages = req.files.optionalImages.map((image) => {
+            let imageList = [];
+            if (req.files.optional_images) {
+                optionalImages = req.files.optional_images.map((image) => {
                     return ALT_URL + 'collections/' + image.filename;
                 });
                 console.log('=====>', optionalImages);
+                if (req.body.optional_image_list) {
+                    imageList = JSON.parse(req.body.optional_image_list);
+                    for(let i = 0; i < imageList.length; i++) {
+                        imageList[i].image = optionalImages[i];
+                    }
+                }
             }
             // TODO : Collection의 Thumbnail로 변경
             let cover_image = await nftRepository.addFileToIPFS(my_file);
@@ -134,7 +141,7 @@ module.exports = {
                 name: req.body.name,
                 cover_image: IPFS_URL + cover_image.Hash,
                 logo_image: logo_image,
-                optionalImages: optionalImages,
+                optional_images: imageList,
                 url: req.body.url,
                 // cover_image: ALT_URL + my_file.path,
                 // company_id: req.body.company_id,
