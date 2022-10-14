@@ -231,19 +231,19 @@ module.exports = {
                     if (beforeUri !== result[i].tokenUri) {
                         beforeUri = result[i].tokenUri;
                         if (beforeUri.startsWith('ipfs://')) {
-                            beforeUri = beforeUri.replace('ipfs://', 'https://infura-ipfs.io/ipfs/');
+                            beforeUri = beforeUri.replace('ipfs://', 'https://taalfi.infura-ipfs.io/ipfs/');
                         } else if (beforeUri.startsWith('data:application/json')) {
                             data = beforeUri.split(',');
                         }
                         if (data.length !== 0) {
                             tokenMeta.data = JSON.parse(Buffer.from(data[data.length - 1], 'base64').toString());
                         } else {
-                            tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://infura-ipfs.io'));
+                            tokenMeta = await _getTokenInfo(beforeUri.replace('https://ipfs.io', 'https://taalfi.infura-ipfs.io'));
                         }
                         // nft 생성
                         // const newNFT = getNewNFT(tokenMeta, new ObjectID(collection._id), req.body.creator_id);
                         if (tokenMeta.data.image.startsWith('ipfs://'))
-                            tokenMeta.data.image = tokenMeta.data.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                            tokenMeta.data.image = tokenMeta.data.image.replace('ipfs://', 'https://taalfi.infura-ipfs.io/ipfs/');
                         console.log(i, tokenMeta.data);
                         const newNFT = getNewNFT(tokenMeta.data, collection._id, req.body.creator_id, collection.category);
                         console.log(newNFT);
