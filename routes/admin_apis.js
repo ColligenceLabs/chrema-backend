@@ -117,6 +117,7 @@ router.get('/serial/indexs', isAuth.validateToken, serialController.indexSerials
 
 router.get('/serial/sales-count/:id', isAuth.validateToken, serialController.salesCount);
 
+router.get('/serial/selling/:id/:token', isAuth.validateToken, serialController.getSeller);
 
 router.get('/serial/detail/:id', isAuth.validateToken, serialController.getDetailSerial);
 

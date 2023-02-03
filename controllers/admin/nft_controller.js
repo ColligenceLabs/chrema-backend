@@ -2410,8 +2410,9 @@ module.exports = {
                 // TODO : market contract 에 cancelSellToken 호출
 
             } else {
-                const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: account});
-                console.log(serial, account);
+                // const serial = await serialRepository.findOneSerial({nft_id: nft._id, owner_id: account});
+                const serial = await serialRepository.findOneSerial({nft_id: nft._id, seller: account});
+                console.log('!! cancel selling ==>', serial, account);
                 if (!serial) {
                     return handlerError(req, res, ErrorMessage.NOT_NFT_OWNER);
                 }
