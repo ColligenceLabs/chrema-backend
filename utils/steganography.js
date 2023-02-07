@@ -7,10 +7,10 @@ const sg = require('nestyle-steganography');
 const defExpires = 60 * 60 * 24 * 365; // Default 1 year in seconds
 
 const s3Client = new Dao.Client({
-  endPoint: '133.186.211.115',
+  endPoint: process.env.VAULT_SERV,
   port: 9000,
-  accessKey: 'admin',
-  secretKey: 'admin1234!',
+  accessKey: process.env.VAULT_USER,
+  secretKey: process.env.VAULT_PASS,
   useSSL: false, // Default is true.
 });
 
