@@ -29,8 +29,8 @@ async function loadConfFromDB() {
                 ethMarketLastBlock = 8447943;
             await lastblockRepository.create(process.env.ETH_CHAIN_ID, 'market', ethMarketLastBlock);
         }
-        eventBlocks.eth = ethEventLastBlock;
-        marketEventBlocks.eth = ethMarketLastBlock;
+        eventBlocks.ethereum = ethEventLastBlock;
+        marketEventBlocks.ethereum = ethMarketLastBlock;
     }
 
     if (process.env.KLAYTN_CHAIN_ID) {
@@ -94,7 +94,7 @@ async function getChainEvents(chainName, lastBlocks) {
             if (useMarket && lastBlocks.market[chainName]) {
                 const lastBlockNumber = lastBlocks.market[chainName];
                 // console.log('market', lastBlockNumber, toBlock, toBlock - lastBlockNumber);
-                if (chainName === 'binance' || chainName === 'eth') {
+                if (chainName === 'binance' || chainName === 'ethereum') {
                     if (toBlock <= lastBlockNumber) return;
                 }
                 if (toBlock - lastBlocks.market[chainName] > 1000) {
@@ -115,12 +115,12 @@ async function getChainEvents(chainName, lastBlocks) {
                     let delay = process.env.CRAWLER_DELAY;
                     if (chainName === 'binance')
                         delay = 7;
-                    else if (chainName === 'eth')
+                    else if (chainName === 'ethereum')
                         delay = 4;
                     toBlock = toBlock - delay;
                 }
 
-                if (chainName === 'binance' || chainName === 'eth') {
+                if (chainName === 'binance' || chainName === 'ethereum') {
                     if (toBlock <= lastBlockNumber) return;
                 }
                 // console.log('event', lastBlockNumber, toBlock, toBlock - lastBlockNumber);

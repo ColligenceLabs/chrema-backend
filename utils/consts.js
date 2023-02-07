@@ -160,5 +160,5 @@ module.exports = {
         WALLET_TRANSFER: 'Wallet Transfer',
         TRANSFER_ERROR: 'Transfer Error',
     },
-    CHAIN_NAMES: ['eth', 'klaytn', 'binance']
+    CHAIN_NAMES: ['ethereum', 'klaytn', 'binance']
 };

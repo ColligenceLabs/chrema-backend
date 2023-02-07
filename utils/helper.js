@@ -226,7 +226,7 @@ exports.getFloorPrice = (filteredPrices, coinPrices) => {
 exports.getWeb3ByChainName = (chainName) => {
     let web3;
     try {
-        if (chainName === 'eth' && provider[parseInt(process.env.ETH_CHAIN_ID)] !== '') {
+        if (chainName === 'ethereum' && provider[parseInt(process.env.ETH_CHAIN_ID)] !== '') {
             if (!web3s.eth){
                 web3 = new Web3(provider[parseInt(process.env.ETH_CHAIN_ID)]);
                 web3s.eth = web3;
@@ -286,7 +286,7 @@ exports.getMarketContract = (chainName) => {
 
 exports.getMarketAddress = (chainName) => {
     let address;
-    if (chainName === 'eth') {
+    if (chainName === 'ethereum') {
         address = market[parseInt(process.env.ETH_CHAIN_ID)];
     } else if (chainName === 'klaytn') {
         address = market[parseInt(process.env.KLAYTN_CHAIN_ID)];
@@ -299,7 +299,7 @@ exports.getMarketAddress = (chainName) => {
 
 exports.getQuote = (quote, chainName) => {
     if (quote === '0x0000000000000000000000000000000000000000') {
-        if (chainName === 'eth')
+        if (chainName === 'ethereum')
             return 'eth';
         else if (chainName === 'binance')
             return 'bnb';
@@ -313,7 +313,7 @@ exports.getQuote = (quote, chainName) => {
 
 exports.getChainId = (chainName) => {
     let chainId;
-    if (chainName === 'eth') {
+    if (chainName === 'ethereum') {
         chainId = parseInt(process.env.ETH_CHAIN_ID);
     } else if (chainName === 'klaytn') {
         chainId = parseInt(process.env.KLAYTN_CHAIN_ID);
