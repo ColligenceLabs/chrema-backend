@@ -16,17 +16,17 @@ async function loadConfFromDB() {
         let ethEventLastBlock = await lastblockRepository.find(process.env.ETH_CHAIN_ID, 'event');
         if (!ethEventLastBlock) {
             if (process.env.ETH_CHAIN_ID === '1')
-                ethEventLastBlock = 14841116;
-            else if (process.env.ETH_CHAIN_ID === '3')
-                ethEventLastBlock = 12297031;
+                ethEventLastBlock = 16573987;
+            else if (process.env.ETH_CHAIN_ID === '5')
+                ethEventLastBlock = 8447943;
             await lastblockRepository.create(process.env.ETH_CHAIN_ID, 'event', ethEventLastBlock);
         }
         let ethMarketLastBlock = await lastblockRepository.find(process.env.ETH_CHAIN_ID, 'market');
         if (!ethMarketLastBlock) {
             if (process.env.ETH_CHAIN_ID === '1')
-                ethMarketLastBlock = 14841116;
-            else if (process.env.ETH_CHAIN_ID === '3')
-                ethMarketLastBlock = 12297031;
+                ethMarketLastBlock = 16573987;
+            else if (process.env.ETH_CHAIN_ID === '5')
+                ethMarketLastBlock = 8447943;
             await lastblockRepository.create(process.env.ETH_CHAIN_ID, 'market', ethMarketLastBlock);
         }
         eventBlocks.eth = ethEventLastBlock;
@@ -38,17 +38,17 @@ async function loadConfFromDB() {
         let klaytnEventLastBlock = await lastblockRepository.find(process.env.KLAYTN_CHAIN_ID, 'event');
         if (!klaytnEventLastBlock) {
             if (process.env.KLAYTN_CHAIN_ID === '8217')
-                klaytnEventLastBlock = 91580723;
+                klaytnEventLastBlock = 113830501;
             else if (process.env.KLAYTN_CHAIN_ID === '1001')
-                klaytnEventLastBlock = 91898839;
+                klaytnEventLastBlock = 114160868;
             await lastblockRepository.create(process.env.KLAYTN_CHAIN_ID, 'event', klaytnEventLastBlock);
         }
         let klaytnMarketLastBlock = await lastblockRepository.find(process.env.KLAYTN_CHAIN_ID, 'market');
         if (!klaytnMarketLastBlock) {
             if (process.env.KLAYTN_CHAIN_ID === '8217')
-                klaytnMarketLastBlock = 91580723;
+                klaytnMarketLastBlock = 113830501;
             else if (process.env.KLAYTN_CHAIN_ID === '1001')
-                klaytnMarketLastBlock = 91898839;
+                klaytnMarketLastBlock = 114160868;
             await lastblockRepository.create(process.env.KLAYTN_CHAIN_ID, 'market', klaytnMarketLastBlock);
         }
         eventBlocks.klaytn = klaytnEventLastBlock;
@@ -68,9 +68,9 @@ async function loadConfFromDB() {
         let binanceMarketLastBlock = await lastblockRepository.find(process.env.BINANCE_CHAIN_ID, 'market');
         if (!binanceMarketLastBlock) {
             if (process.env.BINANCE_CHAIN_ID === '56')
-                binanceMarketLastBlock = 18105956;
+                binanceMarketLastBlock = 25448874;
             else if (process.env.BINANCE_CHAIN_ID === '97')
-                binanceMarketLastBlock = 19610641;
+                binanceMarketLastBlock = 27018824;
             await lastblockRepository.create(process.env.BINANCE_CHAIN_ID, 'market', binanceMarketLastBlock);
         }
         eventBlocks.binance = binanceEventLastBlock;
