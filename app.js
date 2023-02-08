@@ -24,7 +24,7 @@ var app = express();
 
 // enabling cors
 app.use(cors({
-        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://ntal.collery.io'],
+        origin: ['http://localhost:3000', 'http://localhost:8080', 'https://nftdev.chrema.net'],
         credentials: true
 }));
 
