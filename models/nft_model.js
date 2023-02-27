@@ -94,7 +94,7 @@ const NftSchema = new Schema(
                     enum: getCollectionCateValueInEnum(COLLECTION_CATE),
                 },
             ],
-            default: [COLLECTION_CATE.NFTPROJECT.value],
+            default: [COLLECTION_CATE.COLLECTABLE.value],
         },
         company_id: {
             type: Schema.Types.ObjectId,
