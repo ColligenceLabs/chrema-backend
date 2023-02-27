@@ -129,29 +129,25 @@ module.exports = {
             value: 'art',
             title: 'Art',
         },
-        GAMEITEM: {
-            value: 'gameItem',
-            title: 'Game Item'
+        COLLECTABLE: {
+            value: 'collectable',
+            title: 'Collectable'
         },
-        MUSIC: {
-            value: 'music',
-            title: 'Music'
+        PFPS: {
+            value: 'peps',
+            title: 'PFPs'
         },
-        CAR: {
-            value: 'car',
-            title: 'Car'
+        GAMING: {
+            value: 'gaming',
+            title: 'Gaming'
         },
-        HOUSE: {
-            value: 'house',
-            title: 'House'
+        SPORTS: {
+            value: 'sports',
+            title: 'Sports'
         },
-        NFTPROJECT: {
-            value: 'nftProject',
-            title: 'NFT Project'
-        },
-        METAVERSE: {
-            value: 'metaVerse',
-            title: 'MetaVerse'
+        PHOTOGRAPHY: {
+            value: 'photography',
+            title: 'Photography'
         },
     },
     HISTORY_MEMO: {
